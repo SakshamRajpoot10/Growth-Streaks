@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "growth-streaks",
+    "name": "Growth Streaks",
     "slug": "growth-streaks",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,6 +11,16 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.growthstreaks.app",
+      "permissions": [
+        "android.permission.USE_FULL_SCREEN_INTENT",
+        "android.permission.WAKE_LOCK",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.USE_EXACT_ALARM",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.FOREGROUND_SERVICE"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -33,7 +43,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true

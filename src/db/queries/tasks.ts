@@ -1,5 +1,5 @@
 import type * as SQLite from 'expo-sqlite';
-import type { Task } from '../schema';
+import { Task } from '../../types/task';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -8,34 +8,41 @@ export interface CreateTaskInput {
   activityName: string;
   focusArea?: string;
   scheduledTime: string;
-  daysOfWeek?: string;
+  daysOfWeek?: number[];
   alarmSound?: string;
   preAlarmMinutes?: number;
-  isActive?: number;
+  isActive?: boolean;
 }
 
 export interface UpdateTaskInput {
   activityName?: string;
   focusArea?: string;
   scheduledTime?: string;
-  daysOfWeek?: string;
+  daysOfWeek?: number[];
   alarmSound?: string;
   preAlarmMinutes?: number;
-  isActive?: number;
+  isActive?: boolean;
 }
 
 // ─── Row → Domain mapper ─────────────────────────────────────────────────────
 
 function rowToTask(row: Record<string, unknown>): Task {
+  let days: number[] = [1, 2, 3, 4, 5, 6, 7];
+  try {
+    days = JSON.parse((row.days_of_week as string) || '[1,2,3,4,5,6,7]');
+  } catch {
+    days = [1, 2, 3, 4, 5, 6, 7];
+  }
+
   return {
     id: row.id as string,
     activityName: row.activity_name as string,
     focusArea: row.focus_area as string,
     scheduledTime: row.scheduled_time as string,
-    daysOfWeek: row.days_of_week as string,
+    daysOfWeek: days,
     alarmSound: row.alarm_sound as string,
     preAlarmMinutes: row.pre_alarm_minutes as number,
-    isActive: row.is_active as number,
+    isActive: Boolean(row.is_active),
     createdAt: row.created_at as number,
     updatedAt: row.updated_at as number,
   };
@@ -48,83 +55,88 @@ export function getAllTasks(db: SQLite.SQLiteDatabase): Task[] {
   const rows = db.getAllSync(
     'SELECT * FROM tasks ORDER BY scheduled_time ASC',
   );
-  return (rows as Record<string, unknown>[]).map(rowToTask);
+  return (rows as Array<Record<string, unknown>>).map(rowToTask);
 }
 
-/** Returns only active tasks, ordered by scheduled time. */
+/** Returns only active tasks. */
 export function getActiveTasks(db: SQLite.SQLiteDatabase): Task[] {
   const rows = db.getAllSync(
     'SELECT * FROM tasks WHERE is_active = 1 ORDER BY scheduled_time ASC',
   );
-  return (rows as Record<string, unknown>[]).map(rowToTask);
+  return (rows as Array<Record<string, unknown>>).map(rowToTask);
 }
 
-/** Returns a single task by its ID, or null if not found. */
+/** Fetches a single task by ID. */
 export function getTaskById(
   db: SQLite.SQLiteDatabase,
   id: string,
 ): Task | null {
-  const row = db.getFirstSync('SELECT * FROM tasks WHERE id = ?', [id]);
-  return row ? rowToTask(row as Record<string, unknown>) : null;
+  const row = db.getFirstSync(
+    'SELECT * FROM tasks WHERE id = ?',
+    [id],
+  ) as Record<string, unknown> | null;
+  return row ? rowToTask(row) : null;
 }
 
 /**
- * Returns active tasks scheduled for the given day of the week.
- * `dayOfWeek` is 1 (Mon) – 7 (Sun).
+ * Returns active tasks scheduled to run on a given day of the week.
+ * `dayOfWeek` should follow ISO-8601 (1 = Monday, 7 = Sunday).
  */
 export function getTasksForDay(
   db: SQLite.SQLiteDatabase,
   dayOfWeek: number,
 ): Task[] {
-  // days_of_week is stored as a JSON array, e.g. "[1,2,3,4,5]".
-  // We use json_each() to check membership.
-  const rows = db.getAllSync(
-    `SELECT t.* FROM tasks t
-     WHERE t.is_active = 1
-       AND EXISTS (
-         SELECT 1 FROM json_each(t.days_of_week) je WHERE je.value = ?
-       )
-     ORDER BY t.scheduled_time ASC`,
-    [dayOfWeek],
-  );
-  return (rows as Record<string, unknown>[]).map(rowToTask);
+  const allActive = getActiveTasks(db);
+  return allActive.filter((t) => t.daysOfWeek.includes(dayOfWeek));
 }
 
-/** Creates a new task. Returns the created task. */
+/** Inserts a new task. Returns the newly created task. */
 export function createTask(
   db: SQLite.SQLiteDatabase,
-  task: CreateTaskInput,
+  input: CreateTaskInput,
 ): Task {
   const now = Date.now();
+  const days = input.daysOfWeek ?? [1, 2, 3, 4, 5, 6, 7];
+  const daysStr = JSON.stringify(days);
+
   db.runSync(
-    `INSERT INTO tasks (id, activity_name, focus_area, scheduled_time,
-       days_of_week, alarm_sound, pre_alarm_minutes, is_active,
-       created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO tasks (
+       id,
+       activity_name,
+       focus_area,
+       scheduled_time,
+       days_of_week,
+       alarm_sound,
+       pre_alarm_minutes,
+       is_active,
+       created_at,
+       updated_at
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      task.id,
-      task.activityName,
-      task.focusArea ?? 'General',
-      task.scheduledTime,
-      task.daysOfWeek ?? '[1,2,3,4,5,6,7]',
-      task.alarmSound ?? 'default_alarm',
-      task.preAlarmMinutes ?? 5,
-      task.isActive ?? 1,
+      input.id,
+      input.activityName,
+      input.focusArea ?? 'General',
+      input.scheduledTime,
+      daysStr,
+      input.alarmSound ?? 'default_alarm',
+      input.preAlarmMinutes ?? 5,
+      input.isActive ?? true ? 1 : 0,
       now,
       now,
     ],
   );
-  return getTaskById(db, task.id)!;
+
+  return getTaskById(db, input.id)!;
 }
 
-/** Partially updates a task. Returns the updated task or null. */
+/** Updates an existing task. */
 export function updateTask(
   db: SQLite.SQLiteDatabase,
   id: string,
   updates: UpdateTaskInput,
 ): Task | null {
   const setClauses: string[] = [];
-  const values: unknown[] = [];
+  const values: SQLite.SQLiteBindValue[] = [];
 
   if (updates.activityName !== undefined) {
     setClauses.push('activity_name = ?');
@@ -140,7 +152,7 @@ export function updateTask(
   }
   if (updates.daysOfWeek !== undefined) {
     setClauses.push('days_of_week = ?');
-    values.push(updates.daysOfWeek);
+    values.push(JSON.stringify(updates.daysOfWeek));
   }
   if (updates.alarmSound !== undefined) {
     setClauses.push('alarm_sound = ?');
@@ -152,7 +164,7 @@ export function updateTask(
   }
   if (updates.isActive !== undefined) {
     setClauses.push('is_active = ?');
-    values.push(updates.isActive);
+    values.push(updates.isActive ? 1 : 0);
   }
 
   if (setClauses.length === 0) {
@@ -170,7 +182,7 @@ export function updateTask(
   return getTaskById(db, id);
 }
 
-/** Toggles a task's is_active flag. Returns the updated task or null. */
+/** Toggles a task's is_active flag. */
 export function toggleTask(
   db: SQLite.SQLiteDatabase,
   id: string,
@@ -185,11 +197,7 @@ export function toggleTask(
   return getTaskById(db, id);
 }
 
-/** Deletes a task by ID. Returns true if a row was deleted. */
-export function deleteTask(
-  db: SQLite.SQLiteDatabase,
-  id: string,
-): boolean {
-  const result = db.runSync('DELETE FROM tasks WHERE id = ?', [id]);
-  return result.changes > 0;
+/** Permanently deletes a task. */
+export function deleteTask(db: SQLite.SQLiteDatabase, id: string): void {
+  db.runSync('DELETE FROM tasks WHERE id = ?', [id]);
 }

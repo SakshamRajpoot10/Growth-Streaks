@@ -1,41 +1,18 @@
 import type * as SQLite from 'expo-sqlite';
+import { DailyStats, WeeklyStats, HeatmapDay } from '../../types/task-log';
+import { getIntensityLevel } from '../../utils/streak-calculator';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-export interface DailyStats {
-  total: number;
-  completed: number;
-  rate: number; // 0–1
-}
-
-export interface WeeklyStats {
-  date: string;
-  total: number;
-  completed: number;
-  rate: number;
-}
-
-export interface HeatmapEntry {
-  date: string;
-  count: number; // completed tasks on that day
-}
-
-// ─── Queries ─────────────────────────────────────────────────────────────────
-
-/**
- * Returns aggregate stats for a single date.
- * `total`     – number of log entries for the date.
- * `completed` – entries with status = 'yes'.
- * `rate`      – completed / total (0 when total is 0).
- */
 export function getDailyStats(
   db: SQLite.SQLiteDatabase,
   date: string,
 ): DailyStats {
   const row = db.getFirstSync(
     `SELECT
-       COUNT(*)                                   AS total,
-       SUM(CASE WHEN status = 'yes' THEN 1 ELSE 0 END) AS completed
+       COUNT(*) AS total,
+       SUM(CASE WHEN status = 'yes' THEN 1 ELSE 0 END) AS completed,
+       SUM(CASE WHEN status = 'no' THEN 1 ELSE 0 END) AS declined,
+       SUM(CASE WHEN status = 'missed' THEN 1 ELSE 0 END) AS missed,
+       SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending
      FROM task_logs
      WHERE date = ?`,
     [date],
@@ -43,88 +20,104 @@ export function getDailyStats(
 
   const total = (row?.total as number) ?? 0;
   const completed = (row?.completed as number) ?? 0;
+  const declined = (row?.declined as number) ?? 0;
+  const missed = (row?.missed as number) ?? 0;
+  const pending = (row?.pending as number) ?? 0;
 
   return {
     total,
     completed,
-    rate: total > 0 ? completed / total : 0,
+    declined,
+    missed,
+    pending,
+    rate: total > 0 ? Math.round((completed / total) * 100) : 0,
   };
 }
 
-/**
- * Returns per-day stats for every day within the given range (inclusive).
- * Days with no logs are omitted from the result.
- */
 export function getWeeklyStats(
   db: SQLite.SQLiteDatabase,
   startDate: string,
   endDate: string,
-): WeeklyStats[] {
-  const rows = db.getAllSync(
+): WeeklyStats {
+  const row = db.getFirstSync(
     `SELECT
-       date,
-       COUNT(*)                                   AS total,
-       SUM(CASE WHEN status = 'yes' THEN 1 ELSE 0 END) AS completed
+       COUNT(*) AS total,
+       SUM(CASE WHEN status = 'yes' THEN 1 ELSE 0 END) AS completed,
+       SUM(CASE WHEN status = 'no' THEN 1 ELSE 0 END) AS declined,
+       SUM(CASE WHEN status = 'missed' THEN 1 ELSE 0 END) AS missed,
+       SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending
      FROM task_logs
-     WHERE date >= ? AND date <= ?
-     GROUP BY date
-     ORDER BY date ASC`,
+     WHERE date BETWEEN ? AND ?`,
     [startDate, endDate],
-  ) as Record<string, unknown>[];
+  ) as Record<string, unknown> | null;
 
-  return rows.map((r) => {
-    const total = r.total as number;
-    const completed = r.completed as number;
-    return {
-      date: r.date as string,
-      total,
-      completed,
-      rate: total > 0 ? completed / total : 0,
-    };
-  });
+  const total = (row?.total as number) ?? 0;
+  const completed = (row?.completed as number) ?? 0;
+  const declined = (row?.declined as number) ?? 0;
+  const missed = (row?.missed as number) ?? 0;
+  const pending = (row?.pending as number) ?? 0;
+
+  return {
+    total,
+    completed,
+    declined,
+    missed,
+    pending,
+    rate: total > 0 ? Math.round((completed / total) * 100) : 0,
+    startDate,
+    endDate,
+  };
 }
 
-/**
- * Returns heatmap data for a given month: each day in the month that has
- * at least one completed task, along with the count of completed tasks.
- */
 export function getMonthlyHeatmapData(
   db: SQLite.SQLiteDatabase,
   year: number,
   month: number,
-): HeatmapEntry[] {
-  const monthStr = String(month).padStart(2, '0');
-  const prefix = `${year}-${monthStr}`;
+): HeatmapDay[] {
+  const startStr = `${year}-${String(month).padStart(2, '0')}-01`;
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const endStr = `${year}-${String(month).padStart(2, '0')}-${String(daysInMonth).padStart(2, '0')}`;
 
   const rows = db.getAllSync(
     `SELECT
        date,
-       SUM(CASE WHEN status = 'yes' THEN 1 ELSE 0 END) AS count
+       COUNT(*) AS total,
+       SUM(CASE WHEN status = 'yes' THEN 1 ELSE 0 END) AS completed
      FROM task_logs
-     WHERE date LIKE ? || '%'
-     GROUP BY date
-     HAVING count > 0
-     ORDER BY date ASC`,
-    [prefix],
-  ) as Record<string, unknown>[];
+     WHERE date BETWEEN ? AND ?
+     GROUP BY date`,
+    [startStr, endStr],
+  ) as Array<{ date: string; total: number; completed: number }>;
 
-  return rows.map((r) => ({
-    date: r.date as string,
-    count: r.count as number,
-  }));
+  const dateMap = new Map<string, { total: number; completed: number }>();
+  for (const r of rows) {
+    dateMap.set(r.date, { total: r.total, completed: r.completed });
+  }
+
+  const result: HeatmapDay[] = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const info = dateMap.get(dStr) || { total: 0, completed: 0 };
+    const rate = info.total > 0 ? Math.round((info.completed / info.total) * 100) : 0;
+    result.push({
+      date: dStr,
+      total: info.total,
+      completed: info.completed,
+      rate,
+      intensity: getIntensityLevel(rate),
+    });
+  }
+
+  return result;
 }
 
-/**
- * Returns a sorted list of all distinct dates that have at least one
- * completed (status = 'yes') task log.
- */
-export function getCompletedDates(
-  db: SQLite.SQLiteDatabase,
-): string[] {
+export function getCompletedDates(db: SQLite.SQLiteDatabase): string[] {
   const rows = db.getAllSync(
-    `SELECT DISTINCT date FROM task_logs
+    `SELECT DISTINCT date
+     FROM task_logs
      WHERE status = 'yes'
      ORDER BY date ASC`,
-  );
-  return (rows as Record<string, unknown>[]).map((r) => r.date as string);
+  ) as Array<{ date: string }>;
+
+  return rows.map((r) => r.date);
 }
