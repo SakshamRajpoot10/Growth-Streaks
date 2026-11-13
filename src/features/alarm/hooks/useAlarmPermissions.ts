@@ -29,3 +29,4 @@ export function useAlarmPermissions() {
 
   return { hasPermission, canScheduleExact };
 }
+

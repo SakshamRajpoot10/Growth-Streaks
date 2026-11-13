@@ -48,3 +48,4 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
 });
+

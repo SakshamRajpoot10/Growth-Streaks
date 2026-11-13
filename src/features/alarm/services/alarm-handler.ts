@@ -83,3 +83,4 @@ export async function handleBackgroundAlarmEvent({ type, detail }: Event): Promi
 export function registerBackgroundAlarmHandler(): void {
   notifee.onBackgroundEvent(handleBackgroundAlarmEvent);
 }
+

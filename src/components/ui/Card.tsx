@@ -26,3 +26,4 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.border,
   },
 });
+
