@@ -23,9 +23,9 @@
 
 Download the latest standalone universal Android `.apk` directly (no developer tools or Expo Go required):
 
-[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak.apk%20(112%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/I1P_RSS_ZRI_c5jQd2MokwSeZ3NCu15iws0Lapl2u1U.apk)
+[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak.apk%20(112%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/qUHVb4X6akULFmh82w2lkyZmDPLSXjDadd0Xks6tZtQ.apk)
 
-* **Direct APK Download Link:** [https://expo.dev/artifacts/eas/I1P_RSS_ZRI_c5jQd2MokwSeZ3NCu15iws0Lapl2u1U.apk](https://expo.dev/artifacts/eas/I1P_RSS_ZRI_c5jQd2MokwSeZ3NCu15iws0Lapl2u1U.apk)
+* **Direct APK Download Link:** [https://expo.dev/artifacts/eas/qUHVb4X6akULFmh82w2lkyZmDPLSXjDadd0Xks6tZtQ.apk](https://expo.dev/artifacts/eas/qUHVb4X6akULFmh82w2lkyZmDPLSXjDadd0Xks6tZtQ.apk)
 * **Local Workspace File:** `Growth Streak.apk` (112 MB)
 
 ---

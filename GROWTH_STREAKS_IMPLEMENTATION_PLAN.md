@@ -23,8 +23,8 @@ Growth Streak combines strict 3-strike lock-screen alarm accountability with hab
 * **Universal Release APK:** `Growth Streak.apk` (112 MB)
 * **Local Workspace File:** [Growth Streak.apk](file:///d:/PROJECTS/Growth%20Streaks/Growth%20Streak.apk)
 * **Secondary Workspace Copy:** [growth-streaks/Growth Streak.apk](file:///d:/PROJECTS/Growth%20Streaks/growth-streaks/Growth%20Streak.apk)
-* **Cloud Direct Download (EAS CDN):** [Download Growth Streak.apk](https://expo.dev/artifacts/eas/I1P_RSS_ZRI_c5jQd2MokwSeZ3NCu15iws0Lapl2u1U.apk)
-* **EAS Cloud Build Dashboard:** [Expo Build `b235a6e8`](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds/b235a6e8-e507-42e9-8042-432c2e3818af)
+* **Cloud Direct Download (EAS CDN):** [Download Growth Streak.apk](https://expo.dev/artifacts/eas/qUHVb4X6akULFmh82w2lkyZmDPLSXjDadd0Xks6tZtQ.apk)
+* **EAS Cloud Build Dashboard:** [Expo Build `3fe80c59`](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds/3fe80c59-bec3-486e-92a8-8531c96b98a8)
 * **Interactive Live Display Tester:** [growth-streaks-tester.html](file:///d:/PROJECTS/Growth%20Streaks/growth-streaks-tester.html)
 * **Official Branding:** Integrated `GS` Clock & Streak logo across launcher icons, splash screen, and GitHub badges.
 * **Default Theme Architecture:** Default Light Mode out-of-the-box with switchable Obsidian Midnight Dark Mode.
