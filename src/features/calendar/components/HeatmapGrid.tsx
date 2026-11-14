@@ -83,7 +83,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
             style={[
               styles.weekHeaderText,
               { color: colors.textSecondary },
-              (i === 5 || i === 6) && { color: isDark ? '#94A3B8' : '#64748B' },
+              (i === 5 || i === 6) && { color: isDark ? '#64748B' : '#94A3B8' },
             ]}
           >
             {hdr}
@@ -109,19 +109,23 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
           let cellBg = isDark ? '#1E293B' : '#F1F5F9';
           let textColor = colors.text;
           let indicatorColor = 'transparent';
+          let cellBorder = 'transparent';
 
           if (status === 'completed') {
-            cellBg = isDark ? '#064E3B' : '#DCFCE7';
+            cellBg = isDark ? 'rgba(16, 185, 129, 0.22)' : '#DCFCE7';
             textColor = isDark ? '#34D399' : '#15803D';
             indicatorColor = '#10B981';
+            cellBorder = isDark ? 'rgba(16, 185, 129, 0.4)' : '#BBF7D0';
           } else if (status === 'failed') {
-            cellBg = isDark ? '#450A0A' : '#FEE2E2';
+            cellBg = isDark ? 'rgba(239, 68, 68, 0.2)' : '#FEE2E2';
             textColor = isDark ? '#F87171' : '#B91C1C';
             indicatorColor = '#EF4444';
+            cellBorder = isDark ? 'rgba(239, 68, 68, 0.4)' : '#FECACA';
           } else if (status === 'pending') {
-            cellBg = isDark ? '#382805' : '#FEF3C7';
+            cellBg = isDark ? 'rgba(245, 158, 11, 0.18)' : '#FEF3C7';
             textColor = isDark ? '#FBBF24' : '#B45309';
             indicatorColor = '#F59E0B';
+            cellBorder = isDark ? 'rgba(245, 158, 11, 0.35)' : '#FDE68A';
           }
 
           return (
@@ -131,11 +135,16 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
               onPress={() => onSelectDate(dStr)}
               style={[
                 styles.dayCell,
-                { backgroundColor: cellBg },
+                {
+                  backgroundColor: cellBg,
+                  borderColor: cellBorder !== 'transparent' ? cellBorder : isDark ? '#26334D' : '#E2E8F0',
+                  borderWidth: 1,
+                },
                 isSelected && {
                   borderColor: '#10B981',
                   borderWidth: 2.5,
-                  transform: [{ scale: 1.05 }],
+                  transform: [{ scale: 1.06 }],
+                  zIndex: 10,
                 },
                 isToday && !isSelected && {
                   borderColor: colors.primary,
@@ -163,7 +172,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       </View>
 
       {/* Legend */}
-      <View style={[styles.legend, { borderTopColor: colors.border }]}>
+      <View style={[styles.legend, { borderTopColor: isDark ? '#1F293D' : colors.border }]}>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: '#10B981' }]} />
           <Text style={[styles.legendText, { color: colors.textSecondary }]}>Completed</Text>
@@ -173,7 +182,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
           <Text style={[styles.legendText, { color: colors.textSecondary }]}>Missed / Skipped</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: isDark ? '#334155' : '#CBD5E1' }]} />
+          <View style={[styles.legendDot, { backgroundColor: isDark ? '#475569' : '#CBD5E1' }]} />
           <Text style={[styles.legendText, { color: colors.textSecondary }]}>No Alarms Set</Text>
         </View>
       </View>

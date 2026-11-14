@@ -74,8 +74,8 @@ export const SettingsScreen: React.FC = () => {
           </View>
         </Card>
 
-        <View style={[styles.privacyNote, { backgroundColor: isDark ? '#1E293B' : '#E0F2FE', borderColor: isDark ? '#334155' : '#BAE6FD' }]}>
-          <Text style={[styles.privacyText, { color: isDark ? '#38BDF8' : '#0369A1' }]}>
+        <View style={[styles.privacyNote, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : '#EFF6FF', borderColor: isDark ? 'rgba(56, 189, 248, 0.22)' : '#BFDBFE' }]}>
+          <Text style={[styles.privacyText, { color: isDark ? '#38BDF8' : '#1E40AF' }]}>
             🔒 Growth Streaks collects zero personal telemetry and works completely without internet access. All streaks, logs, and routines remain local to your device for lifetime privacy.
           </Text>
         </View>

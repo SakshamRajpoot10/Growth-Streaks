@@ -267,7 +267,7 @@ export const TaskListScreen: React.FC = () => {
             style={[
               styles.manageBtn,
               {
-                backgroundColor: isSelectionMode ? '#EF4444' : isDark ? '#1E293B' : '#F1F5F9',
+                backgroundColor: isSelectionMode ? colors.error : colors.surfaceVariant,
               },
             ]}
           >

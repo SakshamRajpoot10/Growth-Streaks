@@ -125,8 +125,8 @@ export const CalendarScreen: React.FC = () => {
           style={[
             styles.todayBanner,
             isDark
-              ? { backgroundColor: '#131A29', borderColor: '#1E293B' }
-              : { backgroundColor: '#F0FDF4', borderColor: '#DCFCE7' },
+              ? { backgroundColor: '#0F1E1B', borderColor: '#1D3B34' }
+              : { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0' },
           ]}
         >
           <View style={styles.todayBannerContent}>

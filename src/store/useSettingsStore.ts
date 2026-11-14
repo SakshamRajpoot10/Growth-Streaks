@@ -23,7 +23,7 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      theme: 'system',
+      theme: 'light',
       defaultAlarmSound: 'default_alarm',
       vibrationEnabled: true,
       onboardingCompleted: false,

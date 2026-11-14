@@ -307,8 +307,8 @@ export const TaskForm: React.FC<TaskFormProps> = ({
               style={[
                 styles.soundOption,
                 {
-                  backgroundColor: isSelected ? (isDark ? '#064E3B' : '#DCFCE7') : colors.surface,
-                  borderColor: isSelected ? '#10B981' : colors.border,
+                  backgroundColor: isSelected ? (isDark ? 'rgba(16, 185, 129, 0.16)' : '#ECFDF5') : colors.surface,
+                  borderColor: isSelected ? colors.primary : colors.border,
                 },
               ]}
             >
@@ -321,7 +321,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({
                 </Text>
               </View>
               {isSelected ? (
-                <View style={styles.checkBadge}>
+                <View style={[styles.checkBadge, { backgroundColor: colors.primary }]}>
                   <Text style={styles.checkText}>✓</Text>
                 </View>
               ) : (
@@ -333,8 +333,16 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       </View>
 
       {/* 3-Strike Accountability Note */}
-      <View style={[styles.infoBanner, isDark && { backgroundColor: '#1E293B', borderColor: '#334155' }]}>
-        <Text style={[styles.infoText, isDark && { color: '#38BDF8' }]}>
+      <View
+        style={[
+          styles.infoBanner,
+          {
+            backgroundColor: isDark ? 'rgba(56, 189, 248, 0.12)' : '#EFF6FF',
+            borderColor: isDark ? 'rgba(56, 189, 248, 0.25)' : '#BFDBFE',
+          },
+        ]}
+      >
+        <Text style={[styles.infoText, { color: isDark ? '#38BDF8' : '#1E40AF' }]}>
           ⚡ Active Accountability: Alarms fire 5 mins before, 3 mins before, and at routine time with lock-screen YES / NO confirmation.
         </Text>
       </View>

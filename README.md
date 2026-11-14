@@ -23,9 +23,9 @@
 
 Download the latest standalone universal Android `.apk` directly (no developer tools or Expo Go required):
 
-[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak.apk%20(112%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/cIIBIvWk6n8mergwxWEXDpyZnddtR-CmemubXCuBlmc.apk)
+[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak.apk%20(112%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/I1P_RSS_ZRI_c5jQd2MokwSeZ3NCu15iws0Lapl2u1U.apk)
 
-* **Direct APK Download Link:** [https://expo.dev/artifacts/eas/cIIBIvWk6n8mergwxWEXDpyZnddtR-CmemubXCuBlmc.apk](https://expo.dev/artifacts/eas/cIIBIvWk6n8mergwxWEXDpyZnddtR-CmemubXCuBlmc.apk)
+* **Direct APK Download Link:** [https://expo.dev/artifacts/eas/I1P_RSS_ZRI_c5jQd2MokwSeZ3NCu15iws0Lapl2u1U.apk](https://expo.dev/artifacts/eas/I1P_RSS_ZRI_c5jQd2MokwSeZ3NCu15iws0Lapl2u1U.apk)
 * **Local Workspace File:** `Growth Streak.apk` (112 MB)
 
 ---
@@ -33,14 +33,33 @@ Download the latest standalone universal Android `.apk` directly (no developer t
 ## 📸 App Screenshots
 
 <p align="center">
-  <img src="docs/screenshots/screenshot-dashboard.png" width="22%" alt="Dashboard Screen" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/screenshot-calendar.png" width="22%" alt="Streak Calendar Screen" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/screenshot-alarm-creation.png" width="22%" alt="Alarm & Routine Creator" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/screenshot-lockscreen-alarm.png" width="22%" alt="3-Strike Lock-Screen Alarm" />
+  <img src="docs/screenshots/screenshot-dashboard.png" width="18%" alt="Dashboard Screen (Light Default)" />
+  &nbsp;
+  <img src="docs/screenshots/screenshot-calendar.png" width="18%" alt="Streak Calendar Screen (Light Default)" />
+  &nbsp;
+  <img src="docs/screenshots/screenshot-alarm-creation.png" width="18%" alt="Alarm & Routine Creator" />
+  &nbsp;
+  <img src="docs/screenshots/screenshot-dark-mode.png" width="18%" alt="Obsidian Dark Mode" />
+  &nbsp;
+  <img src="docs/screenshots/screenshot-lockscreen-alarm.png" width="18%" alt="3-Strike Lock-Screen Alarm" />
 </p>
+
+---
+
+## 🎨 Design System & Luxury Color Grading
+
+Growth Streak delivers a refined, distraction-free visual experience crafted specifically for habit discipline:
+
+* ☀️ **Default Light Mode (Out of the Box):**
+  * **Canvas:** Ultra-clean `#F8FAFC` slate canvas with soft ambient depth.
+  * **Cards & Surfaces:** `#FFFFFF` pure cards with micro `#E2E8F0` borders for clean contrast without visual clutter.
+  * **Primary Accent:** Vivid Emerald `#10B981` representing health, vitality, and completed growth streaks.
+  * **Streak Flame:** Champagne Amber `#F59E0B` to `#FBBF24` for fire streak counts and milestones.
+* 🌙 **Obsidian Midnight Dark Mode (User-Switchable in Settings):**
+  * **Canvas:** True Obsidian Midnight `#0B0F19` designed for AMOLED battery conservation.
+  * **Cards & Surfaces:** Deep Midnight Slate `#111827` with subtle `#1F2937` graphite structural borders.
+  * **Accents & Highlights:** Radiant Emerald `#10B981` paired with `#6EE7B7` soft mint glows and `#F9FAFB` high-legibility typography.
+  * **Contrast Balance:** Eliminates muddy grays and harsh artificial tones; zero neon eye strain during early morning or late night alarm checks.
 
 ---
 
