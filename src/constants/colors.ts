@@ -1,44 +1,44 @@
 export const Colors = {
   light: {
-    primary: '#10B981',        // Vibrant Emerald Green
+    primary: '#10B981',        // Modern Vibrant Emerald
     primaryLight: '#34D399',   // Fresh Mint
     primaryDark: '#059669',    // Deep Forest Emerald
     primaryGlow: 'rgba(16, 185, 129, 0.15)',
-    accent: '#6366F1',         // Modern Indigo
-    background: '#F8FAFC',     // Clean Premium Slate White
-    surface: '#FFFFFF',        // Pure White Card
+    accent: '#EA580C',         // Friendly Modern Orange (as shown in reference)
+    background: '#F8F9FA',     // Soft, Clean, Modern Light Canvas
+    surface: '#FFFFFF',        // Pure White Card Surface
     surfaceElevated: '#FFFFFF',
-    surfaceVariant: '#F1F5F9', // Subtle Slate Gray Chip/Input
-    text: '#0F172A',           // Slate 900 (High-End Typography)
-    textSecondary: '#64748B',  // Slate 500 (Clean secondary text)
-    border: '#E2E8F0',         // Soft 1px Border
-    borderSubtle: '#F1F5F9',
+    surfaceVariant: '#F3F4F6', // Subtle Slate Gray Chip/Input
+    text: '#111827',           // Near Black Slate for crisp readability
+    textSecondary: '#6B7280',  // Friendly Neutral Slate
+    border: '#E5E7EB',         // Clean Soft 1px Card Border
+    borderSubtle: '#F3F4F6',
     error: '#EF4444',          // Crisp Ruby Red
     errorBg: '#FEE2E2',
     success: '#10B981',
     successBg: '#DCFCE7',
     warning: '#F59E0B',        // Bright Amber
     warningBg: '#FEF3C7',
-    streak: '#F59E0B',         // Golden Flame
-    streakBg: '#FFFBEB',       // Warm Champagne Glow
-    streakBorder: '#FDE68A',
-    streakText: '#B45309',
+    streak: '#EA580C',         // Warm Radiant Orange Flame
+    streakBg: '#FFFBEB',       // Warm Soft Cream / Amber Card
+    streakBorder: '#FDE68A',   // Clean Golden Border
+    streakText: '#C2410C',     // Bold Orange Text
   },
   dark: {
     primary: '#10B981',        // Vibrant Emerald Glow
     primaryLight: '#34D399',
     primaryDark: '#059669',
-    primaryGlow: 'rgba(16, 185, 129, 0.25)',
-    accent: '#818CF8',         // Luminous Soft Violet
-    background: '#0B0F19',     // Cosmic Obsidian Midnight (Deep & Cohesive)
-    surface: '#111827',        // Elevated Midnight Slate Surface
-    surfaceElevated: '#162238',// Rich Elevated Surface with depth
-    surfaceVariant: '#1E293B', // Slate 800 (Pills, inputs, chips)
-    text: '#F8FAFC',           // Crisp Off-White (Zero Eye Strain)
-    textSecondary: '#94A3B8',  // Cool Mist Slate
-    border: '#1E293B',         // Sleek Dark Border
+    primaryGlow: 'rgba(16, 185, 129, 0.22)',
+    accent: '#F59E0B',         // Warm Amber Accent
+    background: '#0B0F19',     // Sleek Obsidian Midnight
+    surface: '#111827',        // Elevated Deep Midnight Slate
+    surfaceElevated: '#162238',// Rich Elevated Surface
+    surfaceVariant: '#1F2937', // Refined Graphite Surface
+    text: '#F9FAFB',           // High-Legibility Off-White
+    textSecondary: '#9CA3AF',  // Cool Slate
+    border: '#1F2937',         // Subtle Clean Border
     borderSubtle: '#162032',
-    error: '#F87171',          // Ruby Glow
+    error: '#F87171',
     errorBg: 'rgba(239, 68, 68, 0.16)',
     success: '#34D399',
     successBg: 'rgba(16, 185, 129, 0.16)',
@@ -46,7 +46,7 @@ export const Colors = {
     warningBg: 'rgba(245, 158, 11, 0.16)',
     streak: '#FBBF24',         // Warm Radiant Gold
     streakBg: '#19150B',       // Deep Polished Amber Charcoal
-    streakBorder: '#3E3013',   // Refined Subtle Bronze Rim
+    streakBorder: '#3E3013',   // Subtle Bronze Rim
     streakText: '#FDE68A',
   },
   heatmap: {

@@ -26,7 +26,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Growth Streak',
+          title: 'Dashboard',
           tabBarLabel: 'Dashboard',
           tabBarIcon: () => <Text style={{ fontSize: 20 }}>📊</Text>,
         }}

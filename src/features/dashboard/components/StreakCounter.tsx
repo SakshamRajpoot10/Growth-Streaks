@@ -22,26 +22,19 @@ export const StreakCounter: React.FC<StreakCounterProps> = ({ streak, longestStr
         },
       ]}
     >
-      <View style={styles.content}>
-        <Text style={styles.flame}>🔥</Text>
-        <View style={styles.textContainer}>
-          <Text style={[styles.streakNumber, { color: colors.streak }]}>{streak}</Text>
-          <Text style={[styles.streakLabel, { color: isDark ? '#FBBF24' : '#D97706' }]}>Day Streak</Text>
+      <View style={styles.headerRow}>
+        <View style={styles.content}>
+          <Text style={styles.flame}>🔥</Text>
+          <View style={styles.textContainer}>
+            <Text style={[styles.streakNumber, { color: isDark ? '#FBBF24' : '#EA580C' }]}>{streak}</Text>
+            <Text style={[styles.streakLabel, { color: isDark ? '#FBBF24' : '#C2410C' }]}>DAY STREAK</Text>
+          </View>
         </View>
-      </View>
-
-      <View style={styles.longestContainer}>
-        <Text
-          style={[
-            styles.longestBadge,
-            {
-              color: colors.streakText,
-              backgroundColor: isDark ? 'rgba(251, 191, 36, 0.12)' : 'rgba(217, 119, 6, 0.12)',
-            },
-          ]}
-        >
-          🏆 Highest Streak: {bestStreak} {bestStreak === 1 ? 'day' : 'days'}
-        </Text>
+        {bestStreak > 0 && (
+          <View style={[styles.bestPill, { backgroundColor: isDark ? 'rgba(251, 191, 36, 0.15)' : '#FEF3C7' }]}>
+            <Text style={[styles.bestText, { color: isDark ? '#FDE68A' : '#B45309' }]}>★ BEST: {bestStreak}D</Text>
+          </View>
+        )}
       </View>
 
       <Text
@@ -52,7 +45,7 @@ export const StreakCounter: React.FC<StreakCounterProps> = ({ streak, longestStr
       >
         {streak > 0
           ? 'Consistency is key. Keep your momentum going!'
-          : 'Complete at least one routine today to keep your streak alive!'}
+          : 'Complete at least one task today to start your streak!'}
       </Text>
     </Card>
   );
@@ -60,46 +53,52 @@ export const StreakCounter: React.FC<StreakCounterProps> = ({ streak, longestStr
 
 const styles = StyleSheet.create({
   card: {
-    padding: 16,
+    padding: 18,
+    borderRadius: 18,
     borderWidth: 1.5,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   flame: {
-    fontSize: 42,
+    fontSize: 44,
     marginRight: 16,
   },
   textContainer: {
     flexDirection: 'column',
   },
   streakNumber: {
-    fontSize: 36,
+    fontSize: 38,
     fontWeight: '800',
     letterSpacing: -0.5,
+    lineHeight: 42,
   },
   streakLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
+    marginTop: 2,
   },
-  longestContainer: {
-    marginTop: 10,
-    flexDirection: 'row',
-  },
-  longestBadge: {
-    fontSize: 12,
-    fontWeight: '700',
+  bestPill: {
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 8,
-    overflow: 'hidden',
+  },
+  bestText: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   subtitle: {
-    fontSize: 13,
-    marginTop: 10,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 14,
   },
 });
