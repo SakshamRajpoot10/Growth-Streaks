@@ -11,7 +11,7 @@ import { openDatabase } from '../../db/client';
 import { getDailyStats, getWeeklyStats, getCompletedDates } from '../../db/queries/analytics';
 import { getTasksForDay } from '../../db/queries/tasks';
 import { getLogsByDate } from '../../db/queries/task-logs';
-import { calculateCurrentStreak } from '../../utils/streak-calculator';
+import { calculateCurrentStreak, calculateLongestStreak } from '../../utils/streak-calculator';
 import { getToday, getTodayDayOfWeek, getWeekRange } from '../../utils/date';
 import { Task } from '../../types/task';
 import { TaskLog, DailyStats, WeeklyStats } from '../../types/task-log';
@@ -40,6 +40,7 @@ export const DashboardScreen: React.FC = () => {
     endDate: '',
   });
   const [currentStreak, setCurrentStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
 
   const loadData = useCallback(() => {
     try {
@@ -69,9 +70,11 @@ export const DashboardScreen: React.FC = () => {
 
       const completedDates = getCompletedDates(db);
       const streak = calculateCurrentStreak(completedDates);
+      const longest = calculateLongestStreak(completedDates);
       setCurrentStreak(streak);
+      setLongestStreak(longest);
     } catch (e) {
-      console.error('Error loading dashboard data:', e);
+      // Handled safely
     }
   }, []);
 
@@ -93,7 +96,7 @@ export const DashboardScreen: React.FC = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <StreakCounter streak={currentStreak} />
+        <StreakCounter streak={currentStreak} longestStreak={longestStreak} />
 
         <DailyProgressRing
           completed={dailyStats.completed}

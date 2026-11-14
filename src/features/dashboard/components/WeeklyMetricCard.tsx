@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '../../../components/ui/Card';
-import { Colors } from '../../../constants/colors';
+import { useTheme } from '../../../utils/theme';
 
 interface WeeklyMetricCardProps {
   totalAlarms: number;
@@ -14,33 +14,35 @@ export const WeeklyMetricCard: React.FC<WeeklyMetricCardProps> = ({
   completedAlarms,
   successRate,
 }) => {
+  const { colors } = useTheme();
+
   return (
     <Card style={styles.card}>
-      <Text style={styles.title}>Weekly Performance</Text>
+      <Text style={[styles.title, { color: colors.text }]}>Weekly Performance</Text>
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
-          <Text style={styles.statValue}>{totalAlarms}</Text>
-          <Text style={styles.statLabel}>Alarms Set</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>{totalAlarms}</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Alarms Set</Text>
         </View>
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
         <View style={styles.statBox}>
-          <Text style={styles.statValue}>{completedAlarms}</Text>
-          <Text style={styles.statLabel}>Completed</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>{completedAlarms}</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Completed</Text>
         </View>
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
         <View style={styles.statBox}>
           <Text
             style={[
               styles.statValue,
-              { color: successRate >= 70 ? Colors.light.primary : Colors.light.accent },
+              { color: successRate >= 70 ? colors.primary : colors.accent },
             ]}
           >
             {successRate}%
           </Text>
-          <Text style={styles.statLabel}>Success Rate</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Success Rate</Text>
         </View>
       </View>
-      <Text style={styles.summaryText}>
+      <Text style={[styles.summaryText, { color: colors.textSecondary }]}>
         {totalAlarms > 0
           ? `You set ${totalAlarms} alarms this week and completed ${completedAlarms}.`
           : 'No alarms registered yet for this week.'}
@@ -56,7 +58,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
     marginBottom: 12,
   },
   statsRow: {
@@ -71,23 +72,18 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 22,
     fontWeight: '800',
-    color: Colors.light.text,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
     marginTop: 4,
   },
   divider: {
     width: 1,
     height: 32,
-    backgroundColor: Colors.light.border,
   },
   summaryText: {
     fontSize: 13,
-    color: Colors.light.textSecondary,
     marginTop: 12,
     textAlign: 'center',
   },
 });
-

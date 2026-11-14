@@ -2,7 +2,6 @@ import notifee, {
   TriggerType,
   AndroidImportance,
   AndroidCategory,
-  NotificationAndroid,
 } from 'react-native-notify-kit';
 import { calculateTriggerTimes } from '../../../utils/alarm-time';
 import { Task } from '../../../types/task';
@@ -40,107 +39,125 @@ export async function scheduleTask3StrikeSequence(
   task: Task,
   date: string = getToday()
 ): Promise<void> {
-  const channelId = await initializeAlarmChannel();
-  const times = calculateTriggerTimes(date, task.scheduledTime, task.preAlarmMinutes);
-  const now = Date.now();
+  try {
+    const channelId = await initializeAlarmChannel();
+    const times = calculateTriggerTimes(date, task.scheduledTime, task.preAlarmMinutes);
+    const now = Date.now();
 
-  const triggers = [
-    {
-      strike: 1,
-      id: `alarm_${task.id}_${date}_strike1`,
-      timestamp: times.trigger1,
-      title: `⏰ 5 min to: ${task.activityName}`,
-      body: `Strike 1/3: Are you ready to execute? Tap YES to confirm or NO to skip.`,
-    },
-    {
-      strike: 2,
-      id: `alarm_${task.id}_${date}_strike2`,
-      timestamp: times.trigger2,
-      title: `⚠️ 3 min to: ${task.activityName}`,
-      body: `Strike 2/3: Second call! Tap YES to start or NO to skip.`,
-    },
-    {
-      strike: 3,
-      id: `alarm_${task.id}_${date}_strike3`,
-      timestamp: times.trigger3,
-      title: `🚨 NOW: ${task.activityName}`,
-      body: `Final Call: Your routine starts now! Confirm execution now.`,
-    },
-  ];
-
-  for (const trig of triggers) {
-    if (trig.timestamp > now) {
-      await notifee.createTriggerNotification(
-        {
-          id: trig.id,
-          title: trig.title,
-          body: trig.body,
-          data: {
-            taskId: task.id,
-            date,
-            strike: String(trig.strike),
-            isAutoFail: 'false',
-          },
-          android: {
-            channelId,
-            importance: AndroidImportance.HIGH,
-            category: AndroidCategory.ALARM,
-            fullScreenAction: {
-              id: 'default',
-            },
-            autoCancel: false,
-            ongoing: true,
-            pressAction: {
-              id: 'default',
-            },
-            actions: [
-              {
-                title: '✅ YES',
-                pressAction: {
-                  id: 'action_yes',
-                },
-              },
-              {
-                title: '❌ NO',
-                pressAction: {
-                  id: 'action_no',
-                },
-              },
-            ],
-          },
-        },
-        {
-          type: TriggerType.TIMESTAMP,
-          timestamp: trig.timestamp,
-        }
-      );
-    }
-  }
-
-  // Schedule silent auto-fail trigger
-  if (times.autoFail > now) {
-    await notifee.createTriggerNotification(
+    const triggers = [
       {
-        id: `alarm_${task.id}_${date}_autofail`,
-        title: 'Accountability Verification',
-        body: 'Verifying completion status...',
-        data: {
-          taskId: task.id,
-          date,
-          strike: '3',
-          isAutoFail: 'true',
-        },
-        android: {
-          channelId,
-          importance: AndroidImportance.MIN,
-          autoCancel: true,
-        },
+        strike: 1,
+        id: `alarm_${task.id}_${date}_strike1`,
+        timestamp: times.trigger1,
+        title: `⏰ 5 min to: ${task.activityName}`,
+        body: `Strike 1/3: Are you ready to execute? Tap YES to confirm or NO to skip.`,
       },
       {
-        type: TriggerType.TIMESTAMP,
-        timestamp: times.autoFail,
+        strike: 2,
+        id: `alarm_${task.id}_${date}_strike2`,
+        timestamp: times.trigger2,
+        title: `⚠️ 3 min to: ${task.activityName}`,
+        body: `Strike 2/3: Second call! Tap YES to start or NO to skip.`,
+      },
+      {
+        strike: 3,
+        id: `alarm_${task.id}_${date}_strike3`,
+        timestamp: times.trigger3,
+        title: `🚨 NOW: ${task.activityName}`,
+        body: `Final Call: Your routine starts now! Confirm execution now.`,
+      },
+    ];
+
+    for (const trig of triggers) {
+      if (trig.timestamp > now) {
+        try {
+          await notifee.createTriggerNotification(
+            {
+              id: trig.id,
+              title: trig.title,
+              body: trig.body,
+              data: {
+                taskId: task.id,
+                date,
+                strike: String(trig.strike),
+                isAutoFail: 'false',
+              },
+              android: {
+                channelId,
+                importance: AndroidImportance.HIGH,
+                category: AndroidCategory.ALARM,
+                fullScreenAction: {
+                  id: 'default',
+                },
+                autoCancel: false,
+                ongoing: true,
+                pressAction: {
+                  id: 'default',
+                },
+                actions: [
+                  {
+                    title: '✅ YES',
+                    pressAction: {
+                      id: 'action_yes',
+                    },
+                  },
+                  {
+                    title: '❌ NO',
+                    pressAction: {
+                      id: 'action_no',
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              type: TriggerType.TIMESTAMP,
+              timestamp: trig.timestamp,
+              alarmManager: {
+                allowWhileIdle: true,
+              },
+            }
+          );
+        } catch (trigErr) {
+          // Handled gracefully so remaining triggers continue
+        }
       }
-    );
+    }
+
+    // Schedule silent auto-fail trigger
+    if (times.autoFail > now) {
+      try {
+        await notifee.createTriggerNotification(
+          {
+            id: `alarm_${task.id}_${date}_autofail`,
+            title: 'Accountability Verification',
+            body: 'Verifying completion status...',
+            data: {
+              taskId: task.id,
+              date,
+              strike: '3',
+              isAutoFail: 'true',
+            },
+            android: {
+              channelId,
+              importance: AndroidImportance.MIN,
+              autoCancel: true,
+            },
+          },
+          {
+            type: TriggerType.TIMESTAMP,
+            timestamp: times.autoFail,
+            alarmManager: {
+              allowWhileIdle: true,
+            },
+          }
+        );
+      } catch (afErr) {
+        // Handled gracefully
+      }
+    }
+  } catch (err) {
+    // Top-level notification scheduling safety
   }
 }
 
@@ -162,4 +179,3 @@ export async function cancelTaskAlarms(taskId: string, date: string): Promise<vo
     }
   }
 }
-

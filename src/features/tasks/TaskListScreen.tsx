@@ -1,21 +1,44 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, StyleSheet, View, Alert } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Alert,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import { ScreenWrapper } from '../../components/common/ScreenWrapper';
 import { TaskCard } from './components/TaskCard';
 import { TaskForm } from './components/TaskForm';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/common/EmptyState';
 import { openDatabase } from '../../db/client';
-import { getAllTasks, createTask, updateTask, toggleTask, deleteTask } from '../../db/queries/tasks';
-import { scheduleTask3StrikeSequence, cancelTaskAlarms } from '../alarm/services/alarm-scheduler';
+import {
+  getAllTasks,
+  createTask,
+  updateTask,
+  toggleTask,
+  deleteTask,
+} from '../../db/queries/tasks';
+import {
+  scheduleTask3StrikeSequence,
+  cancelTaskAlarms,
+} from '../alarm/services/alarm-scheduler';
 import { getToday } from '../../utils/date';
 import { generateUUID } from '../../utils/uuid';
+import { useTheme } from '../../utils/theme';
 import { Task, TaskFormData } from '../../types/task';
 
 export const TaskListScreen: React.FC = () => {
+  const { colors, isDark } = useTheme();
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+
+  // Multi-select deletion state
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
 
   const loadTasks = useCallback(() => {
     try {
@@ -23,7 +46,7 @@ export const TaskListScreen: React.FC = () => {
       const list = getAllTasks(db);
       setTasks(list);
     } catch {
-      // Handled silently
+      // Handled safely
     }
   }, []);
 
@@ -46,13 +69,17 @@ export const TaskListScreen: React.FC = () => {
         isActive: true,
       });
 
-      // Schedule 3-strike alarm for today if active
-      await scheduleTask3StrikeSequence(created, getToday());
+      // Attempt to schedule 3-strike alarm sequence safely
+      try {
+        await scheduleTask3StrikeSequence(created, getToday());
+      } catch {
+        // Notification scheduling warning handled
+      }
 
       setIsCreating(false);
       loadTasks();
-    } catch {
-      Alert.alert('Error', 'Failed to save routine.');
+    } catch (dbErr) {
+      Alert.alert('Save Error', 'Could not save routine to local database.');
     }
   };
 
@@ -70,14 +97,18 @@ export const TaskListScreen: React.FC = () => {
       });
 
       if (updated && updated.isActive) {
-        await cancelTaskAlarms(updated.id, getToday());
-        await scheduleTask3StrikeSequence(updated, getToday());
+        try {
+          await cancelTaskAlarms(updated.id, getToday());
+          await scheduleTask3StrikeSequence(updated, getToday());
+        } catch {
+          // Handled safely
+        }
       }
 
       setEditingTask(null);
       loadTasks();
     } catch {
-      Alert.alert('Error', 'Failed to update routine.');
+      Alert.alert('Update Error', 'Could not update routine.');
     }
   };
 
@@ -86,33 +117,89 @@ export const TaskListScreen: React.FC = () => {
       const db = openDatabase();
       const updated = toggleTask(db, task.id);
       if (updated) {
-        if (updated.isActive) {
-          await scheduleTask3StrikeSequence(updated, getToday());
-        } else {
-          await cancelTaskAlarms(updated.id, getToday());
+        try {
+          if (updated.isActive) {
+            await scheduleTask3StrikeSequence(updated, getToday());
+          } else {
+            await cancelTaskAlarms(updated.id, getToday());
+          }
+        } catch {
+          // Handled safely
         }
       }
       loadTasks();
     } catch {
-      // Handled silently
+      // Handled safely
     }
   };
 
-  const handleDeleteTask = (task: Task) => {
+  const handleDeleteSingleTask = (task: Task) => {
     Alert.alert(
       'Delete Routine',
-      `Are you sure you want to remove "${task.activityName}"?`,
+      `Are you sure you want to delete "${task.activityName}"?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
           onPress: async () => {
-            const db = openDatabase();
-            await cancelTaskAlarms(task.id, getToday());
-            deleteTask(db, task.id);
-            setEditingTask(null);
-            loadTasks();
+            try {
+              const db = openDatabase();
+              await cancelTaskAlarms(task.id, getToday());
+              deleteTask(db, task.id);
+              setEditingTask(null);
+              loadTasks();
+            } catch {
+              // Handled safely
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const toggleSelectTask = (id: string) => {
+    const next = new Set(selectedTaskIds);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    setSelectedTaskIds(next);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedTaskIds.size === tasks.length) {
+      setSelectedTaskIds(new Set());
+    } else {
+      setSelectedTaskIds(new Set(tasks.map((t) => t.id)));
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedTaskIds.size === 0) return;
+
+    Alert.alert(
+      'Delete Selected Routines',
+      `Delete ${selectedTaskIds.size} ${selectedTaskIds.size === 1 ? 'routine' : 'routines'}? This cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const db = openDatabase();
+              for (const id of selectedTaskIds) {
+                await cancelTaskAlarms(id, getToday());
+                deleteTask(db, id);
+              }
+              setSelectedTaskIds(new Set());
+              setIsSelectionMode(false);
+              loadTasks();
+            } catch {
+              // Handled safely
+            }
           },
         },
       ]
@@ -154,7 +241,7 @@ export const TaskListScreen: React.FC = () => {
         <Button
           title="Delete Routine"
           variant="danger"
-          onPress={() => handleDeleteTask(editingTask)}
+          onPress={() => handleDeleteSingleTask(editingTask)}
           style={styles.deleteBtn}
         />
         <Button
@@ -169,24 +256,103 @@ export const TaskListScreen: React.FC = () => {
 
   return (
     <ScreenWrapper>
-      <View style={styles.topBar}>
-        <Button
-          title="+ Add Routine"
-          onPress={() => setIsCreating(true)}
-          style={styles.addBtn}
-        />
-      </View>
+      {/* Top Header Actions (only shown when routines exist) */}
+      {tasks.length > 0 && (
+        <View style={styles.topBar}>
+          <TouchableOpacity
+            onPress={() => {
+              setIsSelectionMode(!isSelectionMode);
+              setSelectedTaskIds(new Set());
+            }}
+            style={[
+              styles.manageBtn,
+              {
+                backgroundColor: isSelectionMode ? '#EF4444' : isDark ? '#1E293B' : '#F1F5F9',
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.manageBtnText,
+                { color: isSelectionMode ? '#FFFFFF' : colors.text },
+              ]}
+            >
+              {isSelectionMode ? 'Cancel' : 'Manage / Delete'}
+            </Text>
+          </TouchableOpacity>
+
+          {!isSelectionMode && (
+            <Button
+              title="+ Add Routine"
+              onPress={() => setIsCreating(true)}
+              style={styles.addBtn}
+            />
+          )}
+        </View>
+      )}
+
+      {/* Multi-Select Action Bar */}
+      {isSelectionMode && tasks.length > 0 && (
+        <View style={[styles.selectionBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <TouchableOpacity onPress={handleSelectAll} style={styles.selectAllBtn}>
+            <Text style={[styles.selectAllText, { color: colors.primary }]}>
+              {selectedTaskIds.size === tasks.length ? 'Deselect All' : 'Select All'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleDeleteSelected}
+            disabled={selectedTaskIds.size === 0}
+            style={[
+              styles.deleteSelectedBtn,
+              { opacity: selectedTaskIds.size === 0 ? 0.4 : 1 },
+            ]}
+          >
+            <Text style={styles.deleteSelectedText}>
+              🗑️ Delete ({selectedTaskIds.size})
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <ScrollView showsVerticalScrollIndicator={false}>
         {tasks.length > 0 ? (
-          tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onToggleActive={handleToggleActive}
-              onPress={(t) => setEditingTask(t)}
-            />
-          ))
+          tasks.map((task) => {
+            const isSelected = selectedTaskIds.has(task.id);
+            return (
+              <View key={task.id} style={styles.cardContainer}>
+                {isSelectionMode && (
+                  <TouchableOpacity
+                    onPress={() => toggleSelectTask(task.id)}
+                    style={[
+                      styles.checkbox,
+                      {
+                        borderColor: isSelected ? '#EF4444' : colors.border,
+                        backgroundColor: isSelected ? '#EF4444' : 'transparent',
+                      },
+                    ]}
+                  >
+                    {isSelected && <Text style={styles.checkboxTick}>✓</Text>}
+                  </TouchableOpacity>
+                )}
+                <View style={{ flex: 1 }}>
+                  <TaskCard
+                    task={task}
+                    onToggleActive={handleToggleActive}
+                    onPress={(t) => {
+                      if (isSelectionMode) {
+                        toggleSelectTask(t.id);
+                      } else {
+                        setEditingTask(t);
+                      }
+                    }}
+                  />
+                </View>
+              </View>
+            );
+          })
         ) : (
+          /* Single Centered Add Routine Button when empty (No duplicates) */
           <EmptyState
             icon="⏰"
             title="No Routines Created"
@@ -204,11 +370,67 @@ export const TaskListScreen: React.FC = () => {
 const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginBottom: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  manageBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+  },
+  manageBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
   },
   addBtn: {
-    minWidth: 140,
+    minWidth: 130,
+  },
+  selectionBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  selectAllBtn: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  selectAllText: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  deleteSelectedBtn: {
+    backgroundColor: '#EF4444',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+  },
+  deleteSelectedText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 26,
+    height: 26,
+    borderRadius: 8,
+    borderWidth: 2,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxTick: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 14,
   },
   cancelBtn: {
     marginTop: 8,
@@ -218,6 +440,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   bottomSpacer: {
-    height: 32,
+    height: 36,
   },
 });

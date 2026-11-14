@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
-import { Colors } from '../../../constants/colors';
 import { Task } from '../../../types/task';
 import { getFocusAreaById } from '../../../constants/focus-areas';
 import { formatTime, getDayName } from '../../../utils/date';
+import { useTheme } from '../../../utils/theme';
 
 interface TaskCardProps {
   task: Task;
@@ -18,6 +18,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onToggleActive,
   onPress,
 }) => {
+  const { colors } = useTheme();
   const focus = getFocusAreaById(task.focusArea);
   const daysText =
     task.daysOfWeek.length === 7
@@ -34,6 +35,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               <Text
                 style={[
                   styles.title,
+                  { color: colors.text },
                   !task.isActive && styles.inactiveText,
                 ]}
               >
@@ -41,7 +43,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               </Text>
             </View>
             <Badge
-              label={focus.name}
+              label={task.focusArea || focus.name}
               color={focus.color + '20'}
               textColor={focus.color}
               style={styles.badge}
@@ -50,14 +52,16 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <Switch
             value={task.isActive}
             onValueChange={() => onToggleActive(task)}
-            trackColor={{ false: '#BDBDBD', true: Colors.light.primaryLight }}
-            thumbColor={task.isActive ? Colors.light.primary : '#FAFAFA'}
+            trackColor={{ false: '#71717A', true: colors.primaryLight }}
+            thumbColor={task.isActive ? colors.primary : '#FAFAFA'}
           />
         </View>
 
         <View style={styles.footerRow}>
-          <Text style={styles.time}>{formatTime(task.scheduledTime)}</Text>
-          <Text style={styles.days}>{daysText}</Text>
+          <Text style={[styles.time, { color: colors.primary }]}>
+            ⏰ {formatTime(task.scheduledTime)}
+          </Text>
+          <Text style={[styles.days, { color: colors.textSecondary }]}>{daysText}</Text>
         </View>
       </Card>
     </TouchableOpacity>
@@ -93,13 +97,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
   },
   inactiveText: {
     textDecorationLine: 'line-through',
-    color: Colors.light.textSecondary,
+    opacity: 0.6,
   },
   badge: {
+    alignSelf: 'flex-start',
     marginTop: 6,
   },
   footerRow: {
@@ -109,15 +113,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: Colors.light.surfaceVariant,
+    borderTopColor: 'rgba(148, 163, 184, 0.15)',
   },
   time: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
-    color: Colors.light.primary,
   },
   days: {
-    fontSize: 13,
-    color: Colors.light.textSecondary,
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

@@ -1,20 +1,22 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';
-import { Colors } from '../../src/constants/colors';
+import { useTheme } from '../../src/utils/theme';
 
 export default function TabLayout() {
+  const { colors } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: Colors.light.surface },
-        headerTitleStyle: { fontWeight: '700', color: Colors.light.text },
-        tabBarActiveTintColor: Colors.light.primary,
-        tabBarInactiveTintColor: Colors.light.textSecondary,
+        headerStyle: { backgroundColor: colors.surface },
+        headerTitleStyle: { fontWeight: '700', color: colors.text },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: Colors.light.surface,
-          borderTopColor: Colors.light.border,
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           height: 60,
           paddingBottom: 8,
           paddingTop: 6,
@@ -24,7 +26,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
+          title: 'Growth Streak',
           tabBarLabel: 'Dashboard',
           tabBarIcon: () => <Text style={{ fontSize: 20 }}>📊</Text>,
         }}
@@ -41,7 +43,7 @@ export default function TabLayout() {
         name="tasks"
         options={{
           title: 'My Routines',
-          tabBarLabel: 'Routines',
+          tabBarLabel: 'Alarm',
           tabBarIcon: () => <Text style={{ fontSize: 20 }}>⏰</Text>,
         }}
       />

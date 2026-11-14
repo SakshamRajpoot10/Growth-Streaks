@@ -2,10 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
 import { ScreenWrapper } from '../../components/common/ScreenWrapper';
 import { Card } from '../../components/ui/Card';
-import { Colors } from '../../constants/colors';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { useTheme } from '../../utils/theme';
 
 export const SettingsScreen: React.FC = () => {
+  const { colors, isDark } = useTheme();
   const {
     vibrationEnabled,
     setVibrationEnabled,
@@ -16,19 +17,21 @@ export const SettingsScreen: React.FC = () => {
   return (
     <ScreenWrapper>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>App Preferences</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>App Preferences</Text>
 
         <Card style={styles.card}>
           <View style={styles.row}>
             <View>
-              <Text style={styles.itemTitle}>Alarm Vibration</Text>
-              <Text style={styles.itemSubtitle}>Vibrate device on 3-strike alarm sequence</Text>
+              <Text style={[styles.itemTitle, { color: colors.text }]}>Alarm Vibration</Text>
+              <Text style={[styles.itemSubtitle, { color: colors.textSecondary }]}>
+                Vibrate device on 3-strike alarm sequence
+              </Text>
             </View>
             <Switch
               value={vibrationEnabled}
               onValueChange={setVibrationEnabled}
-              trackColor={{ false: '#BDBDBD', true: Colors.light.primaryLight }}
-              thumbColor={vibrationEnabled ? Colors.light.primary : '#FAFAFA'}
+              trackColor={{ false: '#71717A', true: colors.primaryLight }}
+              thumbColor={vibrationEnabled ? colors.primary : '#FAFAFA'}
             />
           </View>
         </Card>
@@ -36,40 +39,48 @@ export const SettingsScreen: React.FC = () => {
         <Card style={styles.card}>
           <View style={styles.row}>
             <View>
-              <Text style={styles.itemTitle}>Dark Theme</Text>
-              <Text style={styles.itemSubtitle}>Enable high contrast dark theme</Text>
+              <Text style={[styles.itemTitle, { color: colors.text }]}>Dark Theme</Text>
+              <Text style={[styles.itemSubtitle, { color: colors.textSecondary }]}>
+                Enable high-contrast night theme
+              </Text>
             </View>
             <Switch
               value={theme === 'dark'}
               onValueChange={(val) => setTheme(val ? 'dark' : 'light')}
-              trackColor={{ false: '#BDBDBD', true: Colors.light.primaryLight }}
-              thumbColor={theme === 'dark' ? Colors.light.primary : '#FAFAFA'}
+              trackColor={{ false: '#71717A', true: colors.primaryLight }}
+              thumbColor={theme === 'dark' ? colors.primary : '#FAFAFA'}
             />
           </View>
         </Card>
 
-        <Text style={styles.sectionTitle}>About & Privacy</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>About & Privacy</Text>
 
         <Card style={styles.card}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoTitle}>Architecture</Text>
-            <Text style={styles.infoValue}>100% Offline (SQLite)</Text>
+            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Architecture</Text>
+            <Text style={[styles.infoValue, { color: colors.text }]}>100% Offline (SQLite WAL)</Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={styles.infoTitle}>Full-Screen Intent</Text>
-            <Text style={styles.infoValue}>Active Accountability</Text>
+            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Lock-Screen Alarms</Text>
+            <Text style={[styles.infoValue, { color: colors.text }]}>3-Strike Active Engine</Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={styles.infoTitle}>App Version</Text>
-            <Text style={styles.infoValue}>1.0.0</Text>
+            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Ringtones</Text>
+            <Text style={[styles.infoValue, { color: colors.text }]}>10 Built-In Sounds</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>App Version</Text>
+            <Text style={[styles.infoValue, { color: colors.text }]}>1.0.0 (Play Store Edition)</Text>
           </View>
         </Card>
 
-        <View style={styles.privacyNote}>
-          <Text style={styles.privacyText}>
-            🔒 Growth Streaks collects zero personal telemetry and works completely without internet access. All streaks, logs, and routines remain local to your device.
+        <View style={[styles.privacyNote, { backgroundColor: isDark ? '#1E293B' : '#E0F2FE', borderColor: isDark ? '#334155' : '#BAE6FD' }]}>
+          <Text style={[styles.privacyText, { color: isDark ? '#38BDF8' : '#0369A1' }]}>
+            🔒 Growth Streaks collects zero personal telemetry and works completely without internet access. All streaks, logs, and routines remain local to your device for lifetime privacy.
           </Text>
         </View>
+
+        <View style={{ height: 32 }} />
       </ScrollView>
     </ScreenWrapper>
   );
@@ -79,7 +90,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.text,
     marginTop: 20,
     marginBottom: 8,
   },
@@ -95,11 +105,9 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.light.text,
   },
   itemSubtitle: {
-    fontSize: 12,
-    color: Colors.light.textSecondary,
+    fontSize: 13,
     marginTop: 2,
     maxWidth: 240,
   },
@@ -107,30 +115,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.surfaceVariant,
   },
   infoTitle: {
     fontSize: 14,
-    color: Colors.light.text,
   },
   infoValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.primary,
   },
   privacyNote: {
-    backgroundColor: '#E8F5E9',
-    borderRadius: 12,
     padding: 16,
+    borderRadius: 14,
+    borderWidth: 1,
     marginTop: 24,
-    marginBottom: 36,
   },
   privacyText: {
     fontSize: 13,
-    color: '#2E7D32',
-    lineHeight: 18,
-    textAlign: 'center',
+    lineHeight: 19,
   },
 });
-

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, SafeAreaView, ViewStyle } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../utils/theme';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
@@ -9,9 +9,11 @@ interface ScreenWrapperProps {
 }
 
 export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({ children, style }) => {
+  const { colors, isDark } = useTheme();
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="dark" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <View style={[styles.container, style]}>{children}</View>
     </SafeAreaView>
   );
@@ -20,7 +22,6 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({ children, style })
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   container: {
     flex: 1,

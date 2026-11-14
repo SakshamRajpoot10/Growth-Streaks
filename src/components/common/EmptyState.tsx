@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
 import { Button } from '../ui/Button';
+import { useTheme } from '../../utils/theme';
 
 interface EmptyStateProps {
   icon?: string;
@@ -18,11 +18,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   actionTitle,
   onAction,
 }) => {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.container}>
       <Text style={styles.icon}>{icon}</Text>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
+      <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+      <Text style={[styles.description, { color: colors.textSecondary }]}>{description}</Text>
       {actionTitle && onAction ? (
         <Button
           title={actionTitle}
@@ -40,6 +42,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
+    marginTop: 20,
   },
   icon: {
     fontSize: 54,
@@ -48,13 +51,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: Colors.light.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   description: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
     marginBottom: 20,
@@ -63,4 +64,3 @@ const styles = StyleSheet.create({
     minWidth: 160,
   },
 });
-

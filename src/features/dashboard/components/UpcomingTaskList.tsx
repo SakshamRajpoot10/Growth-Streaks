@@ -4,9 +4,9 @@ import { Task } from '../../../types/task';
 import { TaskLog } from '../../../types/task-log';
 import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
-import { Colors } from '../../../constants/colors';
 import { getFocusAreaById } from '../../../constants/focus-areas';
 import { formatTime } from '../../../utils/date';
+import { useTheme } from '../../../utils/theme';
 
 interface UpcomingTaskListProps {
   tasks: Task[];
@@ -19,32 +19,60 @@ export const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
   logs,
   onTaskPress,
 }) => {
+  const { colors, isDark } = useTheme();
+
   if (tasks.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No routines left for today.</Text>
+        <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+          No routines left for today.
+        </Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionHeader}>Today's Routines</Text>
+      <Text style={[styles.sectionHeader, { color: colors.text }]}>Today's Routines</Text>
       {tasks.map((task) => {
         const log = logs[task.id];
         const focus = getFocusAreaById(task.focusArea);
 
         const getStatusBadge = () => {
           if (!log || log.status === 'pending') {
-            return <Badge label="⏳ Pending" color="#FFF9C4" textColor="#F57F17" />;
+            return (
+              <Badge
+                label="⏳ Pending"
+                color={isDark ? '#422006' : '#FEF3C7'}
+                textColor={isDark ? '#FBBF24' : '#B45309'}
+              />
+            );
           }
           if (log.status === 'yes') {
-            return <Badge label="✅ Done" color="#E8F5E9" textColor="#2E7D32" />;
+            return (
+              <Badge
+                label="✅ Done"
+                color={isDark ? '#064E3B' : '#DCFCE7'}
+                textColor={isDark ? '#34D399' : '#15803D'}
+              />
+            );
           }
           if (log.status === 'no') {
-            return <Badge label="❌ Skipped" color="#FFEBEE" textColor="#C62828" />;
+            return (
+              <Badge
+                label="❌ Skipped"
+                color={isDark ? '#450A0A' : '#FEE2E2'}
+                textColor={isDark ? '#F87171' : '#B91C1C'}
+              />
+            );
           }
-          return <Badge label="⚠️ Missed" color="#ECEFF1" textColor="#546E7A" />;
+          return (
+            <Badge
+              label="⚠️ Missed"
+              color={isDark ? '#334155' : '#E2E8F0'}
+              textColor={isDark ? '#94A3B8' : '#475569'}
+            />
+          );
         };
 
         return (
@@ -55,12 +83,14 @@ export const UpcomingTaskList: React.FC<UpcomingTaskListProps> = ({
           >
             <Card style={styles.taskCard}>
               <View style={styles.leftContent}>
-                <Text style={styles.time}>{formatTime(task.scheduledTime)}</Text>
+                <Text style={[styles.time, { color: colors.primary }]}>
+                  ⏰ {formatTime(task.scheduledTime)}
+                </Text>
                 <View style={styles.titleRow}>
                   <Text style={styles.focusEmoji}>{focus.emoji}</Text>
-                  <Text style={styles.taskTitle}>{task.activityName}</Text>
+                  <Text style={[styles.taskTitle, { color: colors.text }]}>{task.activityName}</Text>
                 </View>
-                <Text style={styles.focusLabel}>{focus.name}</Text>
+                <Text style={[styles.focusLabel, { color: colors.textSecondary }]}>{task.focusArea || focus.name}</Text>
               </View>
               <View style={styles.rightContent}>{getStatusBadge()}</View>
             </Card>
@@ -78,7 +108,6 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.light.text,
     marginBottom: 8,
   },
   taskCard: {
@@ -94,29 +123,27 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 14,
     fontWeight: '700',
-    color: Colors.light.primary,
     marginBottom: 2,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 2,
+    marginTop: 2,
   },
   focusEmoji: {
     fontSize: 16,
     marginRight: 6,
   },
   taskTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.light.text,
+    fontSize: 15,
+    fontWeight: '700',
   },
   focusLabel: {
     fontSize: 12,
-    color: Colors.light.textSecondary,
+    marginTop: 4,
   },
   rightContent: {
-    marginLeft: 12,
+    marginLeft: 8,
   },
   emptyContainer: {
     padding: 24,
@@ -124,6 +151,5 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: Colors.light.textSecondary,
   },
 });
