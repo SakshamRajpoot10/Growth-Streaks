@@ -47,9 +47,7 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-sqlite",
-      "react-native-notify-kit",
-      "./plugins/withCustomProguard.js"
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true

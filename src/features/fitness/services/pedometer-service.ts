@@ -23,19 +23,25 @@ export async function startStepTracker(
     onStepUpdateCallback = onUpdate;
   }
 
+  if (Platform.OS === 'web') {
+    return true;
+  }
+
   try {
-    const isAvailable = await Pedometer.isAvailableAsync();
+    const isAvailable = await Pedometer.isAvailableAsync().catch(() => false);
     if (!isAvailable) {
       return false;
     }
 
-    const { status } = await Pedometer.requestPermissionsAsync();
-    if (status !== 'granted') {
+    const perm = await Pedometer.requestPermissionsAsync().catch(() => ({ status: 'denied' }));
+    if (perm.status !== 'granted') {
       return false;
     }
 
     if (pedometerSubscription) {
-      pedometerSubscription.remove();
+      try {
+        pedometerSubscription.remove();
+      } catch {}
       pedometerSubscription = null;
     }
 
@@ -43,11 +49,13 @@ export async function startStepTracker(
     lastStepCount = 0;
 
     pedometerSubscription = Pedometer.watchStepCount((result) => {
-      const delta = result.steps - lastStepCount;
-      if (delta > 0) {
-        lastStepCount = result.steps;
-        recordStepsDelta(delta);
-      }
+      try {
+        const delta = result.steps - lastStepCount;
+        if (delta > 0) {
+          lastStepCount = result.steps;
+          recordStepsDelta(delta);
+        }
+      } catch {}
     });
 
     return true;

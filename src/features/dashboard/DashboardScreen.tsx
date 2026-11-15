@@ -57,7 +57,6 @@ export const DashboardScreen: React.FC = () => {
   const loadData = useCallback(() => {
     try {
       loadFitnessData();
-      startTracking();
       const db = openDatabase();
       const today = getToday();
       const todayDayOfWeek = getTodayDayOfWeek();
