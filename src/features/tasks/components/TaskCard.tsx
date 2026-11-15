@@ -11,14 +11,17 @@ interface TaskCardProps {
   task: Task;
   onToggleActive: (task: Task) => void;
   onPress: (task: Task) => void;
+  onTestWakeUp?: (task: Task) => void;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   onToggleActive,
   onPress,
+  onTestWakeUp,
 }) => {
   const { colors } = useTheme();
+  const isWakeUp = task.focusArea?.toLowerCase() === 'wake up';
   const focus = getFocusAreaById(task.focusArea);
   const daysText =
     task.daysOfWeek.length === 7
@@ -31,7 +34,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         <View style={styles.headerRow}>
           <View style={styles.titleInfo}>
             <View style={styles.nameRow}>
-              <Text style={styles.emoji}>{focus.emoji}</Text>
+              <Text style={styles.emoji}>{isWakeUp ? '⏰' : focus.emoji}</Text>
               <Text
                 style={[
                   styles.title,
@@ -42,12 +45,22 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                 {task.activityName}
               </Text>
             </View>
-            <Badge
-              label={task.focusArea || focus.name}
-              color={focus.color + '20'}
-              textColor={focus.color}
-              style={styles.badge}
-            />
+            <View style={{ flexDirection: 'row', gap: 6, marginTop: 6 }}>
+              <Badge
+                label={task.focusArea || focus.name}
+                color={focus.color + '20'}
+                textColor={focus.color}
+                style={styles.badge}
+              />
+              {isWakeUp && (
+                <Badge
+                  label="📸 60s Standing Verification"
+                  color="#F59E0B20"
+                  textColor="#D97706"
+                  style={styles.badge}
+                />
+              )}
+            </View>
           </View>
           <Switch
             value={task.isActive}
@@ -61,6 +74,14 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           <Text style={[styles.time, { color: colors.primary }]}>
             ⏰ {formatTime(task.scheduledTime)}
           </Text>
+          {isWakeUp && onTestWakeUp && (
+            <TouchableOpacity
+              onPress={() => onTestWakeUp(task)}
+              style={styles.btnTestWakeUp}
+            >
+              <Text style={styles.btnTestWakeUpText}>📸 Test Alarm</Text>
+            </TouchableOpacity>
+          )}
           <Text style={[styles.days, { color: colors.textSecondary }]}>{daysText}</Text>
         </View>
       </Card>
@@ -122,5 +143,16 @@ const styles = StyleSheet.create({
   days: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  btnTestWakeUp: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    backgroundColor: '#FEF3C7',
+    borderRadius: 6,
+  },
+  btnTestWakeUpText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#D97706',
   },
 });

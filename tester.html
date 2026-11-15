@@ -636,6 +636,72 @@
           </div>
         </div>
 
+        
+        <!-- TAB 4: FITNESS / STEPS (GOOGLE FIT STYLE) -->
+        <div class="tab-view" id="tabFitness">
+          <div class="app-card" style="padding:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:18px;font-weight:800;">Fitness & Activity</div>
+                <div style="font-size:11px;color:#6B7280;margin-top:2px;">Hardware Pedometer • 100% Offline</div>
+              </div>
+              <div class="badge" style="margin-bottom:0;" id="fitStreakBadge">🏃 <span id="fitStreakCount">1</span>D STREAK</div>
+            </div>
+
+            <!-- Current Goal Banner -->
+            <div style="margin-top:14px;padding:12px;background:#ECFDF5;border-radius:12px;border:1px solid #A7F3D0;">
+              <div style="font-size:14px;font-weight:800;color:#065F46;">Daily Target: <span id="fitTargetDisplay">3.0 km</span></div>
+              <div style="font-size:11px;color:#047857;margin-top:2px;">Reach your target before midnight to lock your streak.</div>
+            </div>
+
+            <!-- Steps Circle -->
+            <div style="margin:20px 0;text-align:center;">
+              <div style="width:130px;height:130px;border-radius:65px;border:4px solid #10B981;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(16,185,129,0.05);">
+                <span style="font-size:24px;">👟</span>
+                <div style="font-size:22px;font-weight:800;" id="fitStepsBig">3,950</div>
+                <div style="font-size:10px;font-weight:700;color:#6B7280;">STEPS TODAY</div>
+              </div>
+            </div>
+
+            <!-- 3 Metrics -->
+            <div style="display:flex;justify-content:space-between;gap:8px;">
+              <div style="flex:1;background:#F3F4F6;padding:10px;border-radius:10px;text-align:center;">
+                <div style="font-size:15px;font-weight:800;color:#10B981;" id="fitDistVal">3.01 km</div>
+                <div style="font-size:11px;color:#6B7280;">Distance</div>
+              </div>
+              <div style="flex:1;background:#F3F4F6;padding:10px;border-radius:10px;text-align:center;">
+                <div style="font-size:15px;font-weight:800;color:#EA580C;" id="fitCalVal">158 kcal</div>
+                <div style="font-size:11px;color:#6B7280;">Burned</div>
+              </div>
+              <div style="flex:1;background:#F3F4F6;padding:10px;border-radius:10px;text-align:center;">
+                <div style="font-size:15px;font-weight:800;color:#EF4444;" id="fitHeartVal">39 pts</div>
+                <div style="font-size:11px;color:#6B7280;">Heart Pts</div>
+              </div>
+            </div>
+
+            <!-- 24-Hour Hourly Bars -->
+            <div style="margin-top:20px;">
+              <div style="font-size:13px;font-weight:700;margin-bottom:8px;">24h Hourly Step Cadence</div>
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;height:80px;background:#F9FAFB;padding:10px 8px;border-radius:10px;">
+                <div style="text-align:center;"><div style="width:10px;height:20px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">6h</div></div>
+                <div style="text-align:center;"><div style="width:10px;height:45px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">8h</div></div>
+                <div style="text-align:center;"><div style="width:10px;height:65px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">10h</div></div>
+                <div style="text-align:center;"><div style="width:10px;height:35px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">12h</div></div>
+                <div style="text-align:center;"><div style="width:10px;height:50px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">14h</div></div>
+                <div style="text-align:center;"><div style="width:10px;height:55px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">16h</div></div>
+                <div style="text-align:center;"><div style="width:10px;height:70px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">18h</div></div>
+                <div style="text-align:center;"><div style="width:10px;height:30px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">20h</div></div>
+              </div>
+            </div>
+
+            <!-- Test Walk Simulator -->
+            <div style="display:flex;gap:8px;margin-top:14px;">
+              <button class="picker-btn" style="flex:1;" onclick="addSimSteps(500)">+ Walk 500 Steps</button>
+              <button class="picker-btn" style="flex:1;background:#10B981;color:white;border-color:#10B981;" onclick="addSimSteps(1500)">+ Walk 1.5 km</button>
+            </div>
+          </div>
+        </div>
+
         <!-- TAB 3: ALARMS / ROUTINES -->
         <div class="tab-view" id="tabTasks">
           <!-- Top Manage / Delete Header (When routines exist) -->
@@ -759,6 +825,55 @@
           </div>
         </div>
 
+        
+        <!-- WAKE UP CAMERA MODAL -->
+        <div class="alarm-modal" id="wakeUpCameraModal" style="background:#090D16;padding:24px 16px;">
+          <div id="wakeUpPhase1" style="display:flex;flex-direction:column;align-items:center;width:100%;">
+            <span style="font-size:48px;">⏰</span>
+            <div style="font-size:12px;font-weight:800;color:#F59E0B;margin:8px 0;">WAKE-UP ALARM • FULL STANDING REQUIRED</div>
+            <div style="font-size:44px;font-weight:800;font-family:monospace;color:white;" id="wakeUpTime">07:00 AM</div>
+            <div style="font-size:18px;font-weight:700;color:#10B981;margin-top:4px;">Morning Wake Up</div>
+            <p style="font-size:12px;color:#94A3B8;text-align:center;margin:16px 0 24px;line-height:1.6;">
+              To silence this alarm, slide below and stand upright in front of the camera for 60 seconds.
+            </p>
+            <div style="width:100%;height:58px;background:#1E293B;border-radius:29px;display:flex;align-items:center;padding:4px;cursor:pointer;" onclick="startWakeUpCamera()">
+              <div style="width:50px;height:50px;border-radius:25px;background:#10B981;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:20px;">➔</div>
+              <span style="flex:1;text-align:center;font-size:12px;font-weight:800;color:#94A3B8;">SLIDE TO STAND & VERIFY ➔</span>
+            </div>
+          </div>
+
+          <div id="wakeUpPhase2" style="display:none;flex-direction:column;align-items:center;width:100%;">
+            <div style="background:rgba(0,0,0,0.8);padding:10px 18px;border-radius:12px;text-align:center;margin-bottom:12px;">
+              <div style="font-size:36px;font-weight:800;color:white;font-family:monospace;" id="cameraTimer">60s</div>
+              <div style="font-size:11px;font-weight:700;color:#10B981;" id="cameraStatus">🧍 STANDING DETECTED (CHECK 1/6)</div>
+            </div>
+
+            <!-- Silhouette Frame -->
+            <div style="width:200px;height:240px;border:3px dashed #10B981;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(16,185,129,0.08);margin-bottom:14px;">
+              <div style="width:55px;height:55px;border-radius:28px;border:2px solid rgba(255,255,255,0.7);margin-bottom:8px;"></div>
+              <div style="width:100px;height:100px;border-top-left-radius:25px;border-top-right-radius:25px;border:2px solid rgba(255,255,255,0.7);"></div>
+            </div>
+
+            <p style="font-size:11px;color:#94A3B8;text-align:center;margin-bottom:14px;">Step back so your full head and upper body are inside the guide.</p>
+
+            <button class="picker-btn" style="width:100%;padding:12px;background:#10B981;color:white;border-color:#10B981;font-weight:800;" onclick="completeCameraVerification()">
+              ✓ Standing Verified (Simulate 60s Done)
+            </button>
+            <button class="picker-btn" style="margin-top:8px;border:none;background:transparent;color:#EF4444;font-size:11px;" onclick="closeWakeUpCamera(false)">
+              Cancel & Sound Alarm Again ⚠️
+            </button>
+          </div>
+
+          <div id="wakeUpPhase3" style="display:none;flex-direction:column;align-items:center;width:100%;text-align:center;padding:20px 0;">
+            <span style="font-size:56px;">🎉</span>
+            <div style="font-size:26px;font-weight:800;color:white;margin-top:12px;">Good Morning!</div>
+            <p style="font-size:13px;color:#94A3B8;margin-top:6px;">60 seconds standing verified. Have a productive day ahead!</p>
+            <button class="picker-btn" style="margin-top:20px;padding:12px 24px;background:#10B981;color:white;border-color:#10B981;font-weight:800;" onclick="closeWakeUpCamera(true)">
+              Done
+            </button>
+          </div>
+        </div>
+
         <!-- Bottom Tabs -->
         <div class="tab-bar">
           <button class="tab-item active" onclick="switchTab('tabDashboard', this)">
@@ -772,6 +887,10 @@
           <button class="tab-item" onclick="switchTab('tabTasks', this)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             Alarm
+          </button>
+                    <button class="tab-item" onclick="switchTab('tabFitness', this)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4v6m0 4v6m-4-10v4m8-8v12M4 12h16"/></svg>
+            Fit
           </button>
           <button class="tab-item" onclick="switchTab('tabSettings', this)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -787,6 +906,9 @@
       <div class="panel-box">
         <h3>⚡ Real-Time App Controls</h3>
         <p style="font-size:13px;color:#94A3B8;margin-bottom:12px;">Trigger a lock-screen alarm or test audio feedback:</p>
+                <button class="picker-btn" style="width:100%;padding:12px;background:#F59E0B;color:white;border-color:#F59E0B;margin-bottom:8px;" onclick="triggerWakeUpSimulator()">
+          📸 Test Wake-Up Alarm (60s Camera Standing)
+        </button>
         <button class="picker-btn" style="width:100%;padding:12px;background:#3B82F6;color:white;border-color:#3B82F6;margin-bottom:8px;" onclick="triggerAlarmSim('Deep Coding Routine', 'Study', '07:25 AM')">
           🔔 Trigger Alarm (T-5min Modal)
         </button>
@@ -828,17 +950,28 @@
       { id: '3', name: 'Read Non-Fiction Book', time: '07:00 PM', focus: 'Mindset', sound: 'morning_bell', active: true }
     ];
 
-    const alarmSounds = [
-      { id: 'default_alarm', name: 'Default Alarm', desc: 'Classic steady pulse', freqs: [587, 880, 587, 880] },
-      { id: 'gentle_chime', name: 'Gentle Chime', desc: 'Soft harmonic wake chime', freqs: [523, 659, 783, 1046] },
-      { id: 'digital_beep', name: 'Digital Beep', desc: 'Crisp electronic sequence', freqs: [1000, 1000, 1200, 1200] },
+        const alarmSounds = [
+      { id: 'gentle_chime', name: 'Gentle Chime', desc: 'Soft harmonic wake chimes', freqs: [523, 659, 783, 1046] },
+      { id: 'digital_pulse', name: 'Digital Pulse', desc: 'Crisp electronic sequence', freqs: [1000, 1000, 1200, 1200] },
       { id: 'morning_bell', name: 'Morning Bell', desc: 'Resonant temple bell tone', freqs: [440, 554, 659] },
-      { id: 'sunrise_acoustic', name: 'Sunrise Acoustic', desc: 'Uplifting ascending notes', freqs: [329, 392, 493, 587] },
-      { id: 'energetic_beat', name: 'Energetic Beat', desc: 'Fast active wake tempo', freqs: [700, 900, 1100, 1300] },
-      { id: 'radar_alert', name: 'Radar Alert', desc: 'Sonar ping alert tone', freqs: [1200, 1500, 1200, 1500] },
-      { id: 'cosmic_synth', name: 'Cosmic Synth', desc: 'Futuristic atmospheric chord', freqs: [432, 540, 648, 864] },
-      { id: 'rooster', name: 'Rooster Call', desc: 'Traditional morning wake', freqs: [600, 750, 950, 1100] },
-      { id: 'zen_flute', name: 'Zen Flute', desc: 'Peaceful mindful meditation', freqs: [392, 440, 523, 659] }
+      { id: 'cosmic_synth', name: 'Cosmic Synth', desc: 'Atmospheric progressive chord', freqs: [432, 540, 648, 864] },
+      { id: 'sunrise_acoustic', name: 'Sunrise Acoustic', desc: 'Warm uplifting guitar notes', freqs: [329, 392, 493, 587] },
+      { id: 'energetic_beat', name: 'Energetic Beat', desc: 'Fast active wake rhythm', freqs: [700, 900, 1100, 1300] },
+      { id: 'radar_alert', name: 'Radar Alert', desc: 'High-priority sonar alert pulse', freqs: [1200, 1500, 1200, 1500] },
+      { id: 'zen_flute', name: 'Zen Flute', desc: 'Peaceful mindful meditation', freqs: [392, 440, 523, 659] },
+      { id: 'celestial_harp', name: 'Celestial Harp', desc: 'Flowing ambient dream harp', freqs: [523, 659, 880, 1046] },
+      { id: 'upbeat_wake', name: 'Upbeat Wake', desc: 'Motivating energetic rhythm', freqs: [587, 740, 880, 1174] },
+      { id: 'island_marimba', name: 'Island Marimba', desc: 'Cheerful wooden marimba', freqs: [659, 783, 987, 1318] },
+      { id: 'mountain_echo', name: 'Mountain Echo', desc: 'Spacious reverberating melody', freqs: [440, 659, 880, 1320] },
+      { id: 'amber_melody', name: 'Amber Melody', desc: 'Rich acoustic chords', freqs: [349, 440, 523, 698] },
+      { id: 'quiet_sunrise', name: 'Quiet Sunrise', desc: 'Subtle serene dawn chime', freqs: [587, 880, 1174, 1760] },
+      { id: 'future_clock', name: 'Future Clock', desc: 'Modern digital alarm pulse', freqs: [800, 1200, 800, 1200] },
+      { id: 'heroic_rise', name: 'Heroic Rise', desc: 'Inspiring orchestral rise', freqs: [440, 554, 659, 880] },
+      { id: 'ocean_breeze', name: 'Ocean Breeze', desc: 'Calming natural wake harmony', freqs: [392, 493, 587, 783] },
+      { id: 'focus_flow', name: 'Focus Flow', desc: 'Smooth lofi productivity vibe', freqs: [440, 523, 659, 783] },
+      { id: 'active_stride', name: 'Active Stride', desc: 'Brisk cadence motivation tone', freqs: [600, 800, 1000, 1200] },
+      { id: 'crystal_calm', name: 'Crystal Calm', desc: 'Pure crystal glass resonance', freqs: [880, 1174, 1396, 1760] },
+      { id: 'urgent_call', name: 'Urgent Call', desc: 'Assertive high-visibility alarm', freqs: [950, 1400, 950, 1400] }
     ];
 
     // Audio preview synthesizer
@@ -1146,6 +1279,55 @@
       document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       if (btn) btn.classList.add('active');
+    }
+
+    
+    // Fitness Step tracking state
+    let simSteps = 3950;
+    let simTargetKm = 3.0;
+    function addSimSteps(amt) {
+      simSteps += amt;
+      const km = (simSteps * 0.000762).toFixed(2);
+      const kcal = (simSteps * 0.04).toFixed(0);
+      const heart = Math.floor(simSteps / 100);
+
+      document.getElementById('fitStepsBig').innerText = simSteps.toLocaleString();
+      document.getElementById('fitDistVal').innerText = km + ' km';
+      document.getElementById('fitCalVal').innerText = kcal + ' kcal';
+      document.getElementById('fitHeartVal').innerText = heart + ' pts';
+
+      if (parseFloat(km) >= simTargetKm) {
+        document.getElementById('fitStreakCount').innerText = '1';
+        alert("🎉 Congratulations! Daily fitness goal (" + km + " km) completed! Streak locked in.");
+      }
+    }
+
+    function triggerWakeUpSimulator() {
+      document.getElementById('wakeUpCameraModal').classList.add('active');
+      document.getElementById('wakeUpPhase1').style.display = 'flex';
+      document.getElementById('wakeUpPhase2').style.display = 'none';
+      document.getElementById('wakeUpPhase3').style.display = 'none';
+      playAudioPreview('gentle_chime');
+    }
+
+    function startWakeUpCamera() {
+      document.getElementById('wakeUpPhase1').style.display = 'none';
+      document.getElementById('wakeUpPhase2').style.display = 'flex';
+      let sec = 60;
+      const timerEl = document.getElementById('cameraTimer');
+      timerEl.innerText = sec + 's';
+    }
+
+    function completeCameraVerification() {
+      document.getElementById('wakeUpPhase2').style.display = 'none';
+      document.getElementById('wakeUpPhase3').style.display = 'flex';
+    }
+
+    function closeWakeUpCamera(isSuccess) {
+      document.getElementById('wakeUpCameraModal').classList.remove('active');
+      if (isSuccess) {
+        alert("✅ Morning Routine Confirmed! 60s standing verified, streak kept alive.");
+      }
     }
 
     function triggerAlarmSim(title, focus, time) {

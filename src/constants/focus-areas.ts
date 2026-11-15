@@ -6,6 +6,7 @@ export interface FocusArea {
 }
 
 export const FOCUS_AREAS: FocusArea[] = [
+  { id: 'wake_up', name: 'Wake Up', emoji: '⏰', color: '#F59E0B' },
   { id: 'health', name: 'Health', emoji: '🏃', color: '#4CAF50' },
   { id: 'study', name: 'Study', emoji: '📚', color: '#2196F3' },
   { id: 'work', name: 'Work', emoji: '💼', color: '#FF9800' },

@@ -42,33 +42,19 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
     const dStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const dayLogs = logsByDate[dStr] || [];
 
-    // If there is any completed log
+    // 1. If any task was completed on this date -> GREEN
     if (dayLogs.some((l) => l.status === 'yes')) {
       return 'completed';
     }
 
-    // If there are explicit missed/skipped logs
+    // 2. If alarms were logged and all were missed/declined -> RED
     if (dayLogs.length > 0 && dayLogs.every((l) => l.status === 'no' || l.status === 'missed')) {
       return 'failed';
     }
 
-    // Check if tasks were scheduled for this day of the week
-    const jsDay = new Date(year, month - 1, d).getDay();
-    const isoDay = jsDay === 0 ? 7 : jsDay;
-    const hasScheduledTask = activeTasks.some((t) => t.daysOfWeek.includes(isoDay));
-
-    if (!hasScheduledTask) {
-      return 'none'; // Blank / normal default
-    }
-
-    // If scheduled:
-    if (dStr < todayStr) {
-      return 'failed'; // In the past with no completed log -> Red
-    }
-    if (dStr === todayStr) {
-      return 'pending'; // Today pending
-    }
-    return 'none'; // Future scheduled day
+    // 3. If no alarms were recorded/answered for this date -> BLANK
+    // (Never mark previous or unconfigured days red)
+    return 'none';
   };
 
   const weekHeaders = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];

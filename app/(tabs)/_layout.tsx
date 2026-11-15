@@ -48,6 +48,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="fitness"
+        options={{
+          title: 'Fitness & Activity',
+          tabBarLabel: 'Fit',
+          tabBarIcon: () => <Text style={{ fontSize: 20 }}>🏃</Text>,
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',

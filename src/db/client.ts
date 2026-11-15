@@ -34,11 +34,32 @@ CREATE TABLE IF NOT EXISTS settings (
     value TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS fitness_goals (
+    id            TEXT PRIMARY KEY,
+    goal_type     TEXT NOT NULL DEFAULT 'distance_km', -- distance_km | calories | active_minutes | steps
+    target_value  REAL NOT NULL DEFAULT 3.0,
+    is_active     INTEGER NOT NULL DEFAULT 1,
+    created_at    INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS fitness_daily_logs (
+    date                TEXT PRIMARY KEY, -- 'YYYY-MM-DD'
+    steps               INTEGER NOT NULL DEFAULT 0,
+    distance_km         REAL NOT NULL DEFAULT 0.0,
+    calories            REAL NOT NULL DEFAULT 0.0,
+    active_minutes      INTEGER NOT NULL DEFAULT 0,
+    goal_type           TEXT NOT NULL DEFAULT 'distance_km',
+    goal_target         REAL NOT NULL DEFAULT 3.0,
+    goal_completed      INTEGER NOT NULL DEFAULT 0,
+    hourly_distribution TEXT NOT NULL DEFAULT '{}' -- JSON string: e.g. {"8":450,"9":1200}
+);
+
 CREATE INDEX IF NOT EXISTS idx_task_logs_date ON task_logs(date);
 CREATE INDEX IF NOT EXISTS idx_task_logs_task_date ON task_logs(task_id, date);
 CREATE INDEX IF NOT EXISTS idx_task_logs_status ON task_logs(date, status);
 CREATE INDEX IF NOT EXISTS idx_tasks_active ON tasks(is_active);
 CREATE INDEX IF NOT EXISTS idx_tasks_time ON tasks(scheduled_time);
+CREATE INDEX IF NOT EXISTS idx_fitness_date ON fitness_daily_logs(date);
 `;
 
 /**

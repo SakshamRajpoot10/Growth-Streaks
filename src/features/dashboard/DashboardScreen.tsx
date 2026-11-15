@@ -5,8 +5,10 @@ import { ScreenWrapper } from '../../components/common/ScreenWrapper';
 import { DailyProgressRing } from './components/DailyProgressRing';
 import { StreakCounter } from './components/StreakCounter';
 import { WeeklyMetricCard } from './components/WeeklyMetricCard';
+import { FitnessOverviewCard } from './components/FitnessOverviewCard';
 import { UpcomingTaskList } from './components/UpcomingTaskList';
 import { EmptyState } from '../../components/common/EmptyState';
+import { useFitnessStore } from '../../store/useFitnessStore';
 import { openDatabase } from '../../db/client';
 import { getDailyStats, getWeeklyStats, getCompletedDates } from '../../db/queries/analytics';
 import { getTasksForDay } from '../../db/queries/tasks';
@@ -42,8 +44,20 @@ export const DashboardScreen: React.FC = () => {
   const [currentStreak, setCurrentStreak] = useState(0);
   const [longestStreak, setLongestStreak] = useState(0);
 
+  // Fitness Store hook
+  const {
+    log: fitnessLog,
+    goal: fitnessGoal,
+    fitnessStreak,
+    loadFitnessData,
+    simulateWalk,
+    startTracking,
+  } = useFitnessStore();
+
   const loadData = useCallback(() => {
     try {
+      loadFitnessData();
+      startTracking();
       const db = openDatabase();
       const today = getToday();
       const todayDayOfWeek = getTodayDayOfWeek();
@@ -102,6 +116,14 @@ export const DashboardScreen: React.FC = () => {
           completed={dailyStats.completed}
           total={tasks.length}
           percentage={tasks.length > 0 ? Math.round((dailyStats.completed / tasks.length) * 100) : 0}
+        />
+
+        <FitnessOverviewCard
+          log={fitnessLog}
+          goal={fitnessGoal}
+          streak={fitnessStreak}
+          onPressDetails={() => router.push('/(tabs)/fitness' as any)}
+          onSimulateWalk={() => simulateWalk(500)}
         />
 
         <WeeklyMetricCard

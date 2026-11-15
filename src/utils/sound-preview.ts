@@ -1,69 +1,75 @@
 import { Platform } from 'react-native';
+import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
-import { getSoundById } from '../constants/sounds';
+import { SOUND_ASSET_MAP, getSoundById } from '../constants/sounds';
 
-let audioCtx: any = null;
+let currentPlaybackInstance: Audio.Sound | null = null;
 
-function getAudioContext() {
-  if (typeof window !== 'undefined') {
-    const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
-    if (AudioContextClass) {
-      if (!audioCtx) {
-        audioCtx = new AudioContextClass();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      return audioCtx;
-    }
+/**
+ * Configure audio mode for clean offline playback
+ */
+async function configureAudio() {
+  try {
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+      staysActiveInBackground: true,
+    });
+  } catch {
+    // Audio configuration fallback
   }
-  return null;
 }
 
 /**
- * Plays an audible sound preview for the chosen alarm sound.
- * Works seamlessly in web (using synthetic Web Audio melodies)
- * and triggers rich haptic feedback on physical mobile devices.
+ * Stop any currently running sound preview
  */
-export function playSoundPreview(soundId: string) {
+export async function stopSoundPreview() {
   try {
-    // Trigger tactile haptic feedback on mobile devices
+    if (currentPlaybackInstance) {
+      await currentPlaybackInstance.stopAsync();
+      await currentPlaybackInstance.unloadAsync();
+      currentPlaybackInstance = null;
+    }
+  } catch {
+    currentPlaybackInstance = null;
+  }
+}
+
+/**
+ * Plays real MP3 audio preview for the chosen sound.
+ * Supports looping or one-shot preview with tactile haptic feedback.
+ */
+export async function playSoundPreview(soundId: string, shouldLoop: boolean = false) {
+  try {
+    // Tactile haptic feedback
     if (Platform.OS !== 'web') {
       try {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       } catch {
         // Haptics safety
       }
     }
 
-    const sound = getSoundById(soundId);
-    const ctx = getAudioContext();
-    if (!ctx) return;
+    await stopSoundPreview();
+    await configureAudio();
 
-    let startTime = ctx.currentTime + 0.05;
-    const freqs = sound.frequencyPattern;
-    const durations = sound.durationPattern;
+    const asset = SOUND_ASSET_MAP[soundId] || SOUND_ASSET_MAP['gentle_chime'];
+    if (!asset) return;
 
-    for (let i = 0; i < freqs.length; i++) {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+    const { sound } = await Audio.Sound.createAsync(
+      asset,
+      { shouldPlay: true, isLooping: shouldLoop, volume: 1.0 },
+      (status) => {
+        if (status.isLoaded && status.didJustFinish && !shouldLoop) {
+          stopSoundPreview();
+        }
+      }
+    );
 
-      osc.type = soundId.includes('synth') || soundId.includes('beep') ? 'sawtooth' : 'sine';
-      osc.frequency.setValueAtTime(freqs[i], startTime);
-
-      gain.gain.setValueAtTime(0.001, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.3, startTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + durations[i]);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(startTime);
-      osc.stop(startTime + durations[i] + 0.05);
-
-      startTime += durations[i] + 0.04;
-    }
+    currentPlaybackInstance = sound;
   } catch {
-    // Audio preview safety
+    // Fallback if audio hardware is busy
   }
 }

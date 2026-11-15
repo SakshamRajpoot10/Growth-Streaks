@@ -10,6 +10,7 @@ import {
 import { ScreenWrapper } from '../../components/common/ScreenWrapper';
 import { TaskCard } from './components/TaskCard';
 import { TaskForm } from './components/TaskForm';
+import { WakeUpCameraModal } from '../alarm/components/WakeUpCameraModal';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/common/EmptyState';
 import { openDatabase } from '../../db/client';
@@ -39,6 +40,7 @@ export const TaskListScreen: React.FC = () => {
   // Multi-select deletion state
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
+  const [testingWakeUpTask, setTestingWakeUpTask] = useState<Task | null>(null);
 
   const loadTasks = useCallback(() => {
     try {
@@ -339,6 +341,7 @@ export const TaskListScreen: React.FC = () => {
                   <TaskCard
                     task={task}
                     onToggleActive={handleToggleActive}
+                    onTestWakeUp={(t) => setTestingWakeUpTask(t)}
                     onPress={(t) => {
                       if (isSelectionMode) {
                         toggleSelectTask(t.id);
@@ -363,6 +366,20 @@ export const TaskListScreen: React.FC = () => {
         )}
         <View style={styles.bottomSpacer} />
       </ScrollView>
+
+      {/* Wake-Up Standing Camera Alarm Modal */}
+      <WakeUpCameraModal
+        visible={Boolean(testingWakeUpTask)}
+        taskTitle={testingWakeUpTask?.activityName || 'Morning Wake Up'}
+        alarmSound={testingWakeUpTask?.alarmSound || 'gentle_chime'}
+        onSuccess={() => {
+          Alert.alert('🎉 Good Morning!', '60 seconds standing verified! Morning streak locked in.');
+          setTestingWakeUpTask(null);
+        }}
+        onCancelOrAbandon={() => {
+          setTestingWakeUpTask(null);
+        }}
+      />
     </ScreenWrapper>
   );
 };

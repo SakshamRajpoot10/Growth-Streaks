@@ -5,8 +5,8 @@
 <h1 align="center">Growth Streak</h1>
 
 <p align="center">
-  <strong>Active Accountability Tracker with Lock-Screen Alarms & Habit Streaks</strong><br>
-  <em>Strictly Offline-First • SQLite WAL Mode • 3-Strike Snooze Engine • 12-Hour AM/PM • 10 Alarm Ringtones</em>
+  <strong>Active Accountability Tracker with Lock-Screen Alarms & Habit Streaks — Version 2.0</strong><br>
+  <em>Strictly Offline-First • SQLite WAL Mode • Hardware Pedometer Fitness • 60s Camera Standing Pose Verification • 21 Custom Alarm Ringtones</em>
 </p>
 
 <p align="center">
@@ -23,81 +23,75 @@
 
 Download the latest standalone universal Android `.apk` directly (no developer tools or Expo Go required):
 
-[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak.apk%20(112%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/qUHVb4X6akULFmh82w2lkyZmDPLSXjDadd0Xks6tZtQ.apk)
+[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak%20v2.0.apk%20(112%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds)
 
-* **Direct APK Download Link:** [https://expo.dev/artifacts/eas/qUHVb4X6akULFmh82w2lkyZmDPLSXjDadd0Xks6tZtQ.apk](https://expo.dev/artifacts/eas/qUHVb4X6akULFmh82w2lkyZmDPLSXjDadd0Xks6tZtQ.apk)
+* **Direct APK Download Link:** [https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds)
 * **Local Workspace File:** `Growth Streak.apk` (112 MB)
 
 ---
 
-## 📸 App Screenshots
+## 📸 App Screenshots (Version 2.0)
 
 <p align="center">
-  <img src="docs/screenshots/screenshot-dashboard.png" width="18%" alt="Dashboard Screen (Light Default)" />
+  <img src="docs/screenshots/screenshot-dashboard.png" width="18%" alt="Dashboard with Pedometer & Streaks" />
   &nbsp;
-  <img src="docs/screenshots/screenshot-calendar.png" width="18%" alt="Streak Calendar Screen (Light Default)" />
+  <img src="docs/screenshots/screenshot-fitness.png" width="18%" alt="Google Fit Style Activity Tracker" />
   &nbsp;
-  <img src="docs/screenshots/screenshot-alarm-creation.png" width="18%" alt="Alarm & Routine Creator" />
+  <img src="docs/screenshots/screenshot-calendar.png" width="18%" alt="Zero False Red Calendar Grid" />
   &nbsp;
-  <img src="docs/screenshots/screenshot-dark-mode.png" width="18%" alt="Obsidian Dark Mode" />
+  <img src="docs/screenshots/screenshot-alarm-creation.png" width="18%" alt="21 Alarm Sounds & Routine Builder" />
   &nbsp;
-  <img src="docs/screenshots/screenshot-lockscreen-alarm.png" width="18%" alt="3-Strike Lock-Screen Alarm" />
+  <img src="docs/screenshots/screenshot-lockscreen-alarm.png" width="18%" alt="60s Camera Standing Pose Alarm" />
 </p>
 
 ---
 
-## 🎨 Design System & Luxury Color Grading
+## 🚀 Version 2.0 Breakthrough Features
 
-Growth Streak delivers a refined, distraction-free visual experience crafted specifically for habit discipline:
+### 🏃 1. Google Fit-Style Offline Movement & Step Tracker
+* **100% Offline Pedometry:** Powered directly by Android's silicon-level hardware pedometer chip (`Sensor.TYPE_STEP_COUNTER` via `android.permission.ACTIVITY_RECOGNITION`). Zero battery drain, zero GPS tracking, zero cloud data leakage.
+* **Real-Time Dynamic Metrics:** Live calculation of **Steps**, **Distance (km)**, **Calories Burned (kcal)**, and **Active Move Minutes**.
+* **24-Hour Cadence Bar Graph:** Visualizes your steps taken across every individual hour of the day (0h to 23h).
+* **Flexible Daily Goals:** Set customized streak targets (e.g., 3 km, 5 km, 250 kcal, 45 active minutes, or 10,000 steps).
+* **Fitness Streak Accountability:** Reaching your chosen goal before 12:00 midnight locks in your fitness streak in green; missing it safely resets the streak.
 
-* ☀️ **Default Light Mode (Out of the Box):**
-  * **Canvas:** Ultra-clean `#F8FAFC` slate canvas with soft ambient depth.
-  * **Cards & Surfaces:** `#FFFFFF` pure cards with micro `#E2E8F0` borders for clean contrast without visual clutter.
-  * **Primary Accent:** Vivid Emerald `#10B981` representing health, vitality, and completed growth streaks.
-  * **Streak Flame:** Champagne Amber `#F59E0B` to `#FBBF24` for fire streak counts and milestones.
-* 🌙 **Obsidian Midnight Dark Mode (User-Switchable in Settings):**
-  * **Canvas:** True Obsidian Midnight `#0B0F19` designed for AMOLED battery conservation.
-  * **Cards & Surfaces:** Deep Midnight Slate `#111827` with subtle `#1F2937` graphite structural borders.
-  * **Accents & Highlights:** Radiant Emerald `#10B981` paired with `#6EE7B7` soft mint glows and `#F9FAFB` high-legibility typography.
-  * **Contrast Balance:** Eliminates muddy grays and harsh artificial tones; zero neon eye strain during early morning or late night alarm checks.
+### 📸 2. Wake-Up Alarm with 60-Second Camera Standing Verification
+* **Anti-Snooze Standing Mechanism:** When a Wake-Up routine triggers, the alarm cannot be dismissed by a casual tap.
+* **Slide to Unlock ➔:** An interactive slider pauses the audio and opens the front camera view with an ergonomic posture silhouette guide.
+* **On-Device Offline Posture Detection:** Evaluates upright vertical alignment. If you remain lying in bed or face the camera away, the timer stays at `00` and does not decrement.
+* **60-Second Standing Session:** Countdown starts only while verified standing. Performs strict verification checks every 10 seconds (minimum 4 of 6 checks required).
+* **Anti-Loophole Protection:** If the camera is minimized, closed, or you sit back down before completing the full 60 seconds, **the loud alarm resumes ringing immediately**!
+* **Morning Greeting:** Upon reaching 60 seconds of verified standing, a celebratory banner *"Good Morning! Have a great and productive day!"* silences the alarm and marks your streak complete.
 
----
+### 🎵 3. 21 Custom Built-In Alarm Ringtones with Live Audio Preview
+All 21 audio ringtones are bundled into the app assets with working `expo-av` playback and haptic feedback:
+1. `Gentle Chime` — Soft harmonic wake chimes
+2. `Digital Pulse` — Crisp electronic sequence
+3. `Morning Bell` — Resonant temple bell tone
+4. `Cosmic Synth` — Atmospheric progressive chord
+5. `Sunrise Acoustic` — Warm uplifting guitar notes
+6. `Energetic Beat` — Dynamic high-tempo wake rhythm
+7. `Radar Alert` — High-priority sonar alert pulse
+8. `Zen Flute` — Peaceful mindful meditation
+9. `Celestial Harp` — Flowing ambient dream harp
+10. `Upbeat Wake` — Motivating energetic rhythm
+11. `Island Marimba` — Cheerful wooden marimba
+12. `Mountain Echo` — Spacious reverberating melody
+13. `Amber Melody` — Rich acoustic chords
+14. `Quiet Sunrise` — Subtle serene dawn chime
+15. `Future Clock` — Modern digital alarm pulse
+16. `Heroic Rise` — Inspiring orchestral rise
+17. `Ocean Breeze` — Calming natural wake harmony
+18. `Focus Flow` — Smooth lofi productivity vibe
+19. `Active Stride` — Brisk cadence motivation tone
+20. `Crystal Calm` — Pure crystal glass resonance
+21. `Urgent Call` — Assertive high-visibility alarm
 
-## 🚀 Key Features
-
-### ⏰ 1. Strict 3-Strike Lock-Screen Alarm Engine
-Unlike passive reminder apps that send silent push banners, Growth Streak triggers aggressive lock-screen alarms using Android Full-Screen Intent notifications:
-* **Trigger 1 (T-5 min):** First accountability prompt fires 5 minutes before your scheduled routine.
-* **Trigger 2 (T-3 min):** Second warning fires 2 minutes later if ignored.
-* **Trigger 3 (T-0 min):** Final call fires precisely at routine time.
-* **Auto-Fail (T+5 min):** Automatically registers `NO / Missed` in SQLite if all 3 triggers are ignored.
-* **Interactive Lock-Screen Buttons:** Tap **`[ YES ]`** to log completion & immediately cancel remaining snoozes; tap **`[ NO ]`** to skip.
-
-### 📅 2. Comprehensive Calendar Grid & Heatmap (1 to 30/31 Days)
-* Full 7-column matrix properly aligned with Monday–Sunday weekday offset spacers.
-* **Green Badge:** Set alarms and completed routines.
-* **Red Badge:** Set alarms and missed/skipped routines.
-* **Blank / Normal Default:** No alarms set for that day.
-* **Day Breakdown Sheet:** Tap any date on the calendar to view its logged routines, times, focus areas, and execution status.
-
-### 🕒 3. 12-Hour AM/PM Picker & Custom Focus Areas
-* User-friendly 12-Hour format with Hour, Minute, and **`[ AM ]`** / **`[ PM ]`** selectors.
-* Built-in focus area presets (**Health**, **Study**, **Work**, **Fitness**, **Mindset**, **Finance**) plus a **`✏️ Custom`** option to type any routine.
-
-### 🔔 4. 10 Built-In Alarm Ringtones with Live Audio Preview
-Tap any of the 10 included alarm sounds to preview its tone in real time with haptic feedback:
-1. `Default Alarm` (Classic steady pulse)
-2. `Gentle Chime` (Harmonic wake chime)
-3. `Digital Beep` (Crisp electronic sequence)
-4. `Morning Bell` (Resonant temple bell)
-5. `Sunrise Acoustic` (Uplifting ascending notes)
-6. `Energetic Beat` (Fast active wake tempo)
-7. `Radar Alert` (Sonar alert pulses)
-8. `Cosmic Synth` (Atmospheric chord)
-9. `Rooster Call` (Traditional morning wake)
-10. `Zen Flute` (Mindful meditation chime)
-
-### 🗑️ 5. Multi-Select Batch Deletion & Single Deletion
+### 📅 4. Strict Calendar Streak Engine (Zero False Red Marks)
+* **Clean Blank Days:** Uncreated routines or past days before your download are left completely neutral and blank.
+* **Green Day Mark:** Set alarm and completed at least 1 routine.
+* **Red Day Mark:** Set alarm and missed/skipped without completing.
+* **Today Indicator:** The green active highlight ring advances day by day.
 * "Manage / Delete" mode with checkboxes on each routine card.
 * One-click "Select All / Deselect All" toggle.
 * Batch delete selected routines with confirmation dialog.
