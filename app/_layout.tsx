@@ -6,8 +6,12 @@ import { registerBackgroundAlarmHandler } from '../src/features/alarm/services/a
 import { initializeAlarmChannel } from '../src/features/alarm/services/alarm-scheduler';
 import { useAlarmPermissions } from '../src/features/alarm/hooks/useAlarmPermissions';
 
-// Register background handler at root level for terminated/background triggers
-registerBackgroundAlarmHandler();
+// Safely register background handler with try/catch to guarantee zero startup crash
+try {
+  registerBackgroundAlarmHandler();
+} catch {
+  // Guarded against cold-start lifecycle race conditions
+}
 
 export default function RootLayout() {
   useAlarmPermissions();

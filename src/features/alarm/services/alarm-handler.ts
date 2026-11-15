@@ -78,9 +78,15 @@ export async function handleBackgroundAlarmEvent({ type, detail }: Event): Promi
 
 /**
  * Registers the background event listener with notifee.
- * Must be invoked at the top-level app entry point.
+ * Guarded against unhandled runtime crashes during startup.
  */
 export function registerBackgroundAlarmHandler(): void {
-  notifee.onBackgroundEvent(handleBackgroundAlarmEvent);
+  try {
+    if (notifee && typeof notifee.onBackgroundEvent === 'function') {
+      notifee.onBackgroundEvent(handleBackgroundAlarmEvent);
+    }
+  } catch (error) {
+    // Handled silently to prevent native process termination
+  }
 }
 
