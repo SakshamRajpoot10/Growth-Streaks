@@ -21,10 +21,11 @@
 **Growth Streak** is an active accountability ecosystem designed to eliminate procrastination, enforce daily discipline, and track personal growth. Unlike conventional habit trackers that send passive push notifications that users easily swipe away, Growth Streak utilizes aggressive full-screen accountability alarms, interactive gesture challenges, camera-verified standing posture checks, hardware pedometer fitness tracking, and a strictly fair streak calendar.
 
 ### 📦 Key Deliverables
-* **Standalone Release APK:** `Growth Streak.apk` (112 MB)
+* **Standalone Release APK:** `Growth Streak.apk` (149 MB)
 * **Local Workspace Binary:** [Growth Streak.apk](file:///d:/PROJECTS/Growth%20Streaks/Growth%20Streak.apk)
 * **Secondary Workspace Copy:** [growth-streaks/Growth Streak.apk](file:///d:/PROJECTS/Growth%20Streaks/growth-streaks/Growth%20Streak.apk)
-* **Cloud Direct Download (EAS CDN):** [Download Growth Streak.apk](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds)
+* **Cloud Direct Download (EAS CDN):** [Download Growth Streak.apk](https://expo.dev/artifacts/eas/_NnggjpKlmyg16DwLbMBJ3pVaUV9dsIlQ7EP5bI4Wiw.apk)
+* **EAS Cloud Build Dashboard:** [Build `f87159e7`](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds/f87159e7-f1c3-4735-8eb7-f8814985e15d)
 * **Interactive Live Display Tester:** [growth-streaks-tester.html](file:///d:/PROJECTS/Growth%20Streaks/growth-streaks-tester.html)
 * **High-Resolution App Screenshots:** [docs/screenshots/](file:///d:/PROJECTS/Growth%20Streaks/growth-streaks/docs/screenshots/)
 * **Official Branding:** Custom `GS` Clock & Growth Arrow logo across Android launcher icons (`adaptive-icon.png`), splash screen, and GitHub documentation.
