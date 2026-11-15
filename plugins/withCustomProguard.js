@@ -29,7 +29,7 @@ module.exports = function withCustomProguard(config) {
 -dontwarn io.invertase.notifee.**
 
 # Expo Native Modules
--keep class expo.modules.av.** { *; }
+-keep class expo.modules.audio.** { *; }
 -keep class expo.modules.camera.** { *; }
 -keep class expo.modules.sensors.** { *; }
 -keep class expo.modules.sqlite.** { *; }

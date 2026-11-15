@@ -1,39 +1,22 @@
 import { Platform } from 'react-native';
-import { Audio } from 'expo-av';
+import { createAudioPlayer, AudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { SOUND_ASSET_MAP, getSoundById } from '../constants/sounds';
 
-let currentPlaybackInstance: Audio.Sound | null = null;
-
-/**
- * Configure audio mode for clean offline playback
- */
-async function configureAudio() {
-  try {
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-      playsInSilentModeIOS: true,
-      shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-      staysActiveInBackground: true,
-    });
-  } catch {
-    // Audio configuration fallback
-  }
-}
+let currentPlayerInstance: AudioPlayer | null = null;
 
 /**
  * Stop any currently running sound preview
  */
 export async function stopSoundPreview() {
   try {
-    if (currentPlaybackInstance) {
-      await currentPlaybackInstance.stopAsync();
-      await currentPlaybackInstance.unloadAsync();
-      currentPlaybackInstance = null;
+    if (currentPlayerInstance) {
+      currentPlayerInstance.pause();
+      currentPlayerInstance.remove();
+      currentPlayerInstance = null;
     }
   } catch {
-    currentPlaybackInstance = null;
+    currentPlayerInstance = null;
   }
 }
 
@@ -53,23 +36,23 @@ export async function playSoundPreview(soundId: string, shouldLoop: boolean = fa
     }
 
     await stopSoundPreview();
-    await configureAudio();
 
     const asset = SOUND_ASSET_MAP[soundId] || SOUND_ASSET_MAP['gentle_chime'];
     if (!asset) return;
 
-    const { sound } = await Audio.Sound.createAsync(
-      asset,
-      { shouldPlay: true, isLooping: shouldLoop, volume: 1.0 },
-      (status) => {
-        if (status.isLoaded && status.didJustFinish && !shouldLoop) {
-          stopSoundPreview();
-        }
+    currentPlayerInstance = createAudioPlayer(asset);
+    if (currentPlayerInstance) {
+      currentPlayerInstance.loop = shouldLoop;
+      currentPlayerInstance.play();
+    }
+  } catch (error) {
+    // Fallback safely to haptic feedback if audio output device is unavailable
+    if (Platform.OS !== 'web') {
+      try {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch {
+        // Handled silently
       }
-    );
-
-    currentPlaybackInstance = sound;
-  } catch {
-    // Fallback if audio hardware is busy
+    }
   }
 }
