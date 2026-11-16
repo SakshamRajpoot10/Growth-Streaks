@@ -8,7 +8,6 @@ import { useAlarmPermissions } from '../src/features/alarm/hooks/useAlarmPermiss
 import { useAlarmWatcher } from '../src/features/alarm/hooks/useAlarmWatcher';
 import { IncomingAlarmModal } from '../src/features/alarm/components/IncomingAlarmModal';
 import { useFitnessStore } from '../src/store/useFitnessStore';
-import { initAdService, showAlarmCompletionRewardAd } from '../src/services/adService';
 
 // Safely register background handler with try/catch to guarantee zero startup crash
 try {
@@ -26,21 +25,12 @@ export default function RootLayout() {
       const db = openDatabase();
       seedDefaults(db);
       initializeAlarmChannel();
-      initAdService();
       // Start 24/7 background pedometer hardware tracker on launch
       useFitnessStore.getState().startTracking().catch(() => {});
     } catch {
       // Handled silently
     }
   }, []);
-
-  const handleDismissAlarmWithRewardAd = async () => {
-    dismissAlarm();
-    // Trigger the Alarm Completion Reward Ad upon successful completion/slide
-    try {
-      await showAlarmCompletionRewardAd();
-    } catch {}
-  };
 
   return (
     <>
@@ -53,7 +43,7 @@ export default function RootLayout() {
         visible={Boolean(activeAlarmTask)}
         task={activeAlarmTask}
         strikeNumber={alarmStrike}
-        onDismiss={handleDismissAlarmWithRewardAd}
+        onDismiss={dismissAlarm}
       />
     </>
   );
