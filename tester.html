@@ -545,7 +545,45 @@
             </p>
           </div>
 
-          <!-- Accountability Card (Circular Progress Ring) -->
+          <!-- Today's Movement Card (Placed UP above Accountability) -->
+          <div class="app-card" style="padding:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:16px;font-weight:700;">Today's Movement</div>
+                <div style="font-size:12px;color:#6B7280;margin-top:2px;">Target: 3.0 km</div>
+              </div>
+              <div class="badge" style="margin-bottom:0;background:#DCFCE7;color:#10B981;font-weight:800;font-size:11px;">🏃 1D STREAK</div>
+            </div>
+
+            <!-- Steps Circle -->
+            <div style="margin:16px 0 10px;text-align:center;">
+              <div style="width:120px;height:120px;border-radius:60px;border:4px solid #10B981;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(16,185,129,0.06);">
+                <span style="font-size:22px;">👟</span>
+                <div style="font-size:20px;font-weight:800;" id="dashStepsBig">3,950</div>
+                <div style="font-size:10px;font-weight:700;color:#6B7280;">STEPS TODAY</div>
+              </div>
+            </div>
+
+            <!-- 3 Metric Pills -->
+            <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:12px;">
+              <div style="flex:1;background:#F3F4F6;padding:8px 6px;border-radius:8px;text-align:center;">
+                <div style="font-size:13px;font-weight:800;color:#10B981;" id="dashDist">3.01 km</div>
+                <div style="font-size:10px;color:#6B7280;">Distance</div>
+              </div>
+              <div style="flex:1;background:#F3F4F6;padding:8px 6px;border-radius:8px;text-align:center;">
+                <div style="font-size:13px;font-weight:800;color:#EA580C;" id="dashCal">158 kcal</div>
+                <div style="font-size:10px;color:#6B7280;">Burned</div>
+              </div>
+              <div style="flex:1;background:#F3F4F6;padding:8px 6px;border-radius:8px;text-align:center;">
+                <div style="font-size:13px;font-weight:800;color:#6366F1;" id="dashActive">39 min</div>
+                <div style="font-size:10px;color:#6B7280;">Active</div>
+              </div>
+            </div>
+
+            <button class="picker-btn" style="width:100%;text-align:center;font-weight:700;color:#10B981;" onclick="switchTab('tabFitness', document.querySelectorAll('.nav-tab-item')[3])">View Fit Analytics ➔</button>
+          </div>
+
+          <!-- Accountability Card (Circular Progress Ring - Placed DOWN below Movement) -->
           <div class="app-card" style="text-align:center;padding:22px 16px;">
             <div style="font-size:17px;font-weight:700;margin-bottom:14px;">Today's Accountability</div>
             <div style="position:relative;width:140px;height:140px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;">
@@ -654,28 +692,27 @@
               <div style="font-size:11px;color:#047857;margin-top:2px;">Reach your target before midnight to lock your streak.</div>
             </div>
 
-            <!-- Steps Circle -->
-            <div style="margin:20px 0;text-align:center;">
-              <div style="width:130px;height:130px;border-radius:65px;border:4px solid #10B981;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(16,185,129,0.05);">
-                <span style="font-size:24px;">👟</span>
-                <div style="font-size:22px;font-weight:800;" id="fitStepsBig">3,950</div>
-                <div style="font-size:10px;font-weight:700;color:#6B7280;">STEPS TODAY</div>
+            <!-- Google Fit Style 2x2 Grid (Heart Points, Total Steps, Distance, Calories) -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+              <div style="background:#F3F4F6;padding:14px;border-radius:12px;text-align:center;">
+                <span style="font-size:22px;">❤️</span>
+                <div style="font-size:18px;font-weight:800;color:#EF4444;margin-top:4px;" id="fitHeartVal">39</div>
+                <div style="font-size:11px;color:#6B7280;">Heart Points</div>
               </div>
-            </div>
-
-            <!-- 3 Metrics -->
-            <div style="display:flex;justify-content:space-between;gap:8px;">
-              <div style="flex:1;background:#F3F4F6;padding:10px;border-radius:10px;text-align:center;">
-                <div style="font-size:15px;font-weight:800;color:#10B981;" id="fitDistVal">3.01 km</div>
+              <div style="background:#F3F4F6;padding:14px;border-radius:12px;text-align:center;">
+                <span style="font-size:22px;">👟</span>
+                <div style="font-size:18px;font-weight:800;color:#111827;margin-top:4px;" id="fitStepsBig">3,950</div>
+                <div style="font-size:11px;color:#6B7280;">Total Steps</div>
+              </div>
+              <div style="background:#F3F4F6;padding:14px;border-radius:12px;text-align:center;">
+                <span style="font-size:22px;">📍</span>
+                <div style="font-size:18px;font-weight:800;color:#10B981;margin-top:4px;" id="fitDistVal">3.01 km</div>
                 <div style="font-size:11px;color:#6B7280;">Distance</div>
               </div>
-              <div style="flex:1;background:#F3F4F6;padding:10px;border-radius:10px;text-align:center;">
-                <div style="font-size:15px;font-weight:800;color:#EA580C;" id="fitCalVal">158 kcal</div>
-                <div style="font-size:11px;color:#6B7280;">Burned</div>
-              </div>
-              <div style="flex:1;background:#F3F4F6;padding:10px;border-radius:10px;text-align:center;">
-                <div style="font-size:15px;font-weight:800;color:#EF4444;" id="fitHeartVal">39 pts</div>
-                <div style="font-size:11px;color:#6B7280;">Heart Pts</div>
+              <div style="background:#F3F4F6;padding:14px;border-radius:12px;text-align:center;">
+                <span style="font-size:22px;">🔥</span>
+                <div style="font-size:18px;font-weight:800;color:#EA580C;margin-top:4px;" id="fitCalVal">158</div>
+                <div style="font-size:11px;color:#6B7280;">Calories (kcal)</div>
               </div>
             </div>
 
@@ -694,10 +731,8 @@
               </div>
             </div>
 
-            <!-- Test Walk Simulator -->
-            <div style="display:flex;gap:8px;margin-top:14px;">
-              <button class="picker-btn" style="flex:1;" onclick="addSimSteps(500)">+ Walk 500 Steps</button>
-              <button class="picker-btn" style="flex:1;background:#10B981;color:white;border-color:#10B981;" onclick="addSimSteps(1500)">+ Walk 1.5 km</button>
+            <div style="font-size:11px;color:#10B981;font-weight:700;text-align:center;margin-top:14px;">
+              ✓ Hardware Step Sensor Active (Auto-tracking movement in background)
             </div>
           </div>
         </div>

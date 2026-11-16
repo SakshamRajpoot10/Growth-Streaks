@@ -28,12 +28,12 @@ export const FitnessScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'day' | 'week' | 'month'>('day');
   const [isGoalModalVisible, setIsGoalModalVisible] = useState(false);
   const [selectedGoalType, setSelectedGoalType] = useState<FitnessGoalType>(goal.goalType);
-  const [selectedTarget, setSelectedTarget] = useState<number>(goal.targetValue);
+  const [selectedTarget, setSelectedTarget] = useState<number | null>(null);
   const [weekLogs, setWeekLogs] = useState<FitnessDailyLog[]>([]);
 
   useEffect(() => {
     loadFitnessData();
-    startTracking();
+    startTracking().catch(() => {});
     loadWeekData();
   }, []);
 
@@ -47,7 +47,9 @@ export const FitnessScreen: React.FC = () => {
   };
 
   const handleSaveGoal = () => {
-    updateGoal(selectedGoalType, selectedTarget);
+    if (selectedTarget != null) {
+      updateGoal(selectedGoalType, selectedTarget);
+    }
     setIsGoalModalVisible(false);
   };
 
@@ -75,7 +77,10 @@ export const FitnessScreen: React.FC = () => {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => setIsGoalModalVisible(true)}
+              onPress={() => {
+                setSelectedTarget(null);
+                setIsGoalModalVisible(true);
+              }}
               style={[styles.btnChangeGoal, { backgroundColor: isDark ? '#1F2937' : '#F1F5F9' }]}
             >
               <Text style={[styles.btnChangeGoalText, { color: colors.primary }]}>⚙️ Target</Text>
@@ -267,7 +272,7 @@ export const FitnessScreen: React.FC = () => {
           </Card>
         )}
 
-        {/* Google Fit Style Heart Points & Metric Breakdown */}
+        {/* Google Fit Style Heart Points & Metric Breakdown (2x2 Grid) */}
         <Card style={styles.metricsCard}>
           <Text style={[styles.metricsHeader, { color: colors.text }]}>Live Activity Breakdown</Text>
 
@@ -295,23 +300,6 @@ export const FitnessScreen: React.FC = () => {
               <Text style={[styles.metricBig, { color: '#EA580C' }]}>{log.calories}</Text>
               <Text style={[styles.metricSmall, { color: colors.textSecondary }]}>Calories (kcal)</Text>
             </View>
-          </View>
-
-          {/* Quick Calibration / Walk Simulator Button */}
-          <View style={styles.simulatorRow}>
-            <TouchableOpacity
-              onPress={() => simulateWalk(500)}
-              style={[styles.btnSimulate, { borderColor: colors.border }]}
-            >
-              <Text style={[styles.btnSimulateText, { color: colors.text }]}>+ Walk 500 Steps</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => simulateWalk(1500)}
-              style={[styles.btnSimulate, { borderColor: colors.border }]}
-            >
-              <Text style={[styles.btnSimulateText, { color: colors.text }]}>+ Walk 1.5 km</Text>
-            </TouchableOpacity>
           </View>
         </Card>
 
@@ -341,10 +329,7 @@ export const FitnessScreen: React.FC = () => {
                     key={gt.type}
                     onPress={() => {
                       setSelectedGoalType(gt.type as FitnessGoalType);
-                      if (gt.type === 'distance_km') setSelectedTarget(3.0);
-                      if (gt.type === 'steps') setSelectedTarget(6000);
-                      if (gt.type === 'calories') setSelectedTarget(250);
-                      if (gt.type === 'active_minutes') setSelectedTarget(45);
+                      setSelectedTarget(null);
                     }}
                     style={[
                       styles.goalTypePill,
@@ -366,92 +351,134 @@ export const FitnessScreen: React.FC = () => {
                 ))}
               </View>
 
-              {/* Preset Target Values */}
-              <Text style={[styles.targetPresetsTitle, { color: colors.text }]}>Select Target Value:</Text>
+              {/* Preset Target Values (Neutral by default, toggleable on/off) */}
+              <Text style={[styles.targetPresetsTitle, { color: colors.text }]}>
+                Select Target Value (Tap to select / unselect):
+              </Text>
               <View style={styles.presetsGrid}>
                 {selectedGoalType === 'distance_km' &&
-                  [1.0, 2.0, 3.0, 5.0, 8.0, 10.0].map((v) => (
-                    <TouchableOpacity
-                      key={v}
-                      onPress={() => setSelectedTarget(v)}
-                      style={[
-                        styles.presetPill,
-                        selectedTarget === v && { backgroundColor: '#10B981' },
-                      ]}
-                    >
-                      <Text
+                  [1.0, 2.0, 3.0, 5.0, 8.0, 10.0].map((v) => {
+                    const isSelected = selectedTarget === v;
+                    return (
+                      <TouchableOpacity
+                        key={v}
+                        onPress={() => setSelectedTarget((prev) => (prev === v ? null : v))}
                         style={[
-                          styles.presetPillText,
-                          selectedTarget === v && { color: '#FFFFFF', fontWeight: '800' },
+                          styles.presetPill,
+                          {
+                            backgroundColor: isSelected ? '#10B981' : colors.surfaceVariant,
+                            borderColor: isSelected ? '#059669' : colors.border,
+                            borderWidth: 1,
+                          },
                         ]}
                       >
-                        {v} km
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text
+                          style={[
+                            styles.presetPillText,
+                            {
+                              color: isSelected ? '#FFFFFF' : colors.text,
+                              fontWeight: isSelected ? '800' : '600',
+                            },
+                          ]}
+                        >
+                          {v} km
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
 
                 {selectedGoalType === 'steps' &&
-                  [3000, 5000, 6000, 8000, 10000, 12000].map((v) => (
-                    <TouchableOpacity
-                      key={v}
-                      onPress={() => setSelectedTarget(v)}
-                      style={[
-                        styles.presetPill,
-                        selectedTarget === v && { backgroundColor: '#10B981' },
-                      ]}
-                    >
-                      <Text
+                  [3000, 5000, 6000, 8000, 10000, 12000].map((v) => {
+                    const isSelected = selectedTarget === v;
+                    return (
+                      <TouchableOpacity
+                        key={v}
+                        onPress={() => setSelectedTarget((prev) => (prev === v ? null : v))}
                         style={[
-                          styles.presetPillText,
-                          selectedTarget === v && { color: '#FFFFFF', fontWeight: '800' },
+                          styles.presetPill,
+                          {
+                            backgroundColor: isSelected ? '#10B981' : colors.surfaceVariant,
+                            borderColor: isSelected ? '#059669' : colors.border,
+                            borderWidth: 1,
+                          },
                         ]}
                       >
-                        {v.toLocaleString()}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text
+                          style={[
+                            styles.presetPillText,
+                            {
+                              color: isSelected ? '#FFFFFF' : colors.text,
+                              fontWeight: isSelected ? '800' : '600',
+                            },
+                          ]}
+                        >
+                          {v.toLocaleString()}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
 
                 {selectedGoalType === 'calories' &&
-                  [150, 200, 250, 350, 500, 750].map((v) => (
-                    <TouchableOpacity
-                      key={v}
-                      onPress={() => setSelectedTarget(v)}
-                      style={[
-                        styles.presetPill,
-                        selectedTarget === v && { backgroundColor: '#10B981' },
-                      ]}
-                    >
-                      <Text
+                  [150, 200, 250, 350, 500, 750].map((v) => {
+                    const isSelected = selectedTarget === v;
+                    return (
+                      <TouchableOpacity
+                        key={v}
+                        onPress={() => setSelectedTarget((prev) => (prev === v ? null : v))}
                         style={[
-                          styles.presetPillText,
-                          selectedTarget === v && { color: '#FFFFFF', fontWeight: '800' },
+                          styles.presetPill,
+                          {
+                            backgroundColor: isSelected ? '#10B981' : colors.surfaceVariant,
+                            borderColor: isSelected ? '#059669' : colors.border,
+                            borderWidth: 1,
+                          },
                         ]}
                       >
-                        {v} kcal
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text
+                          style={[
+                            styles.presetPillText,
+                            {
+                              color: isSelected ? '#FFFFFF' : colors.text,
+                              fontWeight: isSelected ? '800' : '600',
+                            },
+                          ]}
+                        >
+                          {v} kcal
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
 
                 {selectedGoalType === 'active_minutes' &&
-                  [20, 30, 45, 60, 90, 120].map((v) => (
-                    <TouchableOpacity
-                      key={v}
-                      onPress={() => setSelectedTarget(v)}
-                      style={[
-                        styles.presetPill,
-                        selectedTarget === v && { backgroundColor: '#10B981' },
-                      ]}
-                    >
-                      <Text
+                  [20, 30, 45, 60, 90, 120].map((v) => {
+                    const isSelected = selectedTarget === v;
+                    return (
+                      <TouchableOpacity
+                        key={v}
+                        onPress={() => setSelectedTarget((prev) => (prev === v ? null : v))}
                         style={[
-                          styles.presetPillText,
-                          selectedTarget === v && { color: '#FFFFFF', fontWeight: '800' },
+                          styles.presetPill,
+                          {
+                            backgroundColor: isSelected ? '#10B981' : colors.surfaceVariant,
+                            borderColor: isSelected ? '#059669' : colors.border,
+                            borderWidth: 1,
+                          },
                         ]}
                       >
-                        {v} mins
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text
+                          style={[
+                            styles.presetPillText,
+                            {
+                              color: isSelected ? '#FFFFFF' : colors.text,
+                              fontWeight: isSelected ? '800' : '600',
+                            },
+                          ]}
+                        >
+                          {v} mins
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
               </View>
 
               <View style={styles.modalActions}>
@@ -607,42 +634,29 @@ const styles = StyleSheet.create({
   metricGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    justifyContent: 'space-between',
+    rowGap: 12,
   },
   metricItem: {
-    width: (SCREEN_WIDTH - 64) / 2,
-    padding: 14,
-    borderRadius: 14,
+    width: '48%',
+    paddingVertical: 18,
+    paddingHorizontal: 12,
+    borderRadius: 16,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   metricEmoji: {
-    fontSize: 22,
-    marginBottom: 4,
+    fontSize: 24,
+    marginBottom: 6,
   },
   metricBig: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '800',
   },
   metricSmall: {
     fontSize: 11,
-    marginTop: 2,
-  },
-  simulatorRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-    gap: 10,
-  },
-  btnSimulate: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  btnSimulateText: {
-    fontSize: 12,
-    fontWeight: '700',
+    marginTop: 4,
+    fontWeight: '600',
   },
   modalOverlay: {
     flex: 1,

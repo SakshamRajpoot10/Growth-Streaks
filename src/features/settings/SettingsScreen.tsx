@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Switch, ScrollView, Vibration, Platform } from 'react-native';
 import { ScreenWrapper } from '../../components/common/ScreenWrapper';
 import { Card } from '../../components/ui/Card';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -13,6 +13,15 @@ export const SettingsScreen: React.FC = () => {
     theme,
     setTheme,
   } = useSettingsStore();
+
+  const handleVibrationToggle = (val: boolean) => {
+    setVibrationEnabled(val);
+    if (val && Platform.OS !== 'web') {
+      try {
+        Vibration.vibrate([0, 300, 150, 300]);
+      } catch {}
+    }
+  };
 
   return (
     <ScreenWrapper>
@@ -29,7 +38,7 @@ export const SettingsScreen: React.FC = () => {
             </View>
             <Switch
               value={vibrationEnabled}
-              onValueChange={setVibrationEnabled}
+              onValueChange={handleVibrationToggle}
               trackColor={{ false: '#71717A', true: colors.primaryLight }}
               thumbColor={vibrationEnabled ? colors.primary : '#FAFAFA'}
             />

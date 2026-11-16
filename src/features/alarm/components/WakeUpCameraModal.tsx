@@ -6,11 +6,13 @@ import {
   Modal,
   TouchableOpacity,
   Dimensions,
-  Animated,
-  PanResponder,
+  Vibration,
+  Platform,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Accelerometer } from 'expo-sensors';
 import { playSoundPreview, stopSoundPreview } from '../../../utils/sound-preview';
+import { useSettingsStore } from '../../../store/useSettingsStore';
 
 interface WakeUpCameraModalProps {
   visible: boolean;
@@ -22,7 +24,6 @@ interface WakeUpCameraModalProps {
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const REQUIRED_SECONDS = 60;
-const CHECK_INTERVAL = 10; // Check every 10 seconds
 
 export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
   visible,
@@ -31,92 +32,104 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
   onSuccess,
   onCancelOrAbandon,
 }) => {
-  const [phase, setPhase] = useState<'alarm_ringing' | 'standing_camera' | 'celebration'>('alarm_ringing');
+  const { vibrationEnabled } = useSettingsStore();
+  const [phase, setPhase] = useState<'standing_camera' | 'celebration'>('standing_camera');
   const [secondsRemaining, setSecondsRemaining] = useState(REQUIRED_SECONDS);
   const [isStandingDetected, setIsStandingDetected] = useState(false);
-  const [successfulChecks, setSuccessfulChecks] = useState(0);
-  const [totalChecks, setTotalChecks] = useState(0);
+  const [phoneTiltAngle, setPhoneTiltAngle] = useState(90);
   const [permission, requestPermission] = useCameraPermissions();
 
-  // Slide to unlock animation
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const maxSlide = SCREEN_WIDTH - 120;
-
-  // Sound loop control
+  // Reset when modal opens
   useEffect(() => {
-    if (visible && phase === 'alarm_ringing') {
-      playSoundPreview(alarmSound, true);
-    } else {
-      stopSoundPreview();
+    if (visible) {
+      setPhase('standing_camera');
+      setSecondsRemaining(REQUIRED_SECONDS);
+      setIsStandingDetected(false);
     }
-
-    return () => {
-      stopSoundPreview();
-    };
-  }, [visible, phase, alarmSound]);
+  }, [visible]);
 
   // Request camera permission on mount
   useEffect(() => {
     if (visible && !permission?.granted) {
-      requestPermission();
+      requestPermission().catch(() => {});
     }
   }, [visible, permission]);
 
-  // Slide to verify PanResponder
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: (_, gesture) => {
-        if (gesture.dx >= 0 && gesture.dx <= maxSlide) {
-          slideAnim.setValue(gesture.dx);
-        }
-      },
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dx >= maxSlide * 0.8) {
-          // Successfully slid
-          Animated.timing(slideAnim, {
-            toValue: maxSlide,
-            duration: 150,
-            useNativeDriver: true,
-          }).start(() => {
-            stopSoundPreview();
-            setPhase('standing_camera');
-            setSecondsRemaining(REQUIRED_SECONDS);
-            setIsStandingDetected(false);
-            setSuccessfulChecks(0);
-            setTotalChecks(0);
-          });
-        } else {
-          // Snap back
-          Animated.spring(slideAnim, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
-        }
-      },
-    })
-  ).current;
+  // Persistent alarm sound & vibration: MUST KEEP RINGING until 60s standing is completed
+  useEffect(() => {
+    if (visible && phase === 'standing_camera') {
+      playSoundPreview(alarmSound, true);
+      if (vibrationEnabled && Platform.OS !== 'web') {
+        try {
+          Vibration.vibrate([0, 700, 300, 700], true);
+        } catch {}
+      }
+    } else {
+      stopSoundPreview();
+      try {
+        Vibration.cancel();
+      } catch {}
+    }
 
-  // Standing timer & 10s check loop
+    return () => {
+      stopSoundPreview();
+      try {
+        Vibration.cancel();
+      } catch {}
+    };
+  }, [visible, phase, alarmSound, vibrationEnabled]);
+
+  // Hardware Accelerometer Posture Sensing
+  useEffect(() => {
+    let sub: { remove: () => void } | null = null;
+
+    if (visible && phase === 'standing_camera') {
+      try {
+        Accelerometer.setUpdateInterval(400);
+        sub = Accelerometer.addListener(({ x, y, z }) => {
+          // Calculate angle relative to horizontal plane
+          // When phone is upright / propped at eye level, y is high (~0.7 to 1.0), z is low (~0.0 to 0.5)
+          // When lying flat on bed / mattress, z is ~1.0, y is near 0
+          const rad = Math.atan2(Math.abs(y), Math.abs(z || 0.001));
+          const deg = Math.round((rad * 180) / Math.PI);
+          setPhoneTiltAngle(deg);
+
+          // Upright threshold is >= 55 degrees
+          const upright = deg >= 55;
+          setIsStandingDetected(upright);
+        });
+      } catch {
+        // Fallback for emulators/web without hardware accelerometer
+        setIsStandingDetected(true);
+      }
+    }
+
+    return () => {
+      if (sub) {
+        try {
+          sub.remove();
+        } catch {}
+      }
+    };
+  }, [visible, phase]);
+
+  // Standing timer: ONLY counts down when user is standing upright with phone
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
 
-    if (phase === 'standing_camera' && isStandingDetected && secondsRemaining > 0) {
+    if (visible && phase === 'standing_camera' && isStandingDetected && secondsRemaining > 0) {
       timer = setInterval(() => {
         setSecondsRemaining((prev) => {
-          const next = prev - 1;
-
-          // Check interval every 10 seconds
-          if ((REQUIRED_SECONDS - next) % CHECK_INTERVAL === 0) {
-            setTotalChecks((tc) => tc + 1);
-            setSuccessfulChecks((sc) => sc + 1);
-          }
-
-          if (next <= 0) {
+          if (prev <= 1) {
+            // Alarm complete! Stop sound and vibration, trigger celebration
+            stopSoundPreview();
+            try {
+              Vibration.cancel();
+            } catch {}
             setPhase('celebration');
             return 0;
           }
-          return next;
+          return prev - 1;
         });
       }, 1000);
     }
@@ -124,16 +137,14 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [phase, isStandingDetected, secondsRemaining]);
+  }, [visible, phase, isStandingDetected, secondsRemaining]);
 
   // Handle celebration auto-exit
   useEffect(() => {
     if (phase === 'celebration') {
       const exitTimer = setTimeout(() => {
         onSuccess();
-        setPhase('alarm_ringing');
-        slideAnim.setValue(0);
-      }, 3000);
+      }, 2500);
       return () => clearTimeout(exitTimer);
     }
   }, [phase, onSuccess]);
@@ -141,45 +152,14 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
   if (!visible) return null;
 
   return (
-    <Modal visible={visible} animationType="fade" transparent={false} statusBarTranslucent>
-      {/* PHASE 1: ALARM RINGING & SLIDE TO UNLOCK */}
-      {phase === 'alarm_ringing' && (
-        <View style={styles.alarmScreenContainer}>
-          <View style={styles.topAlarmHeader}>
-            <Text style={styles.bellIcon}>⏰</Text>
-            <Text style={styles.wakeUpBadge}>WAKE-UP ALARM • FULL STANDING REQUIRED</Text>
-            <Text style={styles.alarmTimeText}>
-              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </Text>
-            <Text style={styles.alarmTitleText}>{taskTitle || 'Morning Wake Up'}</Text>
-            <Text style={styles.alarmNoticeText}>
-              To turn off this alarm, slide below and stand in front of the camera for 60 seconds.
-            </Text>
-          </View>
-
-          {/* Interactive Slide to Verify Bar */}
-          <View style={styles.sliderTrack}>
-            <Animated.View
-              {...panResponder.panHandlers}
-              style={[
-                styles.sliderThumb,
-                { transform: [{ translateX: slideAnim }] },
-              ]}
-            >
-              <Text style={styles.sliderThumbIcon}>➔</Text>
-            </Animated.View>
-            <Text style={styles.sliderTrackText}>SLIDE TO STAND & VERIFY ➔</Text>
-          </View>
-        </View>
-      )}
-
-      {/* PHASE 2: CAMERA STANDING VERIFICATION */}
+    <Modal visible={visible} animationType="slide" transparent={false} statusBarTranslucent>
+      {/* CAMERA STANDING VERIFICATION */}
       {phase === 'standing_camera' && (
         <View style={styles.cameraContainer}>
           {permission?.granted ? (
             <CameraView style={styles.cameraPreview} facing="front">
-              {/* Silhouette Framing Overlay */}
               <View style={styles.overlayContainer}>
+                {/* Silhouette Guide Overlay */}
                 <View
                   style={[
                     styles.silhouetteFrame,
@@ -195,23 +175,29 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
                   <Text style={styles.timerNumber}>{secondsRemaining}s</Text>
                   <Text style={styles.timerLabel}>
                     {isStandingDetected
-                      ? `🧍 STANDING VERIFIED (${successfulChecks}/6 CHECKS)`
-                      : '⚠️ STEP BACK & STAND UPRIGHT'}
+                      ? '🧍 STANDING DETECTED • MAINTAIN POSTURE'
+                      : '⚠️ PHONE FLAT ON BED • STAND UPRIGHT'}
+                  </Text>
+                  <Text style={styles.tiltBadge}>
+                    Phone Angle: {phoneTiltAngle}° {isStandingDetected ? '✓ UPRIGHT' : '✕ TOO FLAT'}
                   </Text>
                 </View>
 
-                {/* Bottom Guidance & Standing Toggle */}
+                {/* Bottom Guidance Box */}
                 <View style={styles.bottomGuidanceBox}>
+                  <Text style={styles.alarmWarningText}>
+                    🚨 LOUD ALARM RINGING UNTIL 60 SECONDS COMPLETE!
+                  </Text>
                   <Text style={styles.guidanceTitle}>
                     {isStandingDetected
-                      ? 'Posture Confirmed! Maintain standing position...'
-                      : 'Step back ~2 meters so your full upper body is in the frame.'}
+                      ? 'Posture Confirmed! Stay standing in front of camera...'
+                      : 'Step out of bed and prop your phone upright facing your face.'}
                   </Text>
                   <Text style={styles.guidanceSub}>
-                    Checking posture every 10 seconds. Leaving the frame resets the alarm.
+                    Countdown pauses if phone is placed flat or posture is lost.
                   </Text>
 
-                  {/* Standing Detection Toggle for verification */}
+                  {/* Manual posture calibration toggle */}
                   <TouchableOpacity
                     onPress={() => setIsStandingDetected((prev) => !prev)}
                     style={[
@@ -220,46 +206,59 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
                     ]}
                   >
                     <Text style={styles.btnToggleStandingText}>
-                      {isStandingDetected ? '✓ Posture Verified (Standing)' : '🧍 Tap to Verify Standing Position'}
+                      {isStandingDetected ? '✓ Posture Active (Standing)' : '🧍 Tap to Force Standing Detection'}
                     </Text>
                   </TouchableOpacity>
 
-                  {/* Loophole Protection: Abandon Warning */}
+                  {/* Cancel / Abandon button */}
                   <TouchableOpacity
                     onPress={() => {
-                      // Leaving early sounds the alarm again!
-                      setPhase('alarm_ringing');
-                      slideAnim.setValue(0);
+                      stopSoundPreview();
+                      try {
+                        Vibration.cancel();
+                      } catch {}
                       if (onCancelOrAbandon) onCancelOrAbandon();
                     }}
                     style={styles.btnAbandon}
                   >
-                    <Text style={styles.btnAbandonText}>Cancel & Resume Loud Alarm ⚠️</Text>
+                    <Text style={styles.btnAbandonText}>Dismiss / Abandon ✕</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </CameraView>
           ) : (
             <View style={styles.noPermissionBox}>
-              <Text style={styles.noPermText}>Camera permission is required to verify standing posture.</Text>
-              <TouchableOpacity onPress={requestPermission} style={styles.btnGrant}>
+              <Text style={styles.noPermTitle}>📸 Camera Access Required</Text>
+              <Text style={styles.noPermText}>
+                Wake-Up standing verification requires front selfie camera to ensure you are up and active.
+              </Text>
+              <TouchableOpacity onPress={() => requestPermission()} style={styles.btnGrant}>
                 <Text style={styles.btnGrantText}>Grant Camera Permission</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  stopSoundPreview();
+                  if (onCancelOrAbandon) onCancelOrAbandon();
+                }}
+                style={styles.btnDismissNoPerm}
+              >
+                <Text style={styles.btnDismissNoPermText}>Cancel Alarm</Text>
               </TouchableOpacity>
             </View>
           )}
         </View>
       )}
 
-      {/* PHASE 3: CELEBRATION */}
+      {/* PHASE 2: CELEBRATION */}
       {phase === 'celebration' && (
         <View style={styles.celebrationContainer}>
           <Text style={styles.celebEmoji}>🎉</Text>
           <Text style={styles.celebTitle}>Good Morning!</Text>
           <Text style={styles.celebSub}>
-            60 seconds standing verified! Your morning accountability streak is locked in.
+            60 seconds standing verified! Your wake-up accountability streak is locked in.
           </Text>
           <View style={styles.celebBadge}>
-            <Text style={styles.celebBadgeText}>✓ HAVE A PRODUCTIVE & GREAT DAY</Text>
+            <Text style={styles.celebBadgeText}>✓ MORNING HABIT COMPLETED</Text>
           </View>
         </View>
       )}
@@ -268,81 +267,6 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
 };
 
 const styles = StyleSheet.create({
-  alarmScreenContainer: {
-    flex: 1,
-    backgroundColor: '#090D16',
-    justifyContent: 'space-between',
-    paddingVertical: 60,
-    paddingHorizontal: 24,
-  },
-  topAlarmHeader: {
-    alignItems: 'center',
-    marginTop: 40,
-  },
-  bellIcon: {
-    fontSize: 54,
-    marginBottom: 16,
-  },
-  wakeUpBadge: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#F59E0B',
-    letterSpacing: 1,
-    marginBottom: 12,
-  },
-  alarmTimeText: {
-    fontSize: 56,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    fontFamily: 'monospace',
-  },
-  alarmTitleText: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#10B981',
-    marginTop: 8,
-  },
-  alarmNoticeText: {
-    fontSize: 14,
-    color: '#94A3B8',
-    textAlign: 'center',
-    marginTop: 20,
-    lineHeight: 22,
-    paddingHorizontal: 16,
-  },
-  sliderTrack: {
-    width: '100%',
-    height: 64,
-    backgroundColor: '#1E293B',
-    borderRadius: 32,
-    justifyContent: 'center',
-    paddingHorizontal: 6,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  sliderThumb: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#10B981',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-    elevation: 4,
-  },
-  sliderThumbIcon: {
-    fontSize: 22,
-    color: '#FFFFFF',
-    fontWeight: '800',
-  },
-  sliderTrackText: {
-    position: 'absolute',
-    alignSelf: 'center',
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#94A3B8',
-    letterSpacing: 1,
-  },
   cameraContainer: {
     flex: 1,
     backgroundColor: '#000000',
@@ -355,36 +279,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 50,
     paddingHorizontal: 20,
-  },
-  timerBox: {
-    backgroundColor: 'rgba(0,0,0,0.75)',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  timerNumber: {
-    fontSize: 48,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    fontFamily: 'monospace',
-  },
-  timerLabel: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#10B981',
-    marginTop: 4,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   silhouetteFrame: {
     position: 'absolute',
-    top: SCREEN_HEIGHT * 0.22,
-    alignSelf: 'center',
-    width: SCREEN_WIDTH * 0.65,
-    height: SCREEN_HEIGHT * 0.42,
-    borderRadius: 24,
-    borderWidth: 3,
+    top: '25%',
+    left: '20%',
+    width: '60%',
+    height: '40%',
+    borderWidth: 2,
     borderStyle: 'dashed',
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -397,26 +302,63 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(245, 158, 11, 0.08)',
   },
   headOutline: {
-    width: 70,
+    width: 60,
     height: 70,
-    borderRadius: 35,
+    borderRadius: 30,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.6)',
-    marginBottom: 10,
+    borderColor: '#FFFFFF',
+    marginBottom: 8,
   },
   bodyOutline: {
-    width: 130,
-    height: 140,
+    width: 100,
+    height: 60,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.6)',
+    borderColor: '#FFFFFF',
+  },
+  timerBox: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  timerNumber: {
+    fontSize: 48,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  timerLabel: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#10B981',
+    letterSpacing: 0.5,
+    marginTop: 4,
+  },
+  tiltBadge: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#94A3B8',
+    marginTop: 4,
   },
   bottomGuidanceBox: {
-    backgroundColor: 'rgba(0,0,0,0.85)',
+    backgroundColor: 'rgba(15, 23, 42, 0.92)',
     padding: 18,
     borderRadius: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
+  },
+  alarmWarningText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#EF4444',
+    letterSpacing: 0.5,
+    marginBottom: 6,
   },
   guidanceTitle: {
     fontSize: 15,
@@ -425,88 +367,109 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   guidanceSub: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#94A3B8',
     textAlign: 'center',
     marginTop: 4,
-    marginBottom: 14,
+    marginBottom: 12,
   },
   btnToggleStanding: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     width: '100%',
-    paddingVertical: 14,
-    borderRadius: 12,
     alignItems: 'center',
+    marginBottom: 8,
   },
   btnToggleStandingText: {
-    fontSize: 14,
-    fontWeight: '800',
     color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '800',
   },
   btnAbandon: {
-    marginTop: 10,
-    padding: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 16,
   },
   btnAbandonText: {
-    fontSize: 12,
     color: '#EF4444',
-    fontWeight: '600',
-  },
-  noPermissionBox: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  noPermText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  btnGrant: {
-    backgroundColor: '#10B981',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 10,
-  },
-  btnGrantText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
-    color: '#FFFFFF',
   },
   celebrationContainer: {
     flex: 1,
-    backgroundColor: '#090D16',
+    backgroundColor: '#0F172A',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 30,
   },
   celebEmoji: {
-    fontSize: 64,
+    fontSize: 70,
     marginBottom: 20,
   },
   celebTitle: {
-    fontSize: 32,
-    fontWeight: '800',
+    fontSize: 28,
+    fontWeight: '900',
     color: '#FFFFFF',
+    marginBottom: 10,
   },
   celebSub: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#94A3B8',
     textAlign: 'center',
-    marginTop: 12,
-    lineHeight: 24,
+    lineHeight: 22,
+    marginBottom: 24,
   },
   celebBadge: {
-    marginTop: 28,
-    backgroundColor: '#ECFDF5',
+    backgroundColor: '#10B981',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 12,
+    borderRadius: 20,
   },
   celebBadgeText: {
-    fontSize: 13,
+    color: '#FFFFFF',
+    fontSize: 12,
     fontWeight: '800',
-    color: '#065F46',
+    letterSpacing: 0.5,
+  },
+  noPermissionBox: {
+    flex: 1,
+    backgroundColor: '#0F172A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 30,
+  },
+  noPermTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginBottom: 10,
+  },
+  noPermText: {
+    fontSize: 14,
+    color: '#94A3B8',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  btnGrant: {
+    backgroundColor: '#10B981',
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: 14,
+  },
+  btnGrantText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  btnDismissNoPerm: {
+    marginTop: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  btnDismissNoPermText: {
+    color: '#EF4444',
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

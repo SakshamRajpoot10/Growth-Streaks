@@ -10,7 +10,7 @@ import {
 import { ScreenWrapper } from '../../components/common/ScreenWrapper';
 import { TaskCard } from './components/TaskCard';
 import { TaskForm } from './components/TaskForm';
-import { WakeUpCameraModal } from '../alarm/components/WakeUpCameraModal';
+import { IncomingAlarmModal } from '../alarm/components/IncomingAlarmModal';
 import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/common/EmptyState';
 import { openDatabase } from '../../db/client';
@@ -367,18 +367,12 @@ export const TaskListScreen: React.FC = () => {
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      {/* Wake-Up Standing Camera Alarm Modal */}
-      <WakeUpCameraModal
+      {/* Full-Screen Alarm Modal with Dual Slide Action & 60s Standing Camera */}
+      <IncomingAlarmModal
         visible={Boolean(testingWakeUpTask)}
-        taskTitle={testingWakeUpTask?.activityName || 'Morning Wake Up'}
-        alarmSound={testingWakeUpTask?.alarmSound || 'gentle_chime'}
-        onSuccess={() => {
-          Alert.alert('🎉 Good Morning!', '60 seconds standing verified! Morning streak locked in.');
-          setTestingWakeUpTask(null);
-        }}
-        onCancelOrAbandon={() => {
-          setTestingWakeUpTask(null);
-        }}
+        task={testingWakeUpTask}
+        strikeNumber={1}
+        onDismiss={() => setTestingWakeUpTask(null)}
       />
     </ScreenWrapper>
   );

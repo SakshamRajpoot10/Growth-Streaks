@@ -9,7 +9,6 @@ interface FitnessOverviewCardProps {
   goal: FitnessGoal;
   streak: number;
   onPressDetails?: () => void;
-  onSimulateWalk?: () => void;
 }
 
 export const FitnessOverviewCard: React.FC<FitnessOverviewCardProps> = ({
@@ -17,7 +16,6 @@ export const FitnessOverviewCard: React.FC<FitnessOverviewCardProps> = ({
   goal,
   streak,
   onPressDetails,
-  onSimulateWalk,
 }) => {
   const { colors, isDark } = useTheme();
 
@@ -109,22 +107,14 @@ export const FitnessOverviewCard: React.FC<FitnessOverviewCardProps> = ({
         </View>
       </View>
 
-      {/* Interactive Controls */}
-      <View style={styles.actionsRow}>
-        {onSimulateWalk && (
-          <TouchableOpacity
-            onPress={onSimulateWalk}
-            style={[styles.btnTestWalk, { borderColor: colors.border }]}
-          >
-            <Text style={[styles.btnTestText, { color: colors.textSecondary }]}>+ Walk 500 Steps</Text>
-          </TouchableOpacity>
-        )}
-        {onPressDetails && (
+      {/* Navigation Controls */}
+      {onPressDetails && (
+        <View style={styles.actionsRow}>
           <TouchableOpacity onPress={onPressDetails} style={styles.btnDetails}>
             <Text style={styles.btnDetailsText}>View Fit Analytics ➔</Text>
           </TouchableOpacity>
-        )}
-      </View>
+        </View>
+      )}
     </Card>
   );
 };

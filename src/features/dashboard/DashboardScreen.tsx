@@ -93,7 +93,12 @@ export const DashboardScreen: React.FC = () => {
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+    // Safely initiate pedometer tracking in background after screen mounts
+    const timer = setTimeout(() => {
+      startTracking().catch(() => {});
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [loadData, startTracking]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -111,18 +116,19 @@ export const DashboardScreen: React.FC = () => {
       >
         <StreakCounter streak={currentStreak} longestStreak={longestStreak} />
 
-        <DailyProgressRing
-          completed={dailyStats.completed}
-          total={tasks.length}
-          percentage={tasks.length > 0 ? Math.round((dailyStats.completed / tasks.length) * 100) : 0}
-        />
-
+        {/* Today's Movement Card placed above Accountability Progress Ring as requested */}
         <FitnessOverviewCard
           log={fitnessLog}
           goal={fitnessGoal}
           streak={fitnessStreak}
           onPressDetails={() => router.push('/(tabs)/fitness' as any)}
-          onSimulateWalk={() => simulateWalk(500)}
+        />
+
+        {/* Today's Accountability Circle placed below Movement */}
+        <DailyProgressRing
+          completed={dailyStats.completed}
+          total={tasks.length}
+          percentage={tasks.length > 0 ? Math.round((dailyStats.completed / tasks.length) * 100) : 0}
         />
 
         <WeeklyMetricCard
