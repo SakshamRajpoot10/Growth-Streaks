@@ -17,6 +17,7 @@ import { calculateCurrentStreak, calculateLongestStreak } from '../../utils/stre
 import { getToday, getTodayDayOfWeek, getWeekRange } from '../../utils/date';
 import { Task } from '../../types/task';
 import { TaskLog, DailyStats, WeeklyStats } from '../../types/task-log';
+import { showFitnessMilestoneRewardAd } from '../../services/adService';
 
 export const DashboardScreen: React.FC = () => {
   const router = useRouter();
@@ -97,8 +98,20 @@ export const DashboardScreen: React.FC = () => {
     const timer = setTimeout(() => {
       startTracking().catch(() => {});
     }, 1200);
+
+    // Check if fitness goal (e.g. 2km / steps) was achieved and reward user with milestone ad
+    const currentProgress = fitnessGoal.goalType === 'distance_km' 
+      ? fitnessLog.distanceKm 
+      : (fitnessGoal.goalType === 'calories' 
+          ? fitnessLog.calories 
+          : (fitnessGoal.goalType === 'active_minutes' ? fitnessLog.activeMinutes : fitnessLog.steps));
+      
+    if (fitnessGoal.targetValue > 0 && currentProgress >= fitnessGoal.targetValue) {
+      showFitnessMilestoneRewardAd().catch(() => {});
+    }
+
     return () => clearTimeout(timer);
-  }, [loadData, startTracking]);
+  }, [loadData, startTracking, fitnessLog.steps, fitnessLog.distanceKm, fitnessGoal.targetValue]);
 
   const onRefresh = () => {
     setRefreshing(true);

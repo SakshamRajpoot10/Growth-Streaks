@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "Growth Streak",
-    "slug": "growth-streaks",
+    "name": "StandUp",
+    "slug": "standup",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "growthstreaks",
+    "scheme": "standup",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "package": "com.growthstreaks.app",
+      "package": "com.growthstreaks.standup",
       "permissions": [
         "android.permission.USE_FULL_SCREEN_INTENT",
         "android.permission.WAKE_LOCK",
@@ -47,8 +47,12 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      "react-native-google-mobile-ads"
     ],
+    "react-native-google-mobile-ads": {
+      "android_app_id": "ca-app-pub-3940256099942544~3347511713"
+    },
     "experiments": {
       "typedRoutes": true
     },
