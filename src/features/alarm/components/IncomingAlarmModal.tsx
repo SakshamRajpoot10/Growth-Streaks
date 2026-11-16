@@ -68,7 +68,11 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
 
     if (isWakeUpTask) {
       // Transition to front selfie camera standing verification!
-      // Audio & vibration continue in WakeUpCameraModal
+      // Sound and vibration turn OFF when camera is opened, per user specification
+      stopSoundPreview();
+      try {
+        Vibration.cancel();
+      } catch {}
       setIsWakeUpCameraActive(true);
       return;
     }
@@ -174,7 +178,7 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
             <Text style={styles.focusArea}>{task.focusArea || 'Daily Habit'}</Text>
             <Text style={styles.promptNotice}>
               {isWakeUpTask
-                ? 'Slide right to open front camera & verify 60s upright standing.'
+                ? 'Slide right to open front camera & stand straight for 30 seconds.'
                 : 'Confirm execution now to protect your streak, or slide left to skip.'}
             </Text>
           </View>

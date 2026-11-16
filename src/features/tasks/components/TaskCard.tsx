@@ -54,7 +54,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               />
               {isWakeUp && (
                 <Badge
-                  label="📸 60s Standing Verification"
+                  label="📸 30s Standing Verification"
                   color="#F59E0B20"
                   textColor="#D97706"
                   style={styles.badge}
