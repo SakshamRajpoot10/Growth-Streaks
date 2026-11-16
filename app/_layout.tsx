@@ -7,6 +7,7 @@ import { initializeAlarmChannel } from '../src/features/alarm/services/alarm-sch
 import { useAlarmPermissions } from '../src/features/alarm/hooks/useAlarmPermissions';
 import { useAlarmWatcher } from '../src/features/alarm/hooks/useAlarmWatcher';
 import { IncomingAlarmModal } from '../src/features/alarm/components/IncomingAlarmModal';
+import { useFitnessStore } from '../src/store/useFitnessStore';
 
 // Safely register background handler with try/catch to guarantee zero startup crash
 try {
@@ -24,6 +25,8 @@ export default function RootLayout() {
       const db = openDatabase();
       seedDefaults(db);
       initializeAlarmChannel();
+      // Start 24/7 background pedometer hardware tracker on launch
+      useFitnessStore.getState().startTracking().catch(() => {});
     } catch {
       // Handled silently
     }

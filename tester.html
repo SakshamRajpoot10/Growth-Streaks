@@ -716,18 +716,49 @@
               </div>
             </div>
 
-            <!-- 24-Hour Hourly Bars -->
+            <!-- Trading-Style Real-Time Line Graph -->
             <div style="margin-top:20px;">
-              <div style="font-size:13px;font-weight:700;margin-bottom:8px;">24h Hourly Step Cadence</div>
-              <div style="display:flex;align-items:flex-end;justify-content:space-between;height:80px;background:#F9FAFB;padding:10px 8px;border-radius:10px;">
-                <div style="text-align:center;"><div style="width:10px;height:20px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">6h</div></div>
-                <div style="text-align:center;"><div style="width:10px;height:45px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">8h</div></div>
-                <div style="text-align:center;"><div style="width:10px;height:65px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">10h</div></div>
-                <div style="text-align:center;"><div style="width:10px;height:35px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">12h</div></div>
-                <div style="text-align:center;"><div style="width:10px;height:50px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">14h</div></div>
-                <div style="text-align:center;"><div style="width:10px;height:55px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">16h</div></div>
-                <div style="text-align:center;"><div style="width:10px;height:70px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">18h</div></div>
-                <div style="text-align:center;"><div style="width:10px;height:30px;background:#10B981;border-radius:4px;margin:0 auto;"></div><div style="font-size:9px;color:#9CA3AF;margin-top:4px;">20h</div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div>
+                  <div style="font-size:14px;font-weight:800;">24h Movement Curve</div>
+                  <div style="font-size:11px;color:#6B7280;">Live Trading-Style Dynamic Cadence</div>
+                </div>
+                <div style="font-size:10px;font-weight:800;color:#10B981;background:rgba(16,185,129,0.12);padding:4px 8px;border-radius:6px;">
+                  ● LIVE STREAM
+                </div>
+              </div>
+
+              <!-- Trading Chart SVG -->
+              <div style="background:#0F172A;border-radius:14px;padding:12px 8px 6px;border:1px solid rgba(255,255,255,0.08);">
+                <svg viewBox="0 0 320 120" style="width:100%;height:120px;overflow:visible;">
+                  <defs>
+                    <linearGradient id="tradingGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#10B981" stop-opacity="0.45" />
+                      <stop offset="70%" stop-color="#10B981" stop-opacity="0.1" />
+                      <stop offset="100%" stop-color="#10B981" stop-opacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Reference Dotted Lines -->
+                  <line x1="10" y1="20" x2="310" y2="20" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4" />
+                  <line x1="10" y1="60" x2="310" y2="60" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4,4" />
+                  <line x1="10" y1="100" x2="310" y2="100" stroke="rgba(255,255,255,0.15)" />
+
+                  <!-- Gradient Filled Area -->
+                  <path d="M 10 95 C 40 90, 70 82, 100 68 C 130 52, 160 38, 190 42 C 220 46, 250 28, 280 20 L 280 100 L 10 100 Z" fill="url(#tradingGrad)" />
+                  <!-- Smooth Trading Curve Stroke -->
+                  <path d="M 10 95 C 40 90, 70 82, 100 68 C 130 52, 160 38, 190 42 C 220 46, 250 28, 280 20" stroke="#10B981" stroke-width="3" stroke-linecap="round" fill="none" />
+                  <!-- Live Ticker Dot -->
+                  <circle cx="280" cy="20" r="7" fill="#10B981" opacity="0.3" />
+                  <circle cx="280" cy="20" r="4" fill="#10B981" />
+                  <circle cx="280" cy="20" r="1.5" fill="#FFFFFF" />
+                </svg>
+                <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:9px;color:#94A3B8;font-weight:700;">
+                  <span>00:00</span>
+                  <span>06:00</span>
+                  <span>12:00</span>
+                  <span>18:00</span>
+                  <span>24:00</span>
+                </div>
               </div>
             </div>
 

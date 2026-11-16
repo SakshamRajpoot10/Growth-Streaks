@@ -11,24 +11,23 @@ import { getToday } from '../../../utils/date';
 let pedometerSubscription: { remove: () => void } | null = null;
 let onStepUpdateCallback: ((log: FitnessDailyLog) => void) | null = null;
 
-// Baseline and tracking state
-let initialBaselineEstablished = false;
+// Pedometer tracking state
 let lastRawSensorSteps = 0;
 let lastStepTimestamp = 0;
 
-// Walking cadence & sedentary fidget filter
-// Normal human walking: 320ms - 1800ms between steps (~1.2 to 2.5 steps/sec)
-const MIN_STEP_INTERVAL_MS = 320;  // Reject rapid shaking, screen taps, chair vibration
-const MAX_STEP_INTERVAL_MS = 1800; // Pause threshold: if >1.8s between movements, walking has paused
-const MIN_CONSECUTIVE_STEPS = 3;   // Must detect at least 3 rhythmic steps before committing (rejects sitting twitches)
+// Walking cadence bounds
+// Human walking/jogging: 280ms to 2400ms between footsteps (~0.4 to 3.5 steps/sec)
+const MIN_STEP_INTERVAL_MS = 280;   // Rejects engine vibrations, motorcycle chatter, fast shaking
+const MAX_STRIDE_INTERVAL_MS = 2500; // Normal stride pause limit
 
-let bufferedSteps = 0;
-let consecutiveRhythmicCount = 0;
-let isWalkSessionActive = false;
+// Sitting fidget / stationary filter state
+let candidateBuffer = 0;
+let candidateTimestamp = 0;
+let bufferResetTimeout: NodeJS.Timeout | null = null;
 
 /**
- * Initializes and starts precision step tracking using Android's hardware pedometer
- * with cadence verification and sedentary/chair fidget rejection.
+ * Initializes and starts offline real-time step tracking using Android's hardware pedometer
+ * with intelligent gait cadence verification and vehicle/bike vibration rejection.
  */
 export async function startStepTracker(
   onUpdate?: (log: FitnessDailyLog) => void
@@ -47,8 +46,8 @@ export async function startStepTracker(
       return false;
     }
 
-    const perm = await Pedometer.requestPermissionsAsync().catch(() => ({ status: 'denied' }));
-    if (perm.status !== 'granted') {
+    const perm = await Pedometer.requestPermissionsAsync().catch(() => ({ status: 'denied', granted: false }));
+    if (!perm.granted && perm.status !== 'granted') {
       return false;
     }
 
@@ -60,16 +59,13 @@ export async function startStepTracker(
     }
 
     // Reset session states
-    initialBaselineEstablished = false;
     lastRawSensorSteps = 0;
     lastStepTimestamp = 0;
-    bufferedSteps = 0;
-    consecutiveRhythmicCount = 0;
-    isWalkSessionActive = false;
+    candidateBuffer = 0;
 
     pedometerSubscription = Pedometer.watchStepCount((result) => {
       try {
-        processRawSensorEvent(result.steps);
+        processSensorStepResult(result.steps);
       } catch {}
     });
 
@@ -80,65 +76,70 @@ export async function startStepTracker(
 }
 
 /**
- * High-accuracy gait processor:
- * Filters out sitting fidgets, shaking, typing, and normalizes step counts to true footfalls.
+ * Gait cadence & vehicle rejection processor:
+ * - Rejects high-frequency bike/motorcycle vibrations (<280ms)
+ * - Rejects single-twitch sitting fidgets (requires 2 consecutive rhythmic strides before committing)
+ * - Accurately records walking and jogging footfalls in real time
  */
-function processRawSensorEvent(currentRawSteps: number): void {
+function processSensorStepResult(rawSteps: number): void {
+  const currentStepNum = Math.round(rawSteps);
   const now = Date.now();
 
-  // 1. Establish initial baseline: do NOT count device boot or accumulated steps as new steps
-  if (!initialBaselineEstablished) {
-    initialBaselineEstablished = true;
-    lastRawSensorSteps = currentRawSteps;
+  // First event: Establish initial sensor baseline
+  if (lastRawSensorSteps === 0) {
+    lastRawSensorSteps = currentStepNum;
     lastStepTimestamp = now;
+    // Android PedometerModule starts at 1 for the first detected step
+    recordStepsDelta(1);
     return;
   }
 
-  const rawDelta = currentRawSteps - lastRawSensorSteps;
+  const rawDelta = currentStepNum - lastRawSensorSteps;
   if (rawDelta <= 0) {
     return;
   }
 
-  // Update last seen raw step count
-  lastRawSensorSteps = currentRawSteps;
-
+  lastRawSensorSteps = currentStepNum;
   const elapsed = now - lastStepTimestamp;
 
-  // 2. High-Frequency Noise Filter:
-  // If an event comes faster than 320ms, it's screen typing, phone vibration, or jitter. Reject.
+  // 1. Bike / Motorcycle Engine Vibration Filter:
+  // Engine vibrations and road bumps generate rapid pulses faster than human stride (< 280ms)
   if (elapsed < MIN_STEP_INTERVAL_MS && lastStepTimestamp > 0) {
+    // High-frequency vibration (bike/vehicle/screen tap jitter) -> REJECT
     return;
   }
 
-  // 3. Cadence and Walking Rhythm Analysis:
-  if (elapsed <= MAX_STEP_INTERVAL_MS && lastStepTimestamp > 0) {
-    // Within walking cadence (0.32s - 1.8s) -> rhythmic step detected
-    consecutiveRhythmicCount += 1;
+  // Normalize step delta to human biomechanics (1-2 steps per footfall event, never 9)
+  const safeDelta = Math.min(rawDelta, Math.max(1, Math.round(elapsed / 450)));
 
-    // Normal human walking is 1 step per cadence event.
-    // Cap any sudden sensor spikes to prevent 1 step becoming 9 steps.
-    const stepsToAdd = Math.min(rawDelta, Math.max(1, Math.round(elapsed / 450)));
+  // 2. Sitting in Chair / Stationary Fidget Filter:
+  if (elapsed > MAX_STRIDE_INTERVAL_MS || lastStepTimestamp === 0) {
+    // Gap was large: Person was sitting, standing still, or stationary
+    // Buffer candidate step. If user takes another step within 2.5s, walking is confirmed!
+    candidateBuffer = safeDelta;
+    candidateTimestamp = now;
 
-    if (!isWalkSessionActive) {
-      bufferedSteps += stepsToAdd;
-
-      // Only activate walking session and commit if user takes >= MIN_CONSECUTIVE_STEPS
-      if (consecutiveRhythmicCount >= MIN_CONSECUTIVE_STEPS) {
-        isWalkSessionActive = true;
-        const totalToCommit = bufferedSteps;
-        bufferedSteps = 0;
-        recordStepsDelta(totalToCommit);
-      }
-    } else {
-      // Walk session already active -> record real step directly
-      recordStepsDelta(stepsToAdd);
-    }
+    if (bufferResetTimeout) clearTimeout(bufferResetTimeout);
+    bufferResetTimeout = setTimeout(() => {
+      // No follow-up step occurred within 3s -> It was an isolated sitting twitch! Discard.
+      candidateBuffer = 0;
+    }, 3000);
   } else {
-    // Gap was longer than 1.8s -> User stopped walking, stood still, or is sitting in chair
-    // Reset buffer (discards isolated fidgets / 1-2 twitches while seated)
-    consecutiveRhythmicCount = 1;
-    bufferedSteps = 1;
-    isWalkSessionActive = false;
+    // Within normal walking cadence (280ms - 2500ms):
+    if (bufferResetTimeout) {
+      clearTimeout(bufferResetTimeout);
+      bufferResetTimeout = null;
+    }
+
+    if (candidateBuffer > 0) {
+      // Walking confirmed! Commit the buffered initial step plus current step
+      const stepsToCommit = candidateBuffer + safeDelta;
+      candidateBuffer = 0;
+      recordStepsDelta(stepsToCommit);
+    } else {
+      // Already in active walking session -> record step immediately
+      recordStepsDelta(safeDelta);
+    }
   }
 
   lastStepTimestamp = now;
@@ -151,39 +152,40 @@ export function stopStepTracker(): void {
     } catch {}
     pedometerSubscription = null;
   }
+  if (bufferResetTimeout) {
+    clearTimeout(bufferResetTimeout);
+    bufferResetTimeout = null;
+  }
 }
 
 /**
  * Records newly detected steps into the current day's SQLite database
+ * Automatically handles midnight rollover (creating a fresh 0-step record for the new day)
  */
 export function recordStepsDelta(deltaSteps: number): FitnessDailyLog {
-  if (deltaSteps <= 0) {
-    const db = openDatabase();
-    return getTodayFitnessLog(db, getToday());
-  }
-
   const db = openDatabase();
   const today = getToday();
   const currentLog = getTodayFitnessLog(db, today);
 
-  const updatedSteps = currentLog.steps + deltaSteps;
+  const updatedSteps = currentLog.steps + Math.max(1, deltaSteps);
 
-  // Stride calculations: Average stride length ~0.762m
+  // Stride calculation: Average human stride ~0.762m
   const updatedDistance = parseFloat((updatedSteps * 0.000762).toFixed(2));
 
   // Metabolic calculations: ~0.04 kcal per step
   const updatedCalories = parseFloat((updatedSteps * 0.04).toFixed(1));
 
-  // Move minutes: ~100 steps per minute of active walking
+  // Active minutes: ~100 steps per active walking minute
   const updatedMinutes = Math.floor(updatedSteps / 100);
 
-  // Hourly distribution bucket
+  // Live hourly distribution bucket for today's trading chart
   const currentHour = String(new Date().getHours());
   const hourly = { ...(currentLog.hourlyDistribution || {}) };
   hourly[currentHour] = (hourly[currentHour] || 0) + deltaSteps;
 
   const updatedLog: FitnessDailyLog = {
     ...currentLog,
+    date: today,
     steps: updatedSteps,
     distanceKm: updatedDistance,
     calories: updatedCalories,
@@ -201,7 +203,7 @@ export function recordStepsDelta(deltaSteps: number): FitnessDailyLog {
 }
 
 /**
- * Manually add or test steps (ideal for calibration)
+ * Manually add or test steps (for calibration)
  */
 export function addManualSteps(steps: number): FitnessDailyLog {
   return recordStepsDelta(steps);

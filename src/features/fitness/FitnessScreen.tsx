@@ -17,6 +17,7 @@ import { FitnessGoalType } from '../../db/queries/fitness';
 import { openDatabase } from '../../db/client';
 import { getFitnessLogsRange, FitnessDailyLog } from '../../db/queries/fitness';
 import { getToday, getWeekRange } from '../../utils/date';
+import { TradingLineGraph } from './components/TradingLineGraph';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -161,94 +162,37 @@ export const FitnessScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* TAB 1: DAY HOURLY GRAPH */}
+        {/* TAB 1: DAY TRADING-STYLE LINE GRAPH */}
         {activeTab === 'day' && (
           <Card style={styles.graphCard}>
-            <Text style={[styles.graphTitle, { color: colors.text }]}>Today's Hourly Distribution</Text>
-            <Text style={[styles.graphSubtitle, { color: colors.textSecondary }]}>
-              Steps recorded hour by hour
-            </Text>
-
-            {/* Hourly Bars */}
-            <View style={styles.barsContainer}>
-              {displayHours.map((hr) => {
-                const stepCount = hourly[String(hr)] || (hr === currentHour ? Math.max(200, Math.floor(log.steps * 0.3)) : 0);
-                const maxSteps = 1000;
-                const heightPct = Math.min(100, Math.max(12, Math.round((stepCount / maxSteps) * 100)));
-
-                return (
-                  <View key={hr} style={styles.barColumn}>
-                    <Text style={[styles.barValueText, { color: colors.textSecondary }]}>
-                      {stepCount > 0 ? stepCount : ''}
-                    </Text>
-                    <View style={[styles.barTrack, { backgroundColor: colors.surfaceVariant }]}>
-                      <View
-                        style={[
-                          styles.barFill,
-                          {
-                            height: `${heightPct}%`,
-                            backgroundColor: stepCount > 0 ? '#10B981' : 'transparent',
-                          },
-                        ]}
-                      />
-                    </View>
-                    <Text style={[styles.barHourText, { color: colors.textSecondary }]}>
-                      {hr}:00
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
+            <TradingLineGraph
+              hourlyDistribution={hourly}
+              totalSteps={log.steps}
+              mode="day"
+            />
           </Card>
         )}
 
-        {/* TAB 2: WEEK GRAPH */}
+        {/* TAB 2: WEEK TRADING-STYLE LINE GRAPH */}
         {activeTab === 'week' && (
           <Card style={styles.graphCard}>
-            <Text style={[styles.graphTitle, { color: colors.text }]}>Weekly Movement</Text>
-            <Text style={[styles.graphSubtitle, { color: colors.textSecondary }]}>
-              Daily cadence & distance this week
-            </Text>
-
-            <View style={styles.barsContainer}>
-              {weekdays.map((dayName, idx) => {
-                const dayLog = weekLogs[idx];
-                const daySteps = dayLog ? dayLog.steps : (idx === 5 ? log.steps : 0);
-                const heightPct = Math.min(100, Math.max(10, Math.round((daySteps / 8000) * 100)));
-
-                return (
-                  <View key={dayName} style={styles.barColumn}>
-                    <Text style={[styles.barValueText, { color: colors.textSecondary }]}>
-                      {daySteps > 0 ? `${(daySteps / 1000).toFixed(1)}k` : ''}
-                    </Text>
-                    <View style={[styles.barTrack, { backgroundColor: colors.surfaceVariant }]}>
-                      <View
-                        style={[
-                          styles.barFill,
-                          {
-                            height: `${heightPct}%`,
-                            backgroundColor: daySteps >= 3000 ? '#10B981' : '#EA580C',
-                          },
-                        ]}
-                      />
-                    </View>
-                    <Text style={[styles.barHourText, { color: colors.textSecondary }]}>
-                      {dayName}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
+            <TradingLineGraph
+              hourlyDistribution={{}}
+              totalSteps={log.steps}
+              mode="week"
+              weekData={weekdays.map((_, idx) => weekLogs[idx]?.steps || (idx === (new Date().getDay() || 7) - 1 ? log.steps : 0))}
+            />
           </Card>
         )}
 
-        {/* TAB 3: MONTH VIEW */}
+        {/* TAB 3: MONTH TRADING-STYLE LINE GRAPH */}
         {activeTab === 'month' && (
           <Card style={styles.graphCard}>
-            <Text style={[styles.graphTitle, { color: colors.text }]}>Monthly Consistency</Text>
-            <Text style={[styles.graphSubtitle, { color: colors.textSecondary }]}>
-              Target achievement rate for this month
-            </Text>
+            <TradingLineGraph
+              hourlyDistribution={{}}
+              totalSteps={log.steps}
+              mode="month"
+            />
             <View style={styles.monthStatsRow}>
               <View style={styles.monthStatBox}>
                 <Text style={[styles.monthStatVal, { color: '#10B981' }]}>
