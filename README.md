@@ -23,10 +23,10 @@
 
 Download the latest standalone universal Android `.apk` directly (no developer tools or Expo Go required):
 
-[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak%20v2.0.apk%20(143%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/eKhMxFBCy3INoji821_riPMs6kAGHmCPbV0XEd1MjGE.apk)
+[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak%20v2.0.apk%20(143%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/ntfyEVoCEJG6spzs0EScnY1Ul8sPhOYU2jXq2Aya-BY.apk)
 
-* **Direct Cloud APK Download:** [Download Growth Streak v2.0.apk](https://expo.dev/artifacts/eas/eKhMxFBCy3INoji821_riPMs6kAGHmCPbV0XEd1MjGE.apk)
-* **EAS Cloud Build Dashboard:** [Build `c3d904c7`](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds/c3d904c7-c36b-4cc6-b694-359001eb2885)
+* **Direct Cloud APK Download:** [Download Growth Streak v2.0.apk](https://expo.dev/artifacts/eas/ntfyEVoCEJG6spzs0EScnY1Ul8sPhOYU2jXq2Aya-BY.apk)
+* **EAS Cloud Build Dashboard:** [Build `15c5d2ac`](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds/15c5d2ac-c336-4477-abdb-b006642daf46)
 * **Local Workspace File:** `Growth Streak.apk` (143 MB)
 
 ---

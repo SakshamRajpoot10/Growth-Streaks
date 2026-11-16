@@ -23,8 +23,8 @@
 ### 📦 Key Deliverables
 * **Standalone Release APK:** `Growth Streak.apk` (143 MB)
 * **Local Workspace Binary:** [Growth Streak.apk](file:///d:/PROJECTS/Growth%20Streaks/Growth%20Streak.apk)
-* **Cloud Direct Download (EAS CDN):** [Download Growth Streak.apk](https://expo.dev/artifacts/eas/eKhMxFBCy3INoji821_riPMs6kAGHmCPbV0XEd1MjGE.apk)
-* **EAS Cloud Build Dashboard:** [Build `c3d904c7`](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds/c3d904c7-c36b-4cc6-b694-359001eb2885)
+* **Cloud Direct Download (EAS CDN):** [Download Growth Streak.apk](https://expo.dev/artifacts/eas/ntfyEVoCEJG6spzs0EScnY1Ul8sPhOYU2jXq2Aya-BY.apk)
+* **EAS Cloud Build Dashboard:** [Build `15c5d2ac`](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds/15c5d2ac-c336-4477-abdb-b006642daf46)
 * **Interactive Live Display Tester:** [growth-streaks-tester.html](file:///d:/PROJECTS/Growth%20Streaks/growth-streaks-tester.html)
 * **High-Resolution App Screenshots:** [docs/screenshots/](file:///d:/PROJECTS/Growth%20Streaks/growth-streaks/docs/screenshots/)
 * **Official Branding:** Custom `GS` Clock & Growth Arrow logo across Android launcher icons (`adaptive-icon.png`), splash screen, and GitHub documentation.
