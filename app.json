@@ -21,6 +21,7 @@
         "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_HEALTH",
         "android.permission.ACTIVITY_RECOGNITION",
         "android.permission.CAMERA",
         "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
@@ -50,7 +51,8 @@
         }
       ],
       "expo-sqlite",
-      "./plugins/withAlarmLockScreen"
+      "./plugins/withAlarmLockScreen",
+      "./plugins/withAlarmSounds"
     ],
     "experiments": {
       "typedRoutes": true

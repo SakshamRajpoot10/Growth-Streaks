@@ -1,5 +1,6 @@
 import { Pedometer } from 'expo-sensors';
 import { Platform } from 'react-native';
+import notifee, { AndroidImportance } from 'react-native-notify-kit';
 import { openDatabase } from '../../../db/client';
 import {
   getTodayFitnessLog,
@@ -10,6 +11,54 @@ import { getToday } from '../../../utils/date';
 
 let pedometerSubscription: { remove: () => void } | null = null;
 let onStepUpdateCallback: ((log: FitnessDailyLog) => void) | null = null;
+let isForegroundServiceRunning = false;
+
+export const PEDOMETER_SERVICE_CHANNEL_ID = 'standup_pedometer_service';
+
+/**
+ * Ensures the low-importance, silent channel for 24/7 background tracking exists
+ */
+async function initializePedometerChannel(): Promise<string> {
+  try {
+    return await notifee.createChannel({
+      id: PEDOMETER_SERVICE_CHANNEL_ID,
+      name: 'StandUp 24/7 Step Tracker',
+      importance: AndroidImportance.LOW,
+      vibration: false,
+      lights: false,
+    });
+  } catch {
+    return PEDOMETER_SERVICE_CHANNEL_ID;
+  }
+}
+
+/**
+ * Updates or launches the persistent Android Foreground Service notification
+ * ensuring Android never suspends the pedometer sensor when app is closed.
+ */
+export async function syncPedometerForegroundNotification(steps: number): Promise<void> {
+  if (Platform.OS !== 'android') return;
+  try {
+    const channelId = await initializePedometerChannel();
+    await notifee.displayNotification({
+      id: 'standup_step_tracker_foreground',
+      title: 'StandUp Fitness Active',
+      body: `🚶 ${steps.toLocaleString()} steps tracked today • 24/7 Active`,
+      android: {
+        channelId,
+        asForegroundService: true,
+        ongoing: true,
+        autoCancel: false,
+        pressAction: {
+          id: 'default',
+        },
+      },
+    });
+    isForegroundServiceRunning = true;
+  } catch {
+    // Handled safely
+  }
+}
 
 // Pedometer tracking state
 let lastRawSensorSteps = 0;
@@ -68,6 +117,13 @@ export async function startStepTracker(
         processSensorStepResult(result.steps);
       } catch {}
     });
+
+    // Start 24/7 foreground service notification
+    try {
+      const db = openDatabase();
+      const currentLog = getTodayFitnessLog(db, getToday());
+      syncPedometerForegroundNotification(currentLog.steps).catch(() => {});
+    } catch {}
 
     return true;
   } catch (error) {
@@ -194,6 +250,8 @@ export function recordStepsDelta(deltaSteps: number): FitnessDailyLog {
   };
 
   upsertFitnessLog(db, updatedLog);
+
+  syncPedometerForegroundNotification(updatedSteps).catch(() => {});
 
   if (onStepUpdateCallback) {
     onStepUpdateCallback(updatedLog);

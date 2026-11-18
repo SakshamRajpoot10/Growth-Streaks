@@ -7,22 +7,23 @@ import { calculateTriggerTimes } from '../../../utils/alarm-time';
 import { Task } from '../../../types/task';
 import { getToday } from '../../../utils/date';
 
-export const ALARM_CHANNEL_ID = 'growth_streaks_accountability';
+export const ALARM_CHANNEL_ID = 'standup_accountability_alarms';
 
 /**
- * Initializes the high-importance notification channel required for
- * Android full-screen alarms and custom ringtone playback.
+ * Initializes the high-importance notification channel with native res/raw audio
+ * required for Android full-screen alarms and STREAM_ALARM playback even when closed.
  */
-export async function initializeAlarmChannel(): Promise<string> {
+export async function initializeAlarmChannel(soundId: string = 'gentle_chime'): Promise<string> {
+  const channelId = `standup_alarm_${soundId}`;
   try {
     return await notifee.createChannel({
-      id: ALARM_CHANNEL_ID,
-      name: 'StandUp Accountability Alarms',
+      id: channelId,
+      name: `StandUp Alarm (${soundId})`,
       importance: AndroidImportance.HIGH,
       vibration: true,
       vibrationPattern: [0, 800, 400, 800],
       lights: true,
-      sound: 'default',
+      sound: soundId, // Plays res/raw/{soundId}.mp3 via STREAM_ALARM
       bypassDnd: true,
     });
   } catch (error) {
@@ -42,7 +43,8 @@ export async function scheduleTask3StrikeSequence(
   date: string = getToday()
 ): Promise<void> {
   try {
-    const channelId = await initializeAlarmChannel();
+    const soundName = task.alarmSound || 'gentle_chime';
+    const channelId = await initializeAlarmChannel(soundName);
     const times = calculateTriggerTimes(date, task.scheduledTime, task.preAlarmMinutes);
     const now = Date.now();
 
@@ -88,13 +90,14 @@ export async function scheduleTask3StrikeSequence(
                 channelId,
                 importance: AndroidImportance.HIGH,
                 category: AndroidCategory.ALARM,
+                sound: soundName,
+                loopSound: true,
                 fullScreenAction: {
                   id: 'default',
                   launchActivity: 'default',
                 },
                 autoCancel: false,
                 ongoing: true,
-                loopSound: true,
                 pressAction: {
                   id: 'default',
                   launchActivity: 'default',

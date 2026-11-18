@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
+import notifee from 'react-native-notify-kit';
 import { openDatabase } from '../src/db/client';
 import { seedDefaults } from '../src/db/seed';
 import { registerBackgroundAlarmHandler } from '../src/features/alarm/services/alarm-handler';
@@ -9,11 +10,23 @@ import { useAlarmWatcher } from '../src/features/alarm/hooks/useAlarmWatcher';
 import { IncomingAlarmModal } from '../src/features/alarm/components/IncomingAlarmModal';
 import { useFitnessStore } from '../src/store/useFitnessStore';
 
-// Safely register background handler with try/catch to guarantee zero startup crash
+// Safely register background handler and 24/7 foreground runner to guarantee zero startup crash
 try {
   registerBackgroundAlarmHandler();
 } catch {
   // Guarded against cold-start lifecycle race conditions
+}
+
+try {
+  if (notifee && typeof notifee.registerForegroundService === 'function') {
+    notifee.registerForegroundService(() => {
+      return new Promise(() => {
+        // Keeps the 24/7 pedometer and exact alarm runner active in the background
+      });
+    });
+  }
+} catch {
+  // Handled safely
 }
 
 export default function RootLayout() {

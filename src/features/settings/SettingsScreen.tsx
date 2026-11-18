@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView, Vibration, Platform } from 'react-native';
+import { View, Text, StyleSheet, Switch, ScrollView, Vibration, Platform, TouchableOpacity } from 'react-native';
+import notifee from 'react-native-notify-kit';
 import { ScreenWrapper } from '../../components/common/ScreenWrapper';
 import { Card } from '../../components/ui/Card';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -72,6 +73,28 @@ export const SettingsScreen: React.FC = () => {
               <Text style={[styles.itemSubtitle, { color: colors.textSecondary, maxWidth: '100%', marginTop: 4 }]}>
                 On Realme, Oppo, Samsung, and Xiaomi phones, please ensure StandUp is set to "Don't Optimize / Unrestricted" in Android Battery Settings so alarms ring on time when your screen is locked.
               </Text>
+              <View style={styles.btnRow}>
+                <TouchableOpacity
+                  style={[styles.actionBtn, { backgroundColor: colors.primaryLight }]}
+                  onPress={() => {
+                    if (Platform.OS === 'android') {
+                      notifee.openBatteryOptimizationSettings().catch(() => {});
+                    }
+                  }}
+                >
+                  <Text style={[styles.actionBtnText, { color: colors.primary }]}>🔋 Battery Settings</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.actionBtn, { backgroundColor: isDark ? '#1E293B' : '#E2E8F0' }]}
+                  onPress={() => {
+                    if (Platform.OS === 'android') {
+                      notifee.openAlarmPermissionSettings().catch(() => {});
+                    }
+                  }}
+                >
+                  <Text style={[styles.actionBtnText, { color: colors.text }]}>⏰ Alarm Settings</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Card>
@@ -165,6 +188,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     paddingVertical: 4,
+  },
+  btnRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+    flexWrap: 'wrap',
+  },
+  actionBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
   permissionItem: {
     paddingVertical: 10,
