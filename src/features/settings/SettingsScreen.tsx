@@ -62,30 +62,71 @@ export const SettingsScreen: React.FC = () => {
           </View>
         </Card>
 
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Alarm & Battery Reliability</Text>
+
+        <Card style={styles.card}>
+          <View style={styles.reliabilityRow}>
+            <Text style={{ fontSize: 20 }}>⚡</Text>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text style={[styles.itemTitle, { color: colors.text }]}>Keep Alarms Accurate (OEM Devices)</Text>
+              <Text style={[styles.itemSubtitle, { color: colors.textSecondary, maxWidth: '100%', marginTop: 4 }]}>
+                On Realme, Oppo, Samsung, and Xiaomi phones, please ensure StandUp is set to "Don't Optimize / Unrestricted" in Android Battery Settings so alarms ring on time when your screen is locked.
+              </Text>
+            </View>
+          </View>
+        </Card>
+
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Device Permissions Guide</Text>
+
+        <Card style={styles.card}>
+          <View style={styles.permissionItem}>
+            <Text style={[styles.permissionName, { color: colors.text }]}>⏰ Exact Alarms & Wake Lock</Text>
+            <Text style={[styles.permissionDesc, { color: colors.textSecondary }]}>
+              Wakes device up from deep sleep to ring at the exact second you set.
+            </Text>
+          </View>
+          <View style={[styles.permissionItem, { borderTopWidth: 1, borderTopColor: isDark ? '#1F2937' : '#F1F5F9' }]}>
+            <Text style={[styles.permissionName, { color: colors.text }]}>📷 Front Selfie Camera</Text>
+            <Text style={[styles.permissionDesc, { color: colors.textSecondary }]}>
+              Used solely for the 30-second standing posture verification. Images are processed locally in memory and never stored or uploaded.
+            </Text>
+          </View>
+          <View style={[styles.permissionItem, { borderTopWidth: 1, borderTopColor: isDark ? '#1F2937' : '#F1F5F9' }]}>
+            <Text style={[styles.permissionName, { color: colors.text }]}>🚶 Physical Activity & Pedometer</Text>
+            <Text style={[styles.permissionDesc, { color: colors.textSecondary }]}>
+              Connects to hardware step sensor to record daily walking streaks with 0% battery impact.
+            </Text>
+          </View>
+        </Card>
+
         <Text style={[styles.sectionTitle, { color: colors.text }]}>About & Privacy</Text>
 
         <Card style={styles.card}>
           <View style={styles.infoRow}>
-            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Architecture</Text>
-            <Text style={[styles.infoValue, { color: colors.text }]}>100% Offline (SQLite WAL)</Text>
+            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Privacy Model</Text>
+            <Text style={[styles.infoValue, { color: '#10B981' }]}>100% Offline • Zero Telemetry</Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Lock-Screen Alarms</Text>
-            <Text style={[styles.infoValue, { color: colors.text }]}>3-Strike Active Engine</Text>
+            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Database Storage</Text>
+            <Text style={[styles.infoValue, { color: colors.text }]}>Local SQLite WAL Engine</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Alarm Engine</Text>
+            <Text style={[styles.infoValue, { color: colors.text }]}>Android Exact AlarmManager</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Ringtones</Text>
-            <Text style={[styles.infoValue, { color: colors.text }]}>10 Built-In Sounds</Text>
+            <Text style={[styles.infoValue, { color: colors.text }]}>21 Built-In Sounds</Text>
           </View>
           <View style={styles.infoRow}>
-            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>App Version</Text>
-            <Text style={[styles.infoValue, { color: colors.text }]}>1.0.0 (Play Store Edition)</Text>
+            <Text style={[styles.infoTitle, { color: colors.textSecondary }]}>Edition</Text>
+            <Text style={[styles.infoValue, { color: colors.text }]}>StandUp Production v1.0.0</Text>
           </View>
         </Card>
 
         <View style={[styles.privacyNote, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.1)' : '#EFF6FF', borderColor: isDark ? 'rgba(56, 189, 248, 0.22)' : '#BFDBFE' }]}>
           <Text style={[styles.privacyText, { color: isDark ? '#38BDF8' : '#1E40AF' }]}>
-            🔒 StandUp collects zero personal telemetry and works completely without internet access. All streaks, logs, and routines remain local to your device for lifetime privacy.
+            🔒 StandUp collects zero personal telemetry, tracks no user data, and never transmits information across the internet. All streaks, habits, logs, and routines remain permanently on your device for lifetime privacy.
           </Text>
         </View>
 
@@ -119,6 +160,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 2,
     maxWidth: 240,
+  },
+  reliabilityRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 4,
+  },
+  permissionItem: {
+    paddingVertical: 10,
+  },
+  permissionName: {
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  permissionDesc: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   infoRow: {
     flexDirection: 'row',

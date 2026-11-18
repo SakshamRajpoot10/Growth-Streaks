@@ -17,11 +17,13 @@ export async function initializeAlarmChannel(): Promise<string> {
   try {
     return await notifee.createChannel({
       id: ALARM_CHANNEL_ID,
-      name: 'Accountability Alarms',
+      name: 'StandUp Accountability Alarms',
       importance: AndroidImportance.HIGH,
       vibration: true,
+      vibrationPattern: [0, 800, 400, 800],
       lights: true,
       sound: 'default',
+      bypassDnd: true,
     });
   } catch (error) {
     return ALARM_CHANNEL_ID;
@@ -88,26 +90,15 @@ export async function scheduleTask3StrikeSequence(
                 category: AndroidCategory.ALARM,
                 fullScreenAction: {
                   id: 'default',
+                  launchActivity: 'default',
                 },
                 autoCancel: false,
                 ongoing: true,
+                loopSound: true,
                 pressAction: {
                   id: 'default',
+                  launchActivity: 'default',
                 },
-                actions: [
-                  {
-                    title: '✅ YES',
-                    pressAction: {
-                      id: 'action_yes',
-                    },
-                  },
-                  {
-                    title: '❌ NO',
-                    pressAction: {
-                      id: 'action_no',
-                    },
-                  },
-                ],
               },
             },
             {

@@ -64,16 +64,17 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       {/* Weekday column headers */}
       <View style={styles.weekHeaderRow}>
         {weekHeaders.map((hdr, i) => (
-          <Text
-            key={i}
-            style={[
-              styles.weekHeaderText,
-              { color: colors.textSecondary },
-              (i === 5 || i === 6) && { color: isDark ? '#64748B' : '#94A3B8' },
-            ]}
-          >
-            {hdr}
-          </Text>
+          <View key={i} style={styles.weekHeaderCol}>
+            <Text
+              style={[
+                styles.weekHeaderText,
+                { color: colors.textSecondary },
+                (i === 5 || i === 6) && { color: isDark ? '#64748B' : '#94A3B8' },
+              ]}
+            >
+              {hdr}
+            </Text>
+          </View>
         ))}
       </View>
 
@@ -81,7 +82,7 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
       <View style={styles.grid}>
         {/* Empty spacer slots before 1st of month */}
         {Array.from({ length: leadingOffset }).map((_, i) => (
-          <View key={`spacer-${i}`} style={styles.dayCellSpacer} />
+          <View key={`spacer-${i}`} style={styles.dayCellWrapper} />
         ))}
 
         {/* Days 1 to daysInMonth */}
@@ -115,44 +116,44 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
           }
 
           return (
-            <TouchableOpacity
-              key={dStr}
-              activeOpacity={0.7}
-              onPress={() => onSelectDate(dStr)}
-              style={[
-                styles.dayCell,
-                {
-                  backgroundColor: cellBg,
-                  borderColor: cellBorder !== 'transparent' ? cellBorder : isDark ? '#26334D' : '#E2E8F0',
-                  borderWidth: 1,
-                },
-                isSelected && {
-                  borderColor: '#10B981',
-                  borderWidth: 2.5,
-                  transform: [{ scale: 1.06 }],
-                  zIndex: 10,
-                },
-                isToday && !isSelected && {
-                  borderColor: colors.primary,
-                  borderWidth: 1.5,
-                },
-              ]}
-            >
-              <Text
+            <View key={dStr} style={styles.dayCellWrapper}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => onSelectDate(dStr)}
                 style={[
-                  styles.dayNumText,
-                  { color: textColor },
-                  (isSelected || status === 'completed') && { fontWeight: '800' },
+                  styles.dayCell,
+                  {
+                    backgroundColor: cellBg,
+                    borderColor: cellBorder !== 'transparent' ? cellBorder : isDark ? '#26334D' : '#E2E8F0',
+                    borderWidth: 1,
+                  },
+                  isSelected && {
+                    borderColor: '#10B981',
+                    borderWidth: 2,
+                    zIndex: 10,
+                  },
+                  isToday && !isSelected && {
+                    borderColor: colors.primary,
+                    borderWidth: 1.5,
+                  },
                 ]}
               >
-                {dayNum}
-              </Text>
+                <Text
+                  style={[
+                    styles.dayNumText,
+                    { color: textColor },
+                    (isSelected || status === 'completed') && { fontWeight: '800' },
+                  ]}
+                >
+                  {dayNum}
+                </Text>
 
-              {/* Status Mark Dot */}
-              {indicatorColor !== 'transparent' && (
-                <View style={[styles.statusDot, { backgroundColor: indicatorColor }]} />
-              )}
-            </TouchableOpacity>
+                {/* Status Mark Dot */}
+                {indicatorColor !== 'transparent' && (
+                  <View style={[styles.statusDot, { backgroundColor: indicatorColor }]} />
+                )}
+              </TouchableOpacity>
+            </View>
           );
         })}
       </View>
@@ -179,56 +180,62 @@ export const HeatmapGrid: React.FC<HeatmapGridProps> = ({
 const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
-    padding: 16,
+    padding: 14,
     marginVertical: 10,
     borderWidth: 1,
   },
   weekHeaderRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    paddingHorizontal: 2,
+    marginBottom: 8,
+    width: '100%',
+  },
+  weekHeaderCol: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   weekHeaderText: {
-    width: 40,
-    textAlign: 'center',
     fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-start',
+    width: '100%',
   },
-  dayCellSpacer: {
-    width: '14.28%',
-    height: 46,
+  dayCellWrapper: {
+    width: '14.285%',
+    aspectRatio: 1,
+    padding: 2.5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dayCell: {
-    width: '13.28%',
-    height: 44,
-    margin: '0.5%',
-    borderRadius: 12,
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
   },
   dayNumText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
+    textAlign: 'center',
   },
   statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
     position: 'absolute',
-    bottom: 5,
+    bottom: 4,
   },
   legend: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 16,
+    marginTop: 14,
     paddingTop: 12,
     borderTopWidth: 1,
   },

@@ -70,19 +70,20 @@ export function useAlarmWatcher() {
     return () => clearInterval(interval);
   }, [checkActiveAlarms]);
 
-  // Listen to notifee foreground events
+  // Listen to notifee foreground events and check for launch from full-screen notification
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;
     try {
-      if (notifee && typeof notifee.onForegroundEvent === 'function') {
-        unsubscribe = notifee.onForegroundEvent(({ type, detail }: Event) => {
-          const taskId = detail?.notification?.data?.taskId;
-          if (taskId && (type === EventType.DELIVERED || type === EventType.PRESS)) {
+      if (notifee) {
+        // Check if app was opened by an alarm notification or full-screen intent
+        notifee.getInitialNotification().then((initial) => {
+          const taskId = initial?.notification?.data?.taskId;
+          if (taskId) {
             try {
               const db = openDatabase();
               const row = db.getFirstSync('SELECT * FROM tasks WHERE id = ?', [String(taskId)]) as any;
               if (row) {
-                const strike = parseInt(String(detail.notification?.data?.strike || '1'), 10);
+                const strike = parseInt(String(initial.notification?.data?.strike || '1'), 10);
                 setActiveAlarmTask({
                   id: row.id,
                   activityName: row.activity_name,
@@ -99,7 +100,35 @@ export function useAlarmWatcher() {
               }
             } catch {}
           }
-        });
+        }).catch(() => {});
+
+        if (typeof notifee.onForegroundEvent === 'function') {
+          unsubscribe = notifee.onForegroundEvent(({ type, detail }: Event) => {
+            const taskId = detail?.notification?.data?.taskId;
+            if (taskId && (type === EventType.DELIVERED || type === EventType.PRESS)) {
+              try {
+                const db = openDatabase();
+                const row = db.getFirstSync('SELECT * FROM tasks WHERE id = ?', [String(taskId)]) as any;
+                if (row) {
+                  const strike = parseInt(String(detail.notification?.data?.strike || '1'), 10);
+                  setActiveAlarmTask({
+                    id: row.id,
+                    activityName: row.activity_name,
+                    focusArea: row.focus_area,
+                    scheduledTime: row.scheduled_time,
+                    daysOfWeek: JSON.parse(row.days_of_week || '[1,2,3,4,5,6,7]'),
+                    alarmSound: row.alarm_sound,
+                    preAlarmMinutes: row.pre_alarm_minutes,
+                    isActive: Boolean(row.is_active),
+                    createdAt: row.created_at,
+                    updatedAt: row.updated_at,
+                  });
+                  setAlarmStrike(strike);
+                }
+              } catch {}
+            }
+          });
+        }
       }
     } catch {}
 

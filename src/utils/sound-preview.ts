@@ -1,9 +1,25 @@
 import { Platform } from 'react-native';
-import { createAudioPlayer, AudioPlayer } from 'expo-audio';
+import { createAudioPlayer, AudioPlayer, setAudioModeAsync } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { SOUND_ASSET_MAP, getSoundById } from '../constants/sounds';
 
 let currentPlayerInstance: AudioPlayer | null = null;
+let isAudioModeConfigured = false;
+
+async function configureAudioForAlarm() {
+  if (isAudioModeConfigured) return;
+  try {
+    await setAudioModeAsync({
+      playsInSilentMode: true,
+      interruptionMode: 'doNotMix',
+      shouldPlayInBackground: true,
+      shouldRouteThroughEarpiece: false,
+    });
+    isAudioModeConfigured = true;
+  } catch {
+    // Audio mode fallback
+  }
+}
 
 /**
  * Stop any currently running sound preview
@@ -22,14 +38,16 @@ export async function stopSoundPreview() {
 
 /**
  * Plays real MP3 audio preview for the chosen sound.
- * Supports looping or one-shot preview with tactile haptic feedback.
+ * Plays in silent mode, interrupts background media, and loops for alarms.
  */
 export async function playSoundPreview(soundId: string, shouldLoop: boolean = false) {
   try {
+    await configureAudioForAlarm();
+
     // Tactile haptic feedback
     if (Platform.OS !== 'web') {
       try {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       } catch {
         // Haptics safety
       }
@@ -43,6 +61,7 @@ export async function playSoundPreview(soundId: string, shouldLoop: boolean = fa
     currentPlayerInstance = createAudioPlayer(asset);
     if (currentPlayerInstance) {
       currentPlayerInstance.loop = shouldLoop;
+      currentPlayerInstance.volume = 1.0;
       currentPlayerInstance.play();
     }
   } catch (error) {
