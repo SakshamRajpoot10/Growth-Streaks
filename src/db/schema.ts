@@ -6,6 +6,7 @@ export const tasks = sqliteTable('tasks', {
   id: text('id').primaryKey(),
   activityName: text('activity_name').notNull(),
   focusArea: text('focus_area').notNull().default('General'),
+  verificationType: text('verification_type').notNull().default('STANDARD'),
   scheduledTime: text('scheduled_time').notNull(), // "HH:MM"
   daysOfWeek: text('days_of_week').notNull().default('[1,2,3,4,5,6,7]'),
   alarmSound: text('alarm_sound').notNull().default('default_alarm'),

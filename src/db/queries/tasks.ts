@@ -1,5 +1,5 @@
 import type * as SQLite from 'expo-sqlite';
-import { Task } from '../../types/task';
+import { Task, VerificationType } from '../../types/task';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -7,6 +7,7 @@ export interface CreateTaskInput {
   id: string;
   activityName: string;
   focusArea?: string;
+  verificationType?: VerificationType;
   scheduledTime: string;
   daysOfWeek?: number[];
   alarmSound?: string;
@@ -17,6 +18,7 @@ export interface CreateTaskInput {
 export interface UpdateTaskInput {
   activityName?: string;
   focusArea?: string;
+  verificationType?: VerificationType;
   scheduledTime?: string;
   daysOfWeek?: number[];
   alarmSound?: string;
@@ -38,6 +40,7 @@ function rowToTask(row: Record<string, unknown>): Task {
     id: row.id as string,
     activityName: row.activity_name as string,
     focusArea: row.focus_area as string,
+    verificationType: (row.verification_type as VerificationType) || 'STANDARD',
     scheduledTime: row.scheduled_time as string,
     daysOfWeek: days,
     alarmSound: row.alarm_sound as string,
@@ -104,6 +107,7 @@ export function createTask(
        id,
        activity_name,
        focus_area,
+       verification_type,
        scheduled_time,
        days_of_week,
        alarm_sound,
@@ -111,11 +115,12 @@ export function createTask(
        is_active,
        created_at,
        updated_at
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       input.id,
       input.activityName,
       input.focusArea ?? 'General',
+      input.verificationType ?? 'STANDARD',
       input.scheduledTime,
       daysStr,
       input.alarmSound ?? 'default_alarm',
@@ -145,6 +150,10 @@ export function updateTask(
   if (updates.focusArea !== undefined) {
     setClauses.push('focus_area = ?');
     values.push(updates.focusArea);
+  }
+  if (updates.verificationType !== undefined) {
+    setClauses.push('verification_type = ?');
+    values.push(updates.verificationType);
   }
   if (updates.scheduledTime !== undefined) {
     setClauses.push('scheduled_time = ?');

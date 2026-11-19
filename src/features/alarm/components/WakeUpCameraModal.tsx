@@ -13,6 +13,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Accelerometer } from 'expo-sensors';
 import { playSoundPreview, stopSoundPreview } from '../../../utils/sound-preview';
 import { useSettingsStore } from '../../../store/useSettingsStore';
+import { NativeBridge } from '../../../services/native-bridge';
 
 interface WakeUpCameraModalProps {
   visible: boolean;
@@ -148,7 +149,7 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
     }
   }, [isStandingDetected, isReAlarmRinging]);
 
-  // 30-Second Countdown: Only counts down when standing straight
+  // 60-Second Countdown: Only counts down when standing straight
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
 
@@ -156,8 +157,9 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
       timer = setInterval(() => {
         setSecondsRemaining((prev) => {
           if (prev <= 1) {
-            // 30 seconds verified! Stop everything, celebrate
+            // 60 seconds verified! Stop everything, celebrate
             stopSoundPreview();
+            NativeBridge.stopAlarm().catch(() => {});
             try {
               Vibration.cancel();
             } catch {}
@@ -230,6 +232,7 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
                   <TouchableOpacity
                     onPress={() => {
                       stopSoundPreview();
+                      NativeBridge.stopAlarm().catch(() => {});
                       try {
                         Vibration.cancel();
                       } catch {}
@@ -252,6 +255,7 @@ export const WakeUpCameraModal: React.FC<WakeUpCameraModalProps> = ({
               <TouchableOpacity
                 onPress={() => {
                   stopSoundPreview();
+                  NativeBridge.stopAlarm().catch(() => {});
                   if (onCancelOrAbandon) onCancelOrAbandon();
                 }}
                 style={{ marginTop: 16 }}

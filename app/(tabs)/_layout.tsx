@@ -55,6 +55,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="fitness"
         options={{
+          headerShown: false,
           title: 'Fitness & Activity',
           tabBarLabel: 'Fit',
           tabBarIcon: () => <Text style={{ fontSize: 20 }}>🏃</Text>,

@@ -47,7 +47,27 @@ export function useAlarmWatcher() {
         const trigger1Ms = scheduledMs - preAlarmMinutes * 60 * 1000;
         const autoFailMs = scheduledMs + 5 * 60 * 1000;
 
-        // If current time is between trigger1 (5 min before) and autoFail (5 min after)
+        // Auto-fail: If current time is past the 5-minute post-alarm window, mark as MISSED immediately!
+        // Prevents stale alarm from ringing when opened late.
+        if (now > autoFailMs) {
+          try {
+            const existingLog = db.getFirstSync(
+              'SELECT id FROM task_logs WHERE task_id = ? AND date = ?',
+              [task.id, today]
+            );
+            if (!existingLog) {
+              db.runSync(
+                `INSERT INTO task_logs (id, task_id, date, status, trigger_count, responded_at, created_at)
+                 VALUES (?, ?, ?, 'missed', 3, NULL, datetime('now'))`,
+                [`missed_${task.id}_${today}`, task.id, today]
+              );
+            }
+          } catch {}
+          dismissedInSession.current.add(task.id);
+          continue;
+        }
+
+        // If current time is within active ringing window:
         if (now >= trigger1Ms && now <= autoFailMs) {
           let strike = 1;
           if (now >= scheduledMs - 2 * 60 * 1000) strike = 2;
@@ -88,6 +108,7 @@ export function useAlarmWatcher() {
                   id: row.id,
                   activityName: row.activity_name,
                   focusArea: row.focus_area,
+                  verificationType: (row.verification_type as any) || 'STANDARD',
                   scheduledTime: row.scheduled_time,
                   daysOfWeek: JSON.parse(row.days_of_week || '[1,2,3,4,5,6,7]'),
                   alarmSound: row.alarm_sound,
@@ -115,6 +136,7 @@ export function useAlarmWatcher() {
                     id: row.id,
                     activityName: row.activity_name,
                     focusArea: row.focus_area,
+                    verificationType: (row.verification_type as any) || 'STANDARD',
                     scheduledTime: row.scheduled_time,
                     daysOfWeek: JSON.parse(row.days_of_week || '[1,2,3,4,5,6,7]'),
                     alarmSound: row.alarm_sound,

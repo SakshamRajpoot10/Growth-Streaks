@@ -2,10 +2,12 @@ import notifee, {
   TriggerType,
   AndroidImportance,
   AndroidCategory,
+  AlarmType,
 } from 'react-native-notify-kit';
 import { calculateTriggerTimes } from '../../../utils/alarm-time';
 import { Task } from '../../../types/task';
 import { getToday } from '../../../utils/date';
+import { NativeBridge } from '../../../services/native-bridge';
 
 export const ALARM_CHANNEL_ID = 'standup_accountability_alarms';
 
@@ -74,6 +76,20 @@ export async function scheduleTask3StrikeSequence(
 
     for (const trig of triggers) {
       if (trig.timestamp > now) {
+        // 1. Android Native AlarmManager (Bypasses Doze, plays MediaPlayer on STREAM_ALARM & wakes lock screen)
+        try {
+          await NativeBridge.scheduleAlarm(
+            trig.id,
+            trig.timestamp,
+            soundName,
+            trig.title,
+            task.id,
+            trig.strike,
+            task.verificationType || 'STANDARD'
+          );
+        } catch {}
+
+        // 2. Notifee Fallback / System Notification
         try {
           await notifee.createTriggerNotification(
             {
@@ -108,7 +124,7 @@ export async function scheduleTask3StrikeSequence(
               type: TriggerType.TIMESTAMP,
               timestamp: trig.timestamp,
               alarmManager: {
-                allowWhileIdle: true,
+                type: AlarmType.SET_ALARM_CLOCK,
               },
             }
           );
@@ -168,8 +184,12 @@ export async function cancelTaskAlarms(taskId: string, date: string): Promise<vo
   for (const id of ids) {
     try {
       await notifee.cancelNotification(id);
+      await NativeBridge.cancelAlarm(id);
     } catch {
       // Ignore if already cancelled or fired
     }
   }
+  try {
+    await NativeBridge.stopAlarm();
+  } catch {}
 }

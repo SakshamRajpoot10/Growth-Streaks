@@ -10,23 +10,14 @@ import { useAlarmWatcher } from '../src/features/alarm/hooks/useAlarmWatcher';
 import { IncomingAlarmModal } from '../src/features/alarm/components/IncomingAlarmModal';
 import { useFitnessStore } from '../src/store/useFitnessStore';
 
-// Safely register background handler and 24/7 foreground runner to guarantee zero startup crash
+import { clearLegacyPedometerNotification } from '../src/features/fitness/services/pedometer-service';
+
+// Safely register background handler to guarantee zero startup crash
 try {
   registerBackgroundAlarmHandler();
+  clearLegacyPedometerNotification().catch(() => {});
 } catch {
   // Guarded against cold-start lifecycle race conditions
-}
-
-try {
-  if (notifee && typeof notifee.registerForegroundService === 'function') {
-    notifee.registerForegroundService(() => {
-      return new Promise(() => {
-        // Keeps the 24/7 pedometer and exact alarm runner active in the background
-      });
-    });
-  }
-} catch {
-  // Handled safely
 }
 
 export default function RootLayout() {

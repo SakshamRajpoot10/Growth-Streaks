@@ -1,6 +1,6 @@
 import { Pedometer } from 'expo-sensors';
 import { Platform } from 'react-native';
-import notifee, { AndroidImportance } from 'react-native-notify-kit';
+import notifee from 'react-native-notify-kit';
 import { openDatabase } from '../../../db/client';
 import {
   getTodayFitnessLog,
@@ -8,75 +8,30 @@ import {
   FitnessDailyLog,
 } from '../../../db/queries/fitness';
 import { getToday } from '../../../utils/date';
+import { NativeBridge } from '../../../services/native-bridge';
 
 let pedometerSubscription: { remove: () => void } | null = null;
+let liveSensorCleanup: (() => void) | null = null;
 let onStepUpdateCallback: ((log: FitnessDailyLog) => void) | null = null;
-let isForegroundServiceRunning = false;
-
-export const PEDOMETER_SERVICE_CHANNEL_ID = 'standup_pedometer_service';
-
-/**
- * Ensures the low-importance, silent channel for 24/7 background tracking exists
- */
-async function initializePedometerChannel(): Promise<string> {
-  try {
-    return await notifee.createChannel({
-      id: PEDOMETER_SERVICE_CHANNEL_ID,
-      name: 'StandUp 24/7 Step Tracker',
-      importance: AndroidImportance.LOW,
-      vibration: false,
-      lights: false,
-    });
-  } catch {
-    return PEDOMETER_SERVICE_CHANNEL_ID;
-  }
-}
+let liveSessionBaseline = 0;
+let lastRecordedTotal = 0;
 
 /**
- * Updates or launches the persistent Android Foreground Service notification
- * ensuring Android never suspends the pedometer sensor when app is closed.
+ * Clean up any legacy persistent pedometer notifications from prior versions
  */
-export async function syncPedometerForegroundNotification(steps: number): Promise<void> {
+export async function clearLegacyPedometerNotification(): Promise<void> {
   if (Platform.OS !== 'android') return;
   try {
-    const channelId = await initializePedometerChannel();
-    await notifee.displayNotification({
-      id: 'standup_step_tracker_foreground',
-      title: 'StandUp Fitness Active',
-      body: `🚶 ${steps.toLocaleString()} steps tracked today • 24/7 Active`,
-      android: {
-        channelId,
-        asForegroundService: true,
-        ongoing: true,
-        autoCancel: false,
-        pressAction: {
-          id: 'default',
-        },
-      },
-    });
-    isForegroundServiceRunning = true;
-  } catch {
-    // Handled safely
-  }
+    await notifee.cancelNotification('standup_step_tracker_foreground');
+    await notifee.stopForegroundService();
+  } catch {}
 }
 
-// Pedometer tracking state
-let lastRawSensorSteps = 0;
-let lastStepTimestamp = 0;
-
-// Walking cadence bounds
-// Human walking/jogging: 280ms to 2400ms between footsteps (~0.4 to 3.5 steps/sec)
-const MIN_STEP_INTERVAL_MS = 280;   // Rejects engine vibrations, motorcycle chatter, fast shaking
-const MAX_STRIDE_INTERVAL_MS = 2500; // Normal stride pause limit
-
-// Sitting fidget / stationary filter state
-let candidateBuffer = 0;
-let candidateTimestamp = 0;
-let bufferResetTimeout: NodeJS.Timeout | null = null;
-
 /**
- * Initializes and starts offline real-time step tracking using Android's hardware pedometer
- * with intelligent gait cadence verification and vehicle/bike vibration rejection.
+ * Initializes and starts background step tracking without any persistent notification.
+ * Primary: Google Recording API on Mobile (play-services-fitness LocalRecordingClient)
+ * Live: Low-power hardware step listener while app is in foreground
+ * Fallback: Expo Sensors Pedometer
  */
 export async function startStepTracker(
   onUpdate?: (log: FitnessDailyLog) => void
@@ -85,10 +40,48 @@ export async function startStepTracker(
     onStepUpdateCallback = onUpdate;
   }
 
+  // Remove any unwanted pedometer notification from shade
+  await clearLegacyPedometerNotification();
+
   if (Platform.OS === 'web') {
     return true;
   }
 
+  // 1. Primary Android Path: Google Recording API (Zero foreground notifications!)
+  if (NativeBridge.isAvailable) {
+    try {
+      // Subscribe to background step collection (accountless, local on-device)
+      await NativeBridge.subscribeRecordingApi();
+
+      // Read current accumulated background steps
+      const recordedSteps = await NativeBridge.readTodayRecordingSteps();
+      const hourlyDistribution = await NativeBridge.readHourlyRecordingSteps();
+
+      if (recordedSteps > 0) {
+        lastRecordedTotal = recordedSteps;
+        recordAbsoluteSteps(recordedSteps, hourlyDistribution);
+      }
+
+      // Start live foreground sensor listener for real-time walking UI ticks
+      await NativeBridge.startLiveSensor();
+
+      if (liveSensorCleanup) {
+        liveSensorCleanup();
+        liveSensorCleanup = null;
+      }
+
+      liveSensorCleanup = NativeBridge.onLiveSensorStepUpdate((liveSessionSteps) => {
+        const liveTotal = lastRecordedTotal + liveSessionSteps;
+        recordAbsoluteSteps(liveTotal);
+      });
+
+      return true;
+    } catch {
+      // Fall through to sensor fallback
+    }
+  }
+
+  // 2. Fallback Path: Expo Sensors Hardware Pedometer
   try {
     const isAvailable = await Pedometer.isAvailableAsync().catch(() => false);
     if (!isAvailable) {
@@ -107,123 +100,83 @@ export async function startStepTracker(
       pedometerSubscription = null;
     }
 
-    // Reset session states
-    lastRawSensorSteps = 0;
-    lastStepTimestamp = 0;
-    candidateBuffer = 0;
+    let initialHardwareCount = -1;
 
     pedometerSubscription = Pedometer.watchStepCount((result) => {
       try {
-        processSensorStepResult(result.steps);
+        const currentCount = Math.round(result.steps);
+        if (initialHardwareCount === -1) {
+          initialHardwareCount = currentCount;
+          return;
+        }
+        const delta = Math.max(0, currentCount - initialHardwareCount);
+        if (delta > 0) {
+          const db = openDatabase();
+          const log = getTodayFitnessLog(db, getToday());
+          recordAbsoluteSteps(log.steps + delta);
+          initialHardwareCount = currentCount;
+        }
       } catch {}
     });
 
-    // Start 24/7 foreground service notification
-    try {
-      const db = openDatabase();
-      const currentLog = getTodayFitnessLog(db, getToday());
-      syncPedometerForegroundNotification(currentLog.steps).catch(() => {});
-    } catch {}
-
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
 
 /**
- * Gait cadence & vehicle rejection processor:
- * - Rejects high-frequency bike/motorcycle vibrations (<280ms)
- * - Rejects single-twitch sitting fidgets (requires 2 consecutive rhythmic strides before committing)
- * - Accurately records walking and jogging footfalls in real time
+ * Refreshes fitness dashboard from the local Recording API source
+ * Called whenever app returns to foreground or on user pull-to-refresh
  */
-function processSensorStepResult(rawSteps: number): void {
-  const currentStepNum = Math.round(rawSteps);
-  const now = Date.now();
+export async function refreshFitnessDashboard(): Promise<FitnessDailyLog> {
+  const db = openDatabase();
+  const today = getToday();
+  const currentLog = getTodayFitnessLog(db, today);
 
-  // First event: Establish initial sensor baseline
-  if (lastRawSensorSteps === 0) {
-    lastRawSensorSteps = currentStepNum;
-    lastStepTimestamp = now;
-    // Android PedometerModule starts at 1 for the first detected step
-    recordStepsDelta(1);
-    return;
+  if (NativeBridge.isAvailable) {
+    try {
+      const recordedSteps = await NativeBridge.readTodayRecordingSteps();
+      const hourlyDistribution = await NativeBridge.readHourlyRecordingSteps();
+
+      if (recordedSteps > currentLog.steps) {
+        lastRecordedTotal = recordedSteps;
+        return recordAbsoluteSteps(recordedSteps, hourlyDistribution);
+      }
+    } catch {}
   }
 
-  const rawDelta = currentStepNum - lastRawSensorSteps;
-  if (rawDelta <= 0) {
-    return;
-  }
-
-  lastRawSensorSteps = currentStepNum;
-  const elapsed = now - lastStepTimestamp;
-
-  // 1. Bike / Motorcycle Engine Vibration Filter:
-  // Engine vibrations and road bumps generate rapid pulses faster than human stride (< 280ms)
-  if (elapsed < MIN_STEP_INTERVAL_MS && lastStepTimestamp > 0) {
-    // High-frequency vibration (bike/vehicle/screen tap jitter) -> REJECT
-    return;
-  }
-
-  // Normalize step delta to human biomechanics (1-2 steps per footfall event, never 9)
-  const safeDelta = Math.min(rawDelta, Math.max(1, Math.round(elapsed / 450)));
-
-  // 2. Sitting in Chair / Stationary Fidget Filter:
-  if (elapsed > MAX_STRIDE_INTERVAL_MS || lastStepTimestamp === 0) {
-    // Gap was large: Person was sitting, standing still, or stationary
-    // Buffer candidate step. If user takes another step within 2.5s, walking is confirmed!
-    candidateBuffer = safeDelta;
-    candidateTimestamp = now;
-
-    if (bufferResetTimeout) clearTimeout(bufferResetTimeout);
-    bufferResetTimeout = setTimeout(() => {
-      // No follow-up step occurred within 3s -> It was an isolated sitting twitch! Discard.
-      candidateBuffer = 0;
-    }, 3000);
-  } else {
-    // Within normal walking cadence (280ms - 2500ms):
-    if (bufferResetTimeout) {
-      clearTimeout(bufferResetTimeout);
-      bufferResetTimeout = null;
-    }
-
-    if (candidateBuffer > 0) {
-      // Walking confirmed! Commit the buffered initial step plus current step
-      const stepsToCommit = candidateBuffer + safeDelta;
-      candidateBuffer = 0;
-      recordStepsDelta(stepsToCommit);
-    } else {
-      // Already in active walking session -> record step immediately
-      recordStepsDelta(safeDelta);
-    }
-  }
-
-  lastStepTimestamp = now;
+  return currentLog;
 }
 
 export function stopStepTracker(): void {
+  if (liveSensorCleanup) {
+    liveSensorCleanup();
+    liveSensorCleanup = null;
+  }
+  if (NativeBridge.isAvailable) {
+    NativeBridge.stopLiveSensor().catch(() => {});
+  }
   if (pedometerSubscription) {
     try {
       pedometerSubscription.remove();
     } catch {}
     pedometerSubscription = null;
   }
-  if (bufferResetTimeout) {
-    clearTimeout(bufferResetTimeout);
-    bufferResetTimeout = null;
-  }
 }
 
 /**
- * Records newly detected steps into the current day's SQLite database
- * Automatically handles midnight rollover (creating a fresh 0-step record for the new day)
+ * Updates SQLite database with real source step count and computed biomechanical metrics
  */
-export function recordStepsDelta(deltaSteps: number): FitnessDailyLog {
+export function recordAbsoluteSteps(
+  totalStepsToday: number,
+  customHourly?: Record<string, number>
+): FitnessDailyLog {
   const db = openDatabase();
   const today = getToday();
   const currentLog = getTodayFitnessLog(db, today);
 
-  const updatedSteps = currentLog.steps + Math.max(1, deltaSteps);
+  const updatedSteps = Math.max(currentLog.steps, totalStepsToday);
 
   // Stride calculation: Average human stride ~0.762m
   const updatedDistance = parseFloat((updatedSteps * 0.000762).toFixed(2));
@@ -234,10 +187,11 @@ export function recordStepsDelta(deltaSteps: number): FitnessDailyLog {
   // Active minutes: ~100 steps per active walking minute
   const updatedMinutes = Math.floor(updatedSteps / 100);
 
-  // Live hourly distribution bucket for today's trading chart
   const currentHour = String(new Date().getHours());
-  const hourly = { ...(currentLog.hourlyDistribution || {}) };
-  hourly[currentHour] = (hourly[currentHour] || 0) + deltaSteps;
+  const hourly = customHourly || { ...(currentLog.hourlyDistribution || {}) };
+  if (!customHourly) {
+    hourly[currentHour] = updatedSteps;
+  }
 
   const updatedLog: FitnessDailyLog = {
     ...currentLog,
@@ -251,8 +205,6 @@ export function recordStepsDelta(deltaSteps: number): FitnessDailyLog {
 
   upsertFitnessLog(db, updatedLog);
 
-  syncPedometerForegroundNotification(updatedSteps).catch(() => {});
-
   if (onStepUpdateCallback) {
     onStepUpdateCallback(updatedLog);
   }
@@ -261,8 +213,11 @@ export function recordStepsDelta(deltaSteps: number): FitnessDailyLog {
 }
 
 /**
- * Manually add or test steps (for calibration)
+ * Manually add steps (for calibration / physical test verification)
  */
-export function addManualSteps(steps: number): FitnessDailyLog {
-  return recordStepsDelta(steps);
+export function addManualSteps(stepsToAdd: number): FitnessDailyLog {
+  const db = openDatabase();
+  const today = getToday();
+  const currentLog = getTodayFitnessLog(db, today);
+  return recordAbsoluteSteps(currentLog.steps + stepsToAdd);
 }

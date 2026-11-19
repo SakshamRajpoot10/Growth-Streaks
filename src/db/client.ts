@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     id                TEXT PRIMARY KEY,
     activity_name     TEXT NOT NULL,
     focus_area        TEXT NOT NULL DEFAULT 'General',
+    verification_type TEXT NOT NULL DEFAULT 'STANDARD',
     scheduled_time    TEXT NOT NULL,
     days_of_week      TEXT NOT NULL DEFAULT '[1,2,3,4,5,6,7]',
     alarm_sound       TEXT NOT NULL DEFAULT 'default_alarm',
@@ -72,6 +73,17 @@ export function openDatabase(): SQLite.SQLiteDatabase {
   db.execSync('PRAGMA journal_mode = WAL;');
   db.execSync('PRAGMA foreign_keys = ON;');
   db.execSync(INITIAL_MIGRATION);
+
+  // Safe migration for verification_type column
+  try {
+    db.execSync("ALTER TABLE tasks ADD COLUMN verification_type TEXT NOT NULL DEFAULT 'STANDARD';");
+  } catch {}
+
+  // Safe migration: Map Wake Up category exclusively to WAKE_UP_VERIFICATION, all others to STANDARD
+  try {
+    db.execSync("UPDATE tasks SET verification_type = 'WAKE_UP_VERIFICATION' WHERE LOWER(focus_area) = 'wake up';");
+    db.execSync("UPDATE tasks SET verification_type = 'STANDARD' WHERE LOWER(focus_area) != 'wake up';");
+  } catch {}
 
   return db;
 }

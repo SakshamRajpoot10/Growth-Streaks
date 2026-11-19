@@ -46,7 +46,7 @@ export const TradingLineGraph: React.FC<TradingLineGraphProps> = ({
       const stepVal = hourlyDistribution[String(hr)] || 0;
       return stepVal;
     });
-    labels = ['00:00', '06:00', '12:00', '18:00', '23:00'];
+    labels = ['12:00 AM', '6:00 AM', '12:00 PM', '6:00 PM', '12:00 AM'];
   } else if (mode === 'week') {
     rawPoints = weekData.length === 7 ? weekData : [0, 0, 0, 0, 0, 0, totalSteps];
     labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -258,13 +258,13 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   labelsRow: {
-    width: GRAPH_WIDTH - 16,
+    width: GRAPH_WIDTH - 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 2,
+    marginTop: 4,
   },
   timeLabel: {
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: '700',
   },
 });

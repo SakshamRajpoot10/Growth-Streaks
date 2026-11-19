@@ -21,7 +21,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onTestWakeUp,
 }) => {
   const { colors } = useTheme();
-  const isWakeUp = task.focusArea?.toLowerCase() === 'wake up';
+  const isWakeUp = task.verificationType === 'WAKE_UP_VERIFICATION';
   const focus = getFocusAreaById(task.focusArea);
   const daysText =
     task.daysOfWeek.length === 7
@@ -52,14 +52,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
                 textColor={focus.color}
                 style={styles.badge}
               />
-              {isWakeUp && (
-                <Badge
-                  label="📸 30s Standing Verification"
-                  color="#F59E0B20"
-                  textColor="#D97706"
-                  style={styles.badge}
-                />
-              )}
+              <Badge
+                label={isWakeUp ? '📸 30s Camera' : '⚡ Standard'}
+                color={isWakeUp ? '#F59E0B20' : '#10B98120'}
+                textColor={isWakeUp ? '#D97706' : '#059669'}
+                style={styles.badge}
+              />
             </View>
           </View>
           <Switch

@@ -64,6 +64,7 @@ export const TaskListScreen: React.FC = () => {
         id: newId,
         activityName: formData.activityName,
         focusArea: formData.focusArea,
+        verificationType: formData.verificationType,
         scheduledTime: formData.scheduledTime,
         daysOfWeek: formData.daysOfWeek,
         alarmSound: formData.alarmSound,
@@ -92,6 +93,7 @@ export const TaskListScreen: React.FC = () => {
       const updated = updateTask(db, editingTask.id, {
         activityName: formData.activityName,
         focusArea: formData.focusArea,
+        verificationType: formData.verificationType,
         scheduledTime: formData.scheduledTime,
         daysOfWeek: formData.daysOfWeek,
         alarmSound: formData.alarmSound,
@@ -213,13 +215,9 @@ export const TaskListScreen: React.FC = () => {
       <ScreenWrapper>
         <TaskForm
           onSubmit={handleCreateTask}
-          submitLabel="Create Routine"
-        />
-        <Button
-          title="Cancel"
-          variant="secondary"
-          onPress={() => setIsCreating(false)}
-          style={styles.cancelBtn}
+          onCancel={() => setIsCreating(false)}
+          isEditing={false}
+          creationMode="alarm"
         />
       </ScreenWrapper>
     );
@@ -232,25 +230,16 @@ export const TaskListScreen: React.FC = () => {
           initialData={{
             activityName: editingTask.activityName,
             focusArea: editingTask.focusArea,
+            verificationType: editingTask.verificationType,
             scheduledTime: editingTask.scheduledTime,
             daysOfWeek: editingTask.daysOfWeek,
             alarmSound: editingTask.alarmSound,
             preAlarmMinutes: editingTask.preAlarmMinutes,
           }}
           onSubmit={handleUpdateTask}
-          submitLabel="Update Routine"
-        />
-        <Button
-          title="Delete Routine"
-          variant="danger"
-          onPress={() => handleDeleteSingleTask(editingTask)}
-          style={styles.deleteBtn}
-        />
-        <Button
-          title="Cancel"
-          variant="secondary"
-          onPress={() => setEditingTask(null)}
-          style={styles.cancelBtn}
+          onDelete={() => handleDeleteSingleTask(editingTask)}
+          onCancel={() => setEditingTask(null)}
+          isEditing={true}
         />
       </ScreenWrapper>
     );

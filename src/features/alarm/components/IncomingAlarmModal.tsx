@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { DualSlideBar } from './DualSlideBar';
 import { WakeUpCameraModal } from './WakeUpCameraModal';
+import { RewardedAdPromptModal } from './RewardedAdPromptModal';
 import { playSoundPreview, stopSoundPreview } from '../../../utils/sound-preview';
 import { useSettingsStore } from '../../../store/useSettingsStore';
 import { Task } from '../../../types/task';
@@ -19,6 +20,7 @@ import { upsertLog } from '../../../db/queries/task-logs';
 import { cancelTaskAlarms } from '../services/alarm-scheduler';
 import { generateUUID } from '../../../utils/uuid';
 import { getToday } from '../../../utils/date';
+import { NativeBridge } from '../../../services/native-bridge';
 
 interface IncomingAlarmModalProps {
   visible: boolean;
@@ -37,10 +39,9 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
 }) => {
   const { vibrationEnabled } = useSettingsStore();
   const [isWakeUpCameraActive, setIsWakeUpCameraActive] = useState(false);
+  const [showRewardPrompt, setShowRewardPrompt] = useState(false);
 
-  const isWakeUpTask =
-    task?.focusArea?.toLowerCase() === 'wake up' ||
-    task?.activityName?.toLowerCase().includes('wake up');
+  const isWakeUpTask = task?.verificationType === 'WAKE_UP_VERIFICATION';
 
   // Audio and vibration on alarm appearance
   useEffect(() => {
@@ -70,6 +71,7 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
       // Transition to front selfie camera standing verification!
       // Sound and vibration turn OFF when camera is opened, per user specification
       stopSoundPreview();
+      NativeBridge.stopAlarm().catch(() => {});
       try {
         Vibration.cancel();
       } catch {}
@@ -79,6 +81,7 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
 
     // Normal routine confirmed
     stopSoundPreview();
+    NativeBridge.stopAlarm().catch(() => {});
     try {
       Vibration.cancel();
     } catch {}
@@ -97,13 +100,14 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
       await cancelTaskAlarms(task.id, today);
     } catch {}
 
-    onDismiss();
+    setShowRewardPrompt(true);
   };
 
   const handleSlideLeftSkip = async () => {
     if (!task) return;
 
     stopSoundPreview();
+    NativeBridge.stopAlarm().catch(() => {});
     try {
       Vibration.cancel();
     } catch {}
@@ -128,6 +132,7 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
   const handleWakeUpCameraSuccess = async () => {
     if (!task) return;
     setIsWakeUpCameraActive(false);
+    NativeBridge.stopAlarm().catch(() => {});
 
     try {
       const db = openDatabase();
@@ -143,14 +148,19 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
       await cancelTaskAlarms(task.id, today);
     } catch {}
 
-    onDismiss();
+    setShowRewardPrompt(true);
   };
 
   if (!visible || !task) return null;
 
   return (
     <>
-      <Modal visible={visible && !isWakeUpCameraActive} animationType="fade" transparent={false} statusBarTranslucent>
+      <Modal
+        visible={visible && !isWakeUpCameraActive && !showRewardPrompt}
+        animationType="fade"
+        transparent={false}
+        statusBarTranslucent
+      >
         <View style={styles.container}>
           {/* Top Banner */}
           <View style={styles.topSection}>
@@ -208,6 +218,20 @@ export const IncomingAlarmModal: React.FC<IncomingAlarmModalProps> = ({
           }}
         />
       )}
+
+      {/* Optional Post-Completion Rewarded Ad Prompt Modal */}
+      <RewardedAdPromptModal
+        visible={showRewardPrompt}
+        routineTitle={task.activityName}
+        onClose={() => {
+          setShowRewardPrompt(false);
+          onDismiss();
+        }}
+        onRewardReceived={() => {
+          setShowRewardPrompt(false);
+          onDismiss();
+        }}
+      />
     </>
   );
 };

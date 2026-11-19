@@ -4,22 +4,27 @@ import { openDatabase } from '../db/client';
 import {
   getFitnessGoal,
   setFitnessGoal,
+  getAllFitnessGoals,
+  setFitnessGoalForType,
   getTodayFitnessLog,
   calculateFitnessStreak,
   FitnessGoal,
   FitnessGoalType,
+  UserFitnessGoals,
   FitnessDailyLog,
 } from '../db/queries/fitness';
-import { startStepTracker, addManualSteps } from '../features/fitness/services/pedometer-service';
+import { startStepTracker, addManualSteps, refreshFitnessDashboard } from '../features/fitness/services/pedometer-service';
 import { getToday } from '../utils/date';
 
 interface FitnessState {
   log: FitnessDailyLog;
   goal: FitnessGoal;
+  userGoals: UserFitnessGoals;
   fitnessStreak: number;
   isTracking: boolean;
   loadFitnessData: () => void;
   updateGoal: (type: FitnessGoalType, target: number) => void;
+  updateSpecificGoal: (type: FitnessGoalType, target: number | null) => void;
   simulateWalk: (steps: number) => void;
   startTracking: () => Promise<void>;
 }
@@ -34,17 +39,23 @@ export const useFitnessStore = create<FitnessState>((set, get) => ({
     distanceKm: 0.0,
     calories: 0.0,
     activeMinutes: 0,
-    goalType: 'distance_km',
-    goalTarget: 3.0,
+    goalType: 'steps',
+    goalTarget: 0,
     goalCompleted: false,
     hourlyDistribution: {},
   },
   goal: {
-    id: 'default',
-    goalType: 'distance_km',
-    targetValue: 3.0,
-    isActive: true,
+    id: '',
+    goalType: 'steps',
+    targetValue: 0,
+    isActive: false,
     createdAt: Date.now(),
+  },
+  userGoals: {
+    steps: null,
+    distance_km: null,
+    heart_points: null,
+    calories: null,
   },
   fitnessStreak: 0,
   isTracking: false,
@@ -54,6 +65,7 @@ export const useFitnessStore = create<FitnessState>((set, get) => ({
       const db = openDatabase();
       const today = getToday();
       const currentGoal = getFitnessGoal(db);
+      const userGoals = getAllFitnessGoals(db);
       const currentLog = getTodayFitnessLog(db, today);
       const streak = calculateFitnessStreak(db);
 
@@ -61,6 +73,7 @@ export const useFitnessStore = create<FitnessState>((set, get) => ({
 
       set({
         goal: currentGoal,
+        userGoals,
         log: currentLog,
         fitnessStreak: streak,
       });
@@ -73,6 +86,16 @@ export const useFitnessStore = create<FitnessState>((set, get) => ({
     try {
       const db = openDatabase();
       setFitnessGoal(db, type, target);
+      get().loadFitnessData();
+    } catch {
+      // Safety
+    }
+  },
+
+  updateSpecificGoal: (type, target) => {
+    try {
+      const db = openDatabase();
+      setFitnessGoalForType(db, type, target);
       get().loadFitnessData();
     } catch {
       // Safety
@@ -113,7 +136,7 @@ export const useFitnessStore = create<FitnessState>((set, get) => ({
 
 // Background-to-Foreground Resume & Midnight Auto-Rollover Listener
 if (Platform.OS !== 'web') {
-  AppState.addEventListener('change', (nextState) => {
+  AppState.addEventListener('change', async (nextState) => {
     if (nextState === 'active') {
       const store = useFitnessStore.getState();
       const currentDate = getToday();
@@ -122,6 +145,12 @@ if (Platform.OS !== 'web') {
       if (currentDate !== lastObservedDate) {
         lastObservedDate = currentDate;
       }
+      try {
+        const refreshed = await refreshFitnessDashboard();
+        const db = openDatabase();
+        const streak = calculateFitnessStreak(db);
+        useFitnessStore.setState({ log: refreshed, fitnessStreak: streak });
+      } catch {}
       store.loadFitnessData();
       store.startTracking().catch(() => {});
     }

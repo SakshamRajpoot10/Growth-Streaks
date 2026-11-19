@@ -1,7 +1,10 @@
+export type VerificationType = 'STANDARD' | 'WAKE_UP_VERIFICATION';
+
 export interface Task {
   id: string;
   activityName: string;
   focusArea: string;
+  verificationType?: VerificationType;
   scheduledTime: string; // "HH:MM"
   daysOfWeek: number[]; // 1=Mon..7=Sun
   alarmSound: string;
@@ -14,6 +17,7 @@ export interface Task {
 export interface TaskFormData {
   activityName: string;
   focusArea: string;
+  verificationType: VerificationType;
   scheduledTime: string;
   daysOfWeek: number[];
   alarmSound: string;
