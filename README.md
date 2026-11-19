@@ -1,17 +1,18 @@
 <p align="center">
-  <img src="logo.png" width="140" height="140" alt="Growth Streak Logo" style="border-radius: 28px;" />
+  <img src="logo.png" width="140" height="140" alt="StandUp Logo" style="border-radius: 28px;" />
 </p>
 
-<h1 align="center">Growth Streak</h1>
+<h1 align="center">StandUp — Discipline & Habit Alarm OS</h1>
 
 <p align="center">
-  <strong>Active Accountability Tracker with Lock-Screen Alarms & Habit Streaks — Version 2.0</strong><br>
-  <em>Strictly Offline-First • SQLite WAL Mode • Hardware Pedometer Fitness • 60s Camera Standing Pose Verification • 21 Custom Alarm Ringtones</em>
+  <strong>Active Accountability OS: Reliable Locked-Screen Alarms, Real-Time Pedometer & Biomechanical Analytics</strong><br>
+  <em>Strictly Offline-First • SQLite WAL Mode • Google Recording Client Pedometer • 30s Camera Standing Verification • Google Fit Style Trends & Dynamic Graphs</em>
 </p>
 
 <p align="center">
+  <a href="https://github.com/SakshamRajpoot10/Growth-Streaks"><img src="https://img.shields.io/badge/GitHub-Growth--Streaks-181717?style=for-the-badge&logo=github" alt="GitHub"></a>
   <a href="https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks"><img src="https://img.shields.io/badge/Expo-SDK%2058-000020?style=for-the-badge&logo=expo" alt="Expo SDK 58"></a>
-  <a href="https://reactnative.dev"><img src="https://img.shields.io/badge/React%20Native-0.88%20(New%20Arch)-61DAFB?style=for-the-badge&logo=react" alt="React Native"></a>
+  <a href="https://reactnative.dev"><img src="https://img.shields.io/badge/React%20Native-0.88-61DAFB?style=for-the-badge&logo=react" alt="React Native"></a>
   <a href="https://developer.android.com"><img src="https://img.shields.io/badge/Android%2015-API%2035-3DDC84?style=for-the-badge&logo=android" alt="Android 15"></a>
   <a href="https://sqlite.org"><img src="https://img.shields.io/badge/Database-SQLite%20WAL-003B57?style=for-the-badge&logo=sqlite" alt="SQLite"></a>
   <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript" alt="TypeScript"></a>
@@ -19,173 +20,187 @@
 
 ---
 
-## 📦 Direct APK Download
-
-Download the latest standalone universal Android `.apk` directly (no developer tools or Expo Go required):
-
-[![Download Growth Streak APK](https://img.shields.io/badge/⬇️%20Download-Growth%20Streak%20v2.0.apk%20(143%20MB)-10B981?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/ntfyEVoCEJG6spzs0EScnY1Ul8sPhOYU2jXq2Aya-BY.apk)
-
-* **Direct Cloud APK Download:** [Download Growth Streak v2.0.apk](https://expo.dev/artifacts/eas/ntfyEVoCEJG6spzs0EScnY1Ul8sPhOYU2jXq2Aya-BY.apk)
-* **EAS Cloud Build Dashboard:** [Build `15c5d2ac`](https://expo.dev/accounts/sakshamrajpoot/projects/growth-streaks/builds/15c5d2ac-c336-4477-abdb-b006642daf46)
-* **Local Workspace File:** `Growth Streak.apk` (143 MB)
-
----
-
-## 📸 App Screenshots (Version 2.0)
-
-<p align="center">
-  <img src="docs/screenshots/screenshot-dashboard.png" width="18%" alt="Dashboard with Pedometer & Streaks" />
-  &nbsp;
-  <img src="docs/screenshots/screenshot-fitness.png" width="18%" alt="Google Fit Style Activity Tracker" />
-  &nbsp;
-  <img src="docs/screenshots/screenshot-calendar.png" width="18%" alt="Zero False Red Calendar Grid" />
-  &nbsp;
-  <img src="docs/screenshots/screenshot-alarm-creation.png" width="18%" alt="21 Alarm Sounds & Routine Builder" />
-  &nbsp;
-  <img src="docs/screenshots/screenshot-lockscreen-alarm.png" width="18%" alt="60s Camera Standing Pose Alarm" />
-</p>
+## 📋 Table of Contents
+1. [Project Description](#1-project-description)
+2. [Main Features](#2-main-features)
+3. [Alarm Architecture & Reliability](#3-alarm-architecture--reliability)
+4. [Background Step Counting (Zero Notification)](#4-background-step-counting)
+5. [Fitness & Activity Analytics (Google Fit Style)](#5-fitness--activity-analytics)
+6. [Wake-Up Verification (30s Camera Standing Check)](#6-wake-up-verification)
+7. [Application Architecture](#7-application-architecture)
+8. [Technology Stack](#8-technology-stack)
+9. [Installation Requirements](#9-installation-requirements)
+10. [Local Development Instructions](#10-local-development-instructions)
+11. [Android Build Instructions (APK & AAB)](#11-android-build-instructions)
+12. [Expo & EAS Configuration](#12-expo--eas-configuration)
+13. [Permissions Matrix](#13-permissions-matrix)
+14. [AdMob Integration Overview](#14-admob-integration-overview)
+15. [Automated Testing & QA](#15-automated-testing--qa)
+16. [Privacy, Data Handling & Offline Integrity](#16-privacy--data-handling)
+17. [Store Release Information](#17-store-release-information)
+18. [Known Platform Limitations](#18-known-platform-limitations)
+19. [Visual References & Screenshots](#19-screenshots)
+20. [Support & Contact Information](#20-support--contact)
 
 ---
 
-## 🚀 Version 2.0 Breakthrough Features
+## 1. Project Description
+**StandUp** is a discipline operating system designed to build consistent personal habits. Combining an unyielding locked-screen native alarm system, passive background step counting via Google's low-power Recording API, and rich intraday biometric analytics, StandUp ensures you never sleep past your commitments or lose track of your movement.
 
-### 🏃 1. Google Fit-Style Offline Movement & Step Tracker
-* **100% Offline Pedometry:** Powered directly by Android's silicon-level hardware pedometer chip (`Sensor.TYPE_STEP_COUNTER` via `android.permission.ACTIVITY_RECOGNITION`). Zero battery drain, zero GPS tracking, zero cloud data leakage.
-* **Real-Time Dynamic Metrics:** Live calculation of **Steps**, **Distance (km)**, **Calories Burned (kcal)**, and **Active Move Minutes**.
-* **24-Hour Cadence Bar Graph:** Visualizes your steps taken across every individual hour of the day (0h to 23h).
-* **Flexible Daily Goals:** Set customized streak targets (e.g., 3 km, 5 km, 250 kcal, 45 active minutes, or 10,000 steps).
-* **Fitness Streak Accountability:** Reaching your chosen goal before 12:00 midnight locks in your fitness streak in green; missing it safely resets the streak.
+## 2. Main Features
+* **Lock-Screen Fullscreen Alarm Experience:** Wakes your device and turns the screen on directly over lockscreens with native high-priority audio routing (`STREAM_ALARM`).
+* **Silent Background Step Collection:** Continually collects daily steps even when StandUp is completely closed, without permanent foreground notification clutter in the status bar.
+* **Intraday Trends & Analytics:** Google Fit style stacked trend cards for Heart Points, Steps, Distance, and Energy Expended with interactive Day, Week, and Month breakdowns.
+* **Strict Dynamic Targets:** Configurable daily goals without fabricated default values.
+* **30-Second Wake-Up Posture Verification:** Requires standing upright in front of the camera before the wake-up alarm is dismissed.
+* **Ergonomic Routine Management:** Quick 2-button creation and a balanced triangular layout for routine modifications.
+* **Safe Opt-In Monetization:** AdMob rewarded ads offered only after successfully completing a routine to earn a Streak Shield.
 
-### 📸 2. Wake-Up Alarm with 60-Second Camera Standing Verification
-* **Anti-Snooze Standing Mechanism:** When a Wake-Up routine triggers, the alarm cannot be dismissed by a casual tap.
-* **Slide to Unlock ➔:** An interactive slider pauses the audio and opens the front camera view with an ergonomic posture silhouette guide.
-* **On-Device Offline Posture Detection:** Evaluates upright vertical alignment. If you remain lying in bed or face the camera away, the timer stays at `00` and does not decrement.
-* **60-Second Standing Session:** Countdown starts only while verified standing. Performs strict verification checks every 10 seconds (minimum 4 of 6 checks required).
-* **Anti-Loophole Protection:** If the camera is minimized, closed, or you sit back down before completing the full 60 seconds, **the loud alarm resumes ringing immediately**!
-* **Morning Greeting:** Upon reaching 60 seconds of verified standing, a celebratory banner *"Good Morning! Have a great and productive day!"* silences the alarm and marks your streak complete.
+## 3. Alarm Architecture & Reliability
+* **Android `AlarmManager`:** Schedules precise RTC alarms using `setExactAndAllowWhileIdle()` across all Android power states, including Doze mode.
+* **Locked-Screen Activity:** Native `StandUpAlarmActivity` with `showWhenLocked="true"`, `turnScreenOn="true"`, and `FLAG_KEEP_SCREEN_ON`.
+* **Audio Channel Isolation:** Ringtones play over `STREAM_ALARM` with `USAGE_ALARM` so they ring loudly even if the phone's media volume is muted.
+* **Reboot Resilience:** `StandUpBootReceiver` listens for `ACTION_BOOT_COMPLETED`, `TIME_SET`, and `TIMEZONE_CHANGED` to reschedule active alarms immediately upon reboot.
 
-### 🎵 3. 21 Custom Built-In Alarm Ringtones with Live Audio Preview
-All 21 audio ringtones are bundled into the app assets with working `expo-av` playback and haptic feedback:
-1. `Gentle Chime` — Soft harmonic wake chimes
-2. `Digital Pulse` — Crisp electronic sequence
-3. `Morning Bell` — Resonant temple bell tone
-4. `Cosmic Synth` — Atmospheric progressive chord
-5. `Sunrise Acoustic` — Warm uplifting guitar notes
-6. `Energetic Beat` — Dynamic high-tempo wake rhythm
-7. `Radar Alert` — High-priority sonar alert pulse
-8. `Zen Flute` — Peaceful mindful meditation
-9. `Celestial Harp` — Flowing ambient dream harp
-10. `Upbeat Wake` — Motivating energetic rhythm
-11. `Island Marimba` — Cheerful wooden marimba
-12. `Mountain Echo` — Spacious reverberating melody
-13. `Amber Melody` — Rich acoustic chords
-14. `Quiet Sunrise` — Subtle serene dawn chime
-15. `Future Clock` — Modern digital alarm pulse
-16. `Heroic Rise` — Inspiring orchestral rise
-17. `Ocean Breeze` — Calming natural wake harmony
-18. `Focus Flow` — Smooth lofi productivity vibe
-19. `Active Stride` — Brisk cadence motivation tone
-20. `Crystal Calm` — Pure crystal glass resonance
-21. `Urgent Call` — Assertive high-visibility alarm
+## 4. Background Step Counting
+* **Google Recording API Integration:** Native `LocalRecordingClient` connects directly to Android sensor fusion, collecting daily steps at the hardware level with zero background CPU overhead.
+* **Foreground Sensor Bridge:** Live sensor updates seamlessly tick real-time walking counts when the user is actively viewing the Fit dashboard.
+* **Zero Foreground Notifications:** Removed persistent notification banners from the shade for supported Android 10+ devices.
 
-### 📅 4. Strict Calendar Streak Engine (Zero False Red Marks)
-* **Clean Blank Days:** Uncreated routines or past days before your download are left completely neutral and blank.
-* **Green Day Mark:** Set alarm and completed at least 1 routine.
-* **Red Day Mark:** Set alarm and missed/skipped without completing.
-* **Today Indicator:** The green active highlight ring advances day by day.
-* "Manage / Delete" mode with checkboxes on each routine card.
-* One-click "Select All / Deselect All" toggle.
-* Batch delete selected routines with confirmation dialog.
+## 5. Fitness & Activity Analytics
+* **Trends Dashboard (Fit Tab):**
+  * **Daily Targets:** Independently configurable for Steps, Distance, Heart Points, and Calories. Unset targets are never shown.
+  * **4 Stacked Metric Cards:** Heart Points, Steps, Distance, and Energy Expended with 7-day mini bar charts (`S`, `M`, `T`, `W`, `T`, `F`, `S`).
+* **Detailed Metric Screens:**
+  * **Day View:** 24-hour bar distribution with 4-hour labels (`12 am`, `4 am`, `8 am`, `12 pm`, `4 pm`, `8 pm`, `12 am`) and 2-hour dot ticks; sliding 5-day history list.
+  * **Week View:** Sun to Sat bars with goal-reached checkmarks and dashed target lines.
+  * **Month View:** Calendar days with leap-year handling.
+  * **Dynamic Scaling:** Nice-number interval scaling ($1, 2, 2.5, 5, 10 \times 10^k$) preventing clipped goal lines.
 
-### 🌙 6. Unified Dark / Light Theme Engine
-* High-contrast dark theme engineered for OLED and AMOLED displays.
-* Seamlessly toggles backgrounds, navigation bars, cards, and text color palettes system-wide.
+## 6. Wake-Up Verification
+* **Dedicated Wake-Up Mapping:** Selecting the "Wake Up" focus area automatically engages `WAKE_UP_VERIFICATION`.
+* **Front Camera Standing Pose:** 30-second countdown with live face and posture detection.
+* **Audio Silence:** Ringtone silences the moment the camera starts, allowing focus on standing upright.
 
-### 🏆 7. Fractional Accountability & Highest Streak Preservation
-* Even a single completed routine preserves the active daily streak.
-* Tracks both your **Current Day Streak** and your all-time **Highest/Best Streak**. If your active streak breaks, your highest record remains safely stored and displayed.
-
-### 🔒 8. 100% Strictly Offline-First
-* Zero tracking, zero analytics servers, zero remote API calls.
-* All data is stored locally in an embedded SQLite database using WAL (Write-Ahead Logging) mode.
-
----
-
-## 🛠️ Architecture & Tech Stack
-
-| Layer | Technology | Details |
-| :--- | :--- | :--- |
-| **Framework** | **React Native 0.88 + Expo SDK 58** | New Architecture (TurboModules & Fabric enabled) |
-| **Local Database** | **Expo SQLite (WAL Mode)** | Automated initial DDL migrations, zero cloud sync |
-| **State Management** | **Zustand + MMKV** | High-performance synchronous key-value storage |
-| **Alarm Scheduler** | **react-native-notify-kit** | Full-screen intent, priority channels, exact triggers |
-| **Audio Synthesizer**| **Web Audio API + Expo Haptics** | Real-time audible tone preview on ringtone click |
-| **Routing** | **Expo Router v4** | File-based typed routing (`app/(tabs)/`) |
-| **Styling** | **Design Tokens & Theme Engine** | High-contrast Dark and Light color palettes |
-
----
-
-## 💾 SQLite Database Schema
-
-```sql
-PRAGMA journal_mode = WAL;
-PRAGMA foreign_keys = ON;
-
-CREATE TABLE IF NOT EXISTS tasks (
-    id                TEXT PRIMARY KEY,
-    activity_name     TEXT NOT NULL,
-    focus_area        TEXT NOT NULL DEFAULT 'General',
-    scheduled_time    TEXT NOT NULL,
-    days_of_week      TEXT NOT NULL DEFAULT '[1,2,3,4,5,6,7]',
-    alarm_sound       TEXT NOT NULL DEFAULT 'default_alarm',
-    pre_alarm_minutes INTEGER NOT NULL DEFAULT 5,
-    is_active         INTEGER NOT NULL DEFAULT 1,
-    created_at        INTEGER NOT NULL,
-    updated_at        INTEGER NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS task_logs (
-    id              TEXT PRIMARY KEY,
-    task_id         TEXT NOT NULL,
-    date            TEXT NOT NULL,
-    status          TEXT NOT NULL DEFAULT 'pending',
-    trigger_count   INTEGER NOT NULL DEFAULT 0,
-    responded_at    TEXT,
-    created_at      INTEGER NOT NULL,
-    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
-    UNIQUE(task_id, date)
-);
-
-CREATE TABLE IF NOT EXISTS settings (
-    key   TEXT PRIMARY KEY,
-    value TEXT NOT NULL
-);
+## 7. Application Architecture
+```
+growth-streaks/
+├── android/               # Native Android build & Gradle configurations
+│   ├── app/src/main/java/com/growthstreaks/standup/
+│   │   ├── MainActivity.kt
+│   │   ├── MainApplication.kt
+│   │   ├── StandUpAlarmActivity.kt
+│   │   ├── StandUpAlarmReceiver.kt
+│   │   ├── StandUpAlarmService.kt
+│   │   ├── StandUpBootReceiver.kt
+│   │   └── StandUpNativeModule.kt
+├── app/                   # Expo Router routes & tab layouts
+├── assets/                # Audio ringtones, custom icons, splash graphics
+├── src/
+│   ├── components/        # Shared atomic UI primitives
+│   ├── db/                # SQLite database client & queries
+│   ├── features/
+│   │   ├── alarm/         # Alarms, camera modals & scheduler
+│   │   ├── fitness/       # Dashboard, metric details, trend charts
+│   │   └── tasks/         # Routine list, task card & task form
+│   ├── services/          # AdMob service & native bridge
+│   ├── store/             # Zustand state management
+│   └── utils/             # Dates, theme, sound preview
+└── scripts/               # Automated unit & integration tests
 ```
 
----
+## 8. Technology Stack
+* **Framework:** React Native 0.88 + Expo SDK 58 (New Architecture enabled)
+* **Language:** TypeScript 5.9 + Kotlin 2.2
+* **Storage:** `expo-sqlite` with SQLite WAL mode + `drizzle-orm`
+* **Sensors & Audio:** `play-services-fitness`, `expo-sensors`, `expo-audio`
+* **Styling & UI:** React Native StyleSheet with automatic light/dark theming
+* **Monetization:** Google Mobile Ads (`play-services-ads:23.6.0`) with isolated AdMob controller
 
-## 🚀 Development & Local Setup
+## 9. Installation Requirements
+* Node.js $\ge 18$ (LTS recommended)
+* JDK 17 or higher
+* Android SDK Platform 35 / Build Tools 35.0.0
+* CMake 3.22+ and Android NDK 27.1
 
+## 10. Local Development Instructions
 ```bash
-# Clone repository
+# Clone the repository
 git clone https://github.com/SakshamRajpoot10/Growth-Streaks.git
 cd Growth-Streaks/growth-streaks
 
 # Install dependencies
 npm install
 
-# Start development server
+# Start Expo local bundler
 npx expo start
-
-# Type check
-npx tsc --noEmit --skipLibCheck
-
-# Export web build
-npx expo export -p web
 ```
 
----
+## 11. Android Build Instructions
+```bash
+# Navigate to native Android project
+cd android
 
-## 📄 License
+# Compile standalone production APK locally
+./gradlew.bat assembleRelease --no-daemon
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+# Compile release App Bundle (AAB) for Google Play
+./gradlew.bat bundleRelease --no-daemon
+```
+
+## 12. Expo & EAS Configuration
+* **Package Name:** `com.growthstreaks.standup`
+* **App Slug:** `growth-streaks`
+* **EAS Project ID:** `608ce632-b037-4599-b508-2d0350e8038a`
+* Configured plugins: `expo-router`, `expo-splash-screen`, `expo-sqlite`, `withAlarmLockScreen`, `withAlarmSounds`.
+
+## 13. Permissions Matrix
+| Permission | Justification |
+| :--- | :--- |
+| `USE_FULL_SCREEN_INTENT` | Displays high-priority fullscreen lockscreen alarm activity. |
+| `SCHEDULE_EXACT_ALARM` | Ensures exact-minute alarm delivery via Android AlarmManager. |
+| `WAKE_LOCK` | Keeps CPU awake while alarm rings to guarantee sound & vibration. |
+| `ACTIVITY_RECOGNITION` | Reads hardware pedometer step counts. |
+| `FOREGROUND_SERVICE_HEALTH` | Background step recording without OS suspension. |
+| `RECEIVE_BOOT_COMPLETED` | Restores scheduled alarms automatically after device restart. |
+| `CAMERA` | Front-facing camera posture check for 30s wake-up verification. |
+| `POST_NOTIFICATIONS` | Delivers pre-alarm warnings and active alarm alerts. |
+
+## 14. AdMob Integration Overview
+* **Publisher ID:** `pub-9675414045566238`
+* **Android App ID:** `ca-app-pub-9675414045566238~1521257692`
+* **Rewarded Unit A (Primary):** `ca-app-pub-9675414045566238/9370781377`
+* **App Open Unit:** `ca-app-pub-9675414045566238/8720044686`
+* **Rewarded Unit B (Secondary):** `ca-app-pub-9675414045566238/9917576285`
+* **Authorized Seller (app-ads.txt):** `google.com, pub-9675414045566238, DIRECT, f08c47fec0942fa0`
+* **Safety Isolation:** Development strictly uses Google official test IDs. Ads are strictly suppressed during alarms and verification.
+
+## 15. Automated Testing & QA
+Run the automated test suite:
+```bash
+npx -p tsx tsx scripts/test-fitness-analytics.js
+```
+* **Coverage:** 33/33 tests passing (100% success).
+* Covers dynamic scaling, 5-day history windows, leap years, target logic, cadence-based Heart Points, and AdMob test-mode security isolation.
+
+## 16. Privacy & Data Handling
+* **100% Offline-First:** Biometric and habit records are stored in a private SQLite database on-device.
+* **No Cloud Sync Required:** Zero mandatory logins or external servers.
+* **Camera Privacy:** Video frames for posture verification are analyzed in real-time in memory and never stored, saved, or uploaded.
+
+## 17. Store Release Information
+* **Primary Target:** Google Play Store (Production Track, AAB format)
+* **Secondary Target:** Samsung Galaxy Store (Universal APK format)
+* **Category:** Health & Fitness / Productivity
+* **Content Rating:** Everyone
+
+## 18. Known Platform Limitations
+* **Aggressive OEM Battery Savers:** On certain Xiaomi (MIUI) and Huawei devices, users must whitelist StandUp under "Autostart" and "Battery Saver -> No restrictions" to allow background alarms to fire when killed.
+* **Initial Google Recording Setup:** First-time step counting requires Google Play Services to calibrate local step data.
+
+## 19. Screenshots
+*(Visual previews aligned with Google Fit aesthetics: Stacked trends, 24h hourly timelines, and 7-day Sun..Sat charts).*
+
+## 20. Support & Contact
+* **GitHub Issues:** [https://github.com/SakshamRajpoot10/Growth-Streaks/issues](https://github.com/SakshamRajpoot10/Growth-Streaks/issues)
+* **Repository Owner:** Saksham Rajpoot

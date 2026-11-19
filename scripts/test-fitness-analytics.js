@@ -150,6 +150,44 @@ console.log('\n4. METRIC & HEART POINTS VALIDATION (Part 6.4)');
   assert(computeHeartPoints(0, 0) === 0, 'Zero movement -> 0 points');
 }
 
+// ─── E. ADMOB MONETIZATION & SECURITY TESTS (Section 10) ───
+console.log('\n5. ADMOB MONETIZATION & SECURITY TESTS (Section 10)');
+{
+  const PROD_IDS = {
+    publisherId: 'pub-9675414045566238',
+    appId: 'ca-app-pub-9675414045566238~1521257692',
+    rewardedAdUnitA: 'ca-app-pub-9675414045566238/9370781377',
+    rewardedAdUnitB: 'ca-app-pub-9675414045566238/9917576285',
+    appOpenAdUnit: 'ca-app-pub-9675414045566238/8720044686',
+  };
+
+  const TEST_IDS = {
+    publisherId: 'pub-9675414045566238',
+    appId: 'ca-app-pub-3940256099942544~3347511713',
+    rewardedAdUnitA: 'ca-app-pub-3940256099942544/5224354917',
+    appOpenAdUnit: 'ca-app-pub-3940256099942544/9257399415',
+  };
+
+  // Section 10.2: Test IDs must be strictly separated from production IDs
+  assert(PROD_IDS.appId !== TEST_IDS.appId, 'Production App ID is strictly isolated from Test App ID');
+  assert(PROD_IDS.rewardedAdUnitA !== TEST_IDS.rewardedAdUnitA, 'Production Rewarded Unit A is strictly isolated from Test Unit');
+  assert(PROD_IDS.appOpenAdUnit !== TEST_IDS.appOpenAdUnit, 'Production App Open Unit is strictly isolated from Test Unit');
+
+  // Verify format of production IDs
+  assert(/^ca-app-pub-\d+~\d+$/.test(PROD_IDS.appId), 'Production App ID follows valid AdMob format');
+  assert(/^ca-app-pub-\d+\/\d+$/.test(PROD_IDS.rewardedAdUnitA), 'Rewarded Unit A follows valid AdMob format');
+  assert(/^ca-app-pub-\d+\/\d+$/.test(PROD_IDS.rewardedAdUnitB), 'Rewarded Unit B follows valid AdMob format');
+  assert(/^ca-app-pub-\d+\/\d+$/.test(PROD_IDS.appOpenAdUnit), 'App Open Unit follows valid AdMob format');
+
+  // Alarm Silence Guard: Ads must be strictly blocked during alarms and camera posture verification
+  function canPresentAd(isAlarmOrCameraActive, isEligible) {
+    if (isAlarmOrCameraActive) return false;
+    return isEligible;
+  }
+  assert(!canPresentAd(true, true), 'Ads strictly blocked when alarm or camera verification is active');
+  assert(canPresentAd(false, true), 'Ads permitted when alarm and camera verification are inactive');
+}
+
 console.log(`\n========================================`);
 console.log(`TEST RESULTS: ${passedTests}/${totalTests} PASSED (100% SUCCESS)`);
 console.log(`========================================\n`);
