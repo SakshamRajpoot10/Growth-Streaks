@@ -1,21 +1,32 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../utils/theme';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
   style?: ViewStyle;
+  withTopInset?: boolean;
 }
 
-export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({ children, style }) => {
+export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({
+  children,
+  style,
+  withTopInset = false,
+}) => {
   const { colors, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
+
+  const topInset = withTopInset
+    ? Math.max(insets.top, Platform.OS === 'android' ? (RNStatusBar.currentHeight ?? 24) : 0)
+    : 0;
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+    <View style={[styles.safeArea, { backgroundColor: colors.background, paddingTop: topInset }]}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <View style={[styles.container, style]}>{children}</View>
-    </SafeAreaView>
+    </View>
   );
 };
 

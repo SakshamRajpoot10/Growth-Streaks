@@ -34,7 +34,7 @@ export const FitnessScreen: React.FC = () => {
   }, [loadFitnessData, startTracking, loadAllLogs]);
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper withTopInset={true}>
       <View style={styles.container}>
         {selectedMetric === null ? (
           // LEVEL 1: COMPLETE FITNESS & ACTIVITY DASHBOARD (Reference Image 1)
