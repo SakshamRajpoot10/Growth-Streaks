@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — StandUp</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 40px 20px; background: #f8fafc; }
+    .card { background: white; padding: 32px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+    h1, h2, h3 { color: #0f172a; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+    th { background: #f1f5f9; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p><a href="index.html">← Back to StandUp</a></p>
+    <h1>Privacy Policy for StandUp</h1>
+    <p><strong>Effective Date:</strong> November 2026<br>
+    <strong>Applicable Law:</strong> Digital Personal Data Protection Act, 2023 (India) & Global Standards<br>
+    <strong>Application:</strong> StandUp — Discipline & Habit Alarm OS (<code>com.growthstreaks.standup</code>)</p>
+
+    <h2>1. Privacy-First & On-Device Processing</h2>
+    <p>StandUp is designed as a privacy-first, on-device discipline and habit operating system. We believe your daily habits, wake-up verification, and movement data belong to you alone.</p>
+    <p><strong>Core Commitment:</strong> All primary features function 100% on-device. We do not maintain remote user databases, do not require user account logins, and do not transmit your habit logs, alarms, or camera frames to any remote server.</p>
+
+    <h2>2. Data We Process</h2>
+    <h3>A. Motion & Step Tracking</h3>
+    <p>Daily step counts, active minutes, and estimated distance/calories are collected via your phone's hardware step sensor (<code>Sensor.TYPE_STEP_COUNTER</code>) and Google Play Services Local Recording API. Data is saved strictly in a local SQLite database on your physical device and is never uploaded to any cloud server.</p>
+
+    <h3>B. Camera Wake-Up Verification</h3>
+    <p>During the 30-second upright standing wake-up check, camera frames are analyzed ephemerally in device RAM to verify standing posture. <strong>Zero photos, videos, or facial templates are stored on disk or transmitted over the internet.</strong> The session terminates immediately upon alarm disarming.</p>
+
+    <h3>C. Google AdMob (Third-Party Advertising)</h3>
+    <p>StandUp displays non-intrusive advertisements powered by Google AdMob (Publisher ID: <code>pub-9675414045566238</code>). Google may collect your Google Advertising ID (AAID) and coarse device signals in accordance with Google's Privacy Policy. <strong>Safety Lock:</strong> Ads are programmatically blocked while alarms are ringing or camera verification is active.</p>
+
+    <h2>3. Permissions Matrix</h2>
+    <table>
+      <tr><th>Permission</th><th>Technical Purpose</th><th>Data Destination</th></tr>
+      <tr><td><code>CAMERA</code></td><td>30-second upright wake-up check</td><td>Ephemeral RAM; Zero upload</td></tr>
+      <tr><td><code>ACTIVITY_RECOGNITION</code></td><td>Read physical pedometer ticks</td><td>Local SQLite database only</td></tr>
+      <tr><td><code>USE_EXACT_ALARM</code></td><td>Ring alarms at scheduled time</td><td>Android system AlarmManager</td></tr>
+      <tr><td><code>USE_FULL_SCREEN_INTENT</code></td><td>Display alarm over locked screen</td><td>Local UI Activity</td></tr>
+    </table>
+
+    <h2>4. Data Erasure</h2>
+    <p>Clearing application storage or uninstalling the StandUp app permanently deletes all local databases, streak records, and settings from your device.</p>
+
+    <h2>5. Grievance Redressal & Contact</h2>
+    <p>For inquiries or grievance redressal under India's DPDP Act, 2023, please contact our support team at our official developer portal.</p>
+  </div>
+</body>
+</html>

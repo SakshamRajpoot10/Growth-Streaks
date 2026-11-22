@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — StandUp: Habit Alarm & Tracker</title>
+  <meta name="description" content="Official Privacy Policy for StandUp: Habit Alarm & Tracker (com.growthstreaks.standup). Details our on-device privacy architecture, camera processing, and DPDP Act 2023 compliance.">
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  <style>
+    :root {
+      --bg-dark: #07130e;
+      --bg-surface: #0d221a;
+      --bg-card: rgba(15, 39, 30, 0.85);
+      --primary: #10b981;
+      --primary-light: #34d399;
+      --emerald-dark: #064e3b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-accent: #6ee7b7;
+      --border: rgba(52, 211, 153, 0.2);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.7;
+      padding: 40px 20px;
+      background-image: radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+    }
+    .wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .back-nav {
+      margin-bottom: 24px;
+    }
+    .back-nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    .back-nav a:hover { color: #ffffff; }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--border);
+      color: var(--text-accent);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+    .meta-bar {
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+    .meta-bar strong { color: var(--text-accent); }
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 36px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-accent);
+      margin: 22px 0 10px;
+    }
+    p { margin-bottom: 16px; color: var(--text-main); font-size: 1rem; }
+    ul, ol { margin-left: 24px; margin-bottom: 18px; color: var(--text-main); }
+    li { margin-bottom: 8px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 0.92rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      text-align: left;
+    }
+    th {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--text-accent);
+      font-weight: 700;
+    }
+    td { background: rgba(7, 19, 14, 0.6); }
+    code {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--text-accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+    }
+    .highlight-box {
+      background: rgba(6, 78, 59, 0.35);
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 12px 12px 0;
+      margin: 20px 0;
+    }
+    .footer-note {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .card { padding: 28px 20px; }
+      h1 { font-size: 2rem; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <div class="back-nav">
+      <a href="index.html">← Back to StandUp Official Website</a>
+    </div>
+
+    <div class="card">
+      <div class="header-badge">Legal & Privacy Governance</div>
+      <h1>Privacy Policy for StandUp</h1>
+      <div class="meta-bar">
+        <span><strong>Application:</strong> StandUp: Habit Alarm & Tracker (<code>com.growthstreaks.standup</code>)</span><br>
+        <span><strong>Effective Date:</strong> November 22, 2026</span> • 
+        <span><strong>Governing Law:</strong> Digital Personal Data Protection Act, 2023 (India)</span> • 
+        <span><strong>Developer:</strong> Saksham Rajpoot</span>
+      </div>
+
+      <h2>1. Introduction & Application Scope</h2>
+      <p>This Privacy Policy governs your use of <strong>StandUp: Habit Alarm & Tracker</strong> (hereinafter referred to as "StandUp", "the Application", "we", "us", or "our"), published by <strong>Saksham Rajpoot</strong> on the PhonePe Appstore and compatible Android platforms.</p>
+      <p>StandUp is an on-device discipline operating system designed to help users establish consistent morning wake-up routines, maintain 24/7 background physical activity, and track daily habit streaks. We take user privacy with absolute seriousness and have architected StandUp on a strict <strong>privacy-first, on-device data processing</strong> model.</p>
+
+      <h2>2. Core Privacy Principle: 100% On-Device Processing</h2>
+      <div class="highlight-box">
+        <strong>Our Privacy Commitment:</strong> StandUp does not require an account, phone number, email address, or user profile. We maintain zero remote user databases and zero cloud habit storage. Your morning alarms, waking habits, physical movement metrics, and streak calendar remain 100% on your physical mobile device.
+      </div>
+
+      <h2>3. Information We Collect and Process</h2>
+
+      <h3>A. Physical Activity & Movement Data</h3>
+      <p>StandUp collects your daily step counts, active minutes, estimated walking distance, and burned calories using your phone's built-in hardware step sensor (<code>Sensor.TYPE_STEP_COUNTER</code>) and Google Play Services Local Recording API.</p>
+      <ul>
+        <li><strong>Storage:</strong> All step logs and historical trends are saved strictly in an on-device SQLite database (<code>standup.db</code>).</li>
+        <li><strong>Network Transmission:</strong> Zero movement or fitness data is ever uploaded to any remote server or shared with third parties.</li>
+        <li><strong>GPS Location:</strong> StandUp does not access, request, or record GPS or location coordinates.</li>
+      </ul>
+
+      <h3>B. Camera Wake-Up Verification (Ephemeral Processing)</h3>
+      <p>When you enable a mission-based wake-up routine, StandUp requires a 30-second upright standing posture check via the front-facing camera to disarm the alarm.</p>
+      <ul>
+        <li><strong>100% Ephemeral RAM Processing:</strong> Camera video frames are analyzed in real-time in your device's volatile memory (RAM) solely to verify upright posture.</li>
+        <li><strong>Zero Image Storage:</strong> No photographs, video streams, or facial biometric templates are ever captured, saved to disk, or transmitted across the internet.</li>
+        <li><strong>Immediate Termination:</strong> The camera session automatically terminates and releases hardware locks the exact moment the 30-second mission completes or the alarm is disarmed.</li>
+      </ul>
+
+      <h3>C. Morning Routines, Habits & Calendar History</h3>
+      <p>Your scheduled alarm times, custom labels (e.g., "Wakebup", "Work hard"), selected ringtones, daily targets, and calendar completion markers are stored exclusively within local device storage. If you clear the app cache/data or uninstall StandUp, this data is completely erased.</p>
+
+      <h2>4. Complete Android System Permissions Audit</h2>
+      <p>StandUp requests only the permissions strictly required to perform its core alarm and fitness functions reliably on Android:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Permission</th>
+            <th>Technical Purpose</th>
+            <th>Data Destination</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>USE_EXACT_ALARM</code></td>
+            <td>Triggers alarms at the exact scheduled second via <code>AlarmManager</code>.</td>
+            <td>Android System AlarmManager</td>
+          </tr>
+          <tr>
+            <td><code>USE_FULL_SCREEN_INTENT</code></td>
+            <td>Displays full-screen alarm overlay (<code>StandUpAlarmActivity</code>) over lock screen.</td>
+            <td>Local OS Activity Window</td>
+          </tr>
+          <tr>
+            <td><code>CAMERA</code></td>
+            <td>30-second upright posture wake-up verification mission.</td>
+            <td><strong>Ephemeral RAM only (Zero disk / Zero network)</strong></td>
+          </tr>
+          <tr>
+            <td><code>ACTIVITY_RECOGNITION</code></td>
+            <td>Reads step counts from the device hardware pedometer sensor.</td>
+            <td>Local SQLite database only</td>
+          </tr>
+          <tr>
+            <td><code>FOREGROUND_SERVICE_HEALTH</code></td>
+            <td>Maintains background sensor registration without task killing on Android 14+.</td>
+            <td>Local background service</td>
+          </tr>
+          <tr>
+            <td><code>FOREGROUND_SERVICE_MEDIA_PLAYBACK</code></td>
+            <td>Plays continuous custom alarm audio via <code>STREAM_ALARM</code> until disarmed.</td>
+            <td>Device Audio Stream</td>
+          </tr>
+          <tr>
+            <td><code>RECEIVE_BOOT_COMPLETED</code></td>
+            <td>Reschedules active user alarms automatically after device reboot or restart.</td>
+            <td>Local Broadcast Receiver</td>
+          </tr>
+          <tr>
+            <td><code>WAKE_LOCK</code></td>
+            <td>Prevents CPU from entering deep sleep while an alarm is actively ringing.</td>
+            <td>Android PowerManager</td>
+          </tr>
+          <tr>
+            <td><code>VIBRATE</code></td>
+            <td>Vibrates device synchronously with alarm audio for sensory wake-up.</td>
+            <td>Device Vibrator Service</td>
+          </tr>
+          <tr>
+            <td><code>POST_NOTIFICATIONS</code></td>
+            <td>Displays daily routine reminders and alarm status alerts on Android 13+.</td>
+            <td>Local Notification Shade</td>
+          </tr>
+          <tr>
+            <td><code>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS</code></td>
+            <td>Guides user to whitelist StandUp from OEM battery savers that silence alarms.</td>
+            <td>System Settings Intent</td>
+          </tr>
+          <tr>
+            <td><code>INTERNET</code> & <code>ACCESS_NETWORK_STATE</code></td>
+            <td>Loads non-intrusive advertisements served by Google AdMob SDK.</td>
+            <td>Google AdMob Servers</td>
+          </tr>
+          <tr>
+            <td><code>AD_ID</code></td>
+            <td>Google Advertising ID used by AdMob SDK for frequency capping and fraud detection.</td>
+            <td>Google Mobile Ads SDK</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>5. Advertising & Google AdMob Disclosures</h2>
+      <p>StandUp is supported by non-intrusive banner and interstitial advertisements provided by <strong>Google AdMob</strong> (Google LLC, Publisher ID: <code>ca-app-pub-9675414045566238~1521257692</code>).</p>
+      <ul>
+        <li><strong>Data Collected by AdMob:</strong> Google Mobile Ads SDK may collect device identifiers (Google Advertising ID / AAID), IP address, network carrier, and ad engagement diagnostics to serve ads in compliance with <a href="https://policies.google.com/privacy" target="_blank" style="color: var(--text-accent);">Google's Privacy Policy</a>.</li>
+        <li><strong>Alarm Safety Lock:</strong> Advertisements are strictly suppressed and programmatically blocked while an alarm is ringing or camera verification is active, preventing disruption to your wake-up experience.</li>
+        <li><strong>User Control:</strong> You can reset or delete your Advertising ID at any time via your device: <em>Settings → Google → Ads → Reset/Delete Advertising ID</em>.</li>
+      </ul>
+
+      <h2>6. Third-Party Services & Analytics</h2>
+      <p>StandUp does not integrate third-party analytics trackers (such as Google Analytics, Mixpanel, or Facebook SDK). The only external network communication in the application is the Google AdMob SDK for ad serving.</p>
+
+      <h2>7. Data Sharing and Disclosure</h2>
+      <p>We do not sell, rent, monetize, or trade your personal information, fitness records, camera stream, or alarm habits to any third party. Your data never leaves your device except for the advertising signals processed directly by Google AdMob as detailed in Section 5.</p>
+
+      <h2>8. Data Retention, Erasure & User Rights</h2>
+      <p>Because StandUp operates 100% on-device, you maintain total control over your data:</p>
+      <ul>
+        <li><strong>Instant Data Deletion:</strong> You can permanently wipe all habits, alarms, and step logs by clearing storage: <em>Android Settings → Apps → StandUp → Storage → Clear Storage</em>.</li>
+        <li><strong>Application Uninstallation:</strong> Uninstalling the StandUp application permanently and irrecoverably removes all local database files, preferences, and cached assets from your phone.</li>
+      </ul>
+
+      <h2>9. Children's Privacy</h2>
+      <p>StandUp is rated for <strong>Everyone (3+)</strong> and provides general habit, alarm, and walking step tracking. We do not knowingly collect or solicit personal information from children under the age of 13. Because StandUp requires no account creation, no child's personal identity is ever collected.</p>
+
+      <h2>10. Compliance with India's DPDP Act, 2023</h2>
+      <p>In full compliance with the <strong>Digital Personal Data Protection Act, 2023 (DPDP Act)</strong> of India:</p>
+      <ul>
+        <li>We adhere to strict data minimization — processing only data that is technically essential for app functionality.</li>
+        <li>Camera processing is non-persistent and ephemeral.</li>
+        <li>We provide clear grievance redressal mechanisms for Indian consumers.</li>
+      </ul>
+
+      <h2>11. Developer Contact & Grievance Redressal</h2>
+      <p>If you have questions, feedback, or grievance redressal requests regarding this Privacy Policy or your data, please contact the developer directly:</p>
+      <div class="highlight-box">
+        <strong>Data Protection & Grievance Officer:</strong> Saksham Rajpoot<br>
+        <strong>Email:</strong> <a href="mailto:sakshamrajpoot094@gmail.com" style="color: var(--text-accent);">sakshamrajpoot094@gmail.com</a><br>
+        <strong>Official Website:</strong> <a href="https://sakshamrajpoot10.github.io/Growth-Streaks/" style="color: var(--text-accent);">https://sakshamrajpoot10.github.io/Growth-Streaks/</a><br>
+        <strong>Location:</strong> India
+      </div>
+
+      <h2>12. Policy Changes and Updates</h2>
+      <p>We may update this Privacy Policy from time to time to reflect changes in legal requirements or application enhancements. Any revisions will be published immediately on this webpage with an updated Effective Date.</p>
+
+      <div class="footer-note">
+        <p>&copy; 2026 StandUp. Developed & Published by Saksham Rajpoot. All rights reserved.</p>
+        <p><a href="index.html" style="color: var(--text-accent); text-decoration: none;">Return to StandUp Homepage</a></p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

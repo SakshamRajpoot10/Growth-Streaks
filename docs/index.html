@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StandUp — Discipline & Habit Alarm OS for Android</title>
+  <meta name="description" content="Transform mornings and build unbreakable daily streaks with StandUp. Featuring native lock-screen alarms, 30s camera posture verification, 24/7 background step counting, and habit tracking.">
+  <meta name="keywords" content="StandUp, habit tracker, alarm clock, pedometer, step counter, morning routine, discipline, PhonePe Appstore">
+  <meta property="og:title" content="StandUp — Discipline & Habit Alarm OS">
+  <meta property="og:description" content="Wake up on time with camera verification, track daily steps 24/7, and build unbreakable habit streaks.">
+  <meta property="og:image" content="assets/icon.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  <style>
+    :root {
+      --bg-dark: #07130e;
+      --bg-surface: #0d221a;
+      --bg-card: rgba(15, 39, 30, 0.75);
+      --bg-glass: rgba(20, 50, 38, 0.65);
+      --primary: #10b981;
+      --primary-light: #34d399;
+      --primary-glow: rgba(16, 185, 129, 0.25);
+      --emerald-dark: #064e3b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-accent: #6ee7b7;
+      --border: rgba(52, 211, 153, 0.2);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 65%, rgba(5, 150, 105, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    /* Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(7, 19, 14, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 72px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: -0.5px;
+    }
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      box-shadow: 0 0 16px var(--primary-glow);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--text-accent); }
+    .btn-nav {
+      background: linear-gradient(135deg, var(--primary), var(--emerald-dark));
+      color: white !important;
+      padding: 9px 20px;
+      border-radius: 24px;
+      font-weight: 600 !important;
+      box-shadow: 0 2px 10px var(--primary-glow);
+      transition: transform 0.2s, box-shadow 0.2s !important;
+    }
+    .btn-nav:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 90px 0 60px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: center;
+      gap: 56px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--border);
+      color: var(--text-accent);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -1.5px;
+      margin-bottom: 22px;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #34d399, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 36px;
+      max-width: 560px;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+      color: #ffffff;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+      transition: all 0.25s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(16, 185, 129, 0.5);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface);
+      color: var(--text-main);
+      padding: 14px 24px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: all 0.25s ease;
+    }
+    .btn-secondary:hover {
+      background: var(--bg-glass);
+      border-color: var(--primary-light);
+    }
+    .hero-highlights {
+      display: flex;
+      gap: 24px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .hero-highlights span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-highlights span::before {
+      content: "✓";
+      color: var(--primary-light);
+      font-weight: bold;
+    }
+
+    /* Phone Mockup */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+    .phone-mockup {
+      width: 290px;
+      height: 590px;
+      background: #000;
+      border-radius: 44px;
+      padding: 11px;
+      box-shadow: 
+        0 25px 60px -12px rgba(0, 0, 0, 0.8),
+        0 0 30px var(--primary-glow),
+        inset 0 0 4px rgba(255, 255, 255, 0.2);
+      border: 3px solid rgba(52, 211, 153, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 34px;
+      overflow: hidden;
+      background: #000;
+    }
+    .phone-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Features Grid */
+    .section { padding: 90px 0; }
+    .section-header {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 56px;
+    }
+    .section-tag {
+      color: var(--text-accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+    .section-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 28px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 28px;
+      backdrop-filter: blur(10px);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary-light);
+      box-shadow: 0 12px 30px rgba(16, 185, 129, 0.15);
+    }
+    .feature-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      margin-bottom: 22px;
+    }
+    .feature-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Screenshots Showcase */
+    .screenshots-scroll {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .screenshot-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform 0.25s ease;
+      text-align: center;
+    }
+    .screenshot-item:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+    }
+    .screenshot-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .screenshot-caption {
+      padding: 12px 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-accent);
+      background: rgba(7, 19, 14, 0.9);
+    }
+
+    /* Privacy Banner */
+    .privacy-banner {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.4) 0%, rgba(13, 34, 26, 0.8) 100%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      margin: 40px 0;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      align-items: center;
+      gap: 36px;
+    }
+    .privacy-banner h3 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .privacy-banner p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 20px;
+      line-height: 1.65;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: var(--bg-surface);
+      border: 1px solid var(--primary-light);
+      border-radius: 24px;
+      padding: 36px 32px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px var(--primary-glow);
+      text-align: center;
+    }
+    .modal-content h3 { font-size: 1.6rem; margin-bottom: 12px; }
+    .modal-content p { color: var(--text-muted); margin-bottom: 24px; font-size: 0.98rem; }
+    .btn-close {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(4, 12, 9, 0.95);
+      border-top: 1px solid var(--border);
+      padding: 60px 0 36px;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+    .footer-brand p { margin-top: 12px; max-width: 360px; line-height: 1.6; }
+    .footer-links h4 { color: var(--text-main); font-size: 1rem; margin-bottom: 16px; font-weight: 700; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text-accent); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 24px;
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; text-align: center; gap: 40px; padding: 50px 0 30px; }
+      .hero-title { font-size: 2.6rem; }
+      .hero-subtitle { margin: 0 auto 30px; }
+      .hero-actions { justify-content: center; }
+      .hero-highlights { justify-content: center; }
+      .privacy-banner { grid-template-columns: 1fr; padding: 32px 24px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="container">
+      <nav>
+        <a href="#" class="brand">
+          <img src="assets/icon.png" alt="StandUp App Icon">
+          <span>StandUp</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#verification">Wake-Up Mission</a></li>
+          <li><a href="#fitness">Pedometer</a></li>
+          <li><a href="#screenshots">Screenshots</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="#download" class="btn-nav" onclick="handleDownload(event)">Download</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero container">
+    <div class="hero-content">
+      <div class="hero-badge">⚡ Discipline & Habit Alarm OS for Android</div>
+      <h1 class="hero-title">Wake Up. Move More.<br>Build <span>Consistency</span>.</h1>
+      <p class="hero-subtitle">
+        Stop hitting snooze. StandUp pairs an uncompromising native alarm engine with 30-second camera posture verification, 24/7 background pedometer tracking, and an accountability streak calendar — 100% on-device and free.
+      </p>
+      <div class="hero-actions">
+        <button id="downloadBtn" class="btn-primary" onclick="handleDownload(event)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download on PhonePe Appstore
+        </button>
+        <a href="#features" class="btn-secondary">Explore Features ↓</a>
+      </div>
+      <div class="hero-highlights">
+        <span>100% Free & No Sign-In</span>
+        <span>Zero Battery Drain</span>
+        <span>DPDP Act 2023 Compliant</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <img src="assets/01_dashboard_accountability.jpg" alt="StandUp Dashboard Interface">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Pillars / Features -->
+  <section id="features" class="section container">
+    <div class="section-header">
+      <span class="section-tag">Engineered for Daily Discipline</span>
+      <h2 class="section-title">Four Pillars of Consistent Growth</h2>
+      <p class="section-desc">Traditional alarm clocks are too easy to snooze, and standalone habit apps are too easy to forget. StandUp unifies waking up, moving, and tracking into one seamless OS.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⏰</div>
+        <h3>Native Alarm Engine</h3>
+        <p>Powered by native Android background services. Rings reliably over the lock screen, even when the app is swiped away or the phone is in deep sleep. Uses isolated <code>STREAM_ALARM</code> audio channels so it is never muted by media volume sliders.</p>
+      </div>
+
+      <div class="feature-card" id="verification">
+        <div class="feature-icon">📸</div>
+        <h3>30s Camera Verification</h3>
+        <p>Physically forces you out of bed. To disarm your morning alarm, StandUp requires a 30-second upright standing posture check using the front camera. Processed 100% in volatile RAM — zero photos are captured, saved, or uploaded.</p>
+      </div>
+
+      <div class="feature-card" id="fitness">
+        <div class="feature-icon">🏃</div>
+        <h3>24/7 Hardware Pedometer</h3>
+        <p>Tracks your daily steps, active minutes, estimated distance, and burned calories automatically using device hardware sensors and Google Play Services Local Recording API — without battery-draining GPS or persistent notification clutter.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <h3>Habit Streak Calendar</h3>
+        <p>Monitor your daily routines and monthly momentum. Days where all morning tasks and alarms are completed light up with vibrant completion markers to keep your consistency streaks unbroken week after week.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Authentic Screenshots -->
+  <section id="screenshots" class="section container">
+    <div class="section-header">
+      <span class="section-tag">Authentic Mobile Interface</span>
+      <h2 class="section-title">Clean, Focused & Battery Efficient</h2>
+      <p class="section-desc">Inspect genuine screenshots captured from StandUp running on Android.</p>
+    </div>
+
+    <div class="screenshots-scroll">
+      <div class="screenshot-item">
+        <img src="assets/01_dashboard_accountability.jpg" alt="Daily Accountability">
+        <div class="screenshot-caption">100% Daily Accountability</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/03_my_routines_alarms.jpg" alt="My Routines and Alarms">
+        <div class="screenshot-caption">Camera Wake-Up Alarms</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/02_dashboard_movement_streaks.jpg" alt="Movement & Streaks">
+        <div class="screenshot-caption">Movement & Streak Badges</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/04_fitness_activity_trends.jpg" alt="Fitness Trends">
+        <div class="screenshot-caption">7-Day Fitness Trends</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/06_streak_calendar.jpg" alt="Habit Calendar">
+        <div class="screenshot-caption">Monthly Streak Calendar</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/05_configure_daily_targets.jpg" alt="Configure Targets">
+        <div class="screenshot-caption">Customizable Step Targets</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy & Data Safety Banner -->
+  <section class="container">
+    <div class="privacy-banner">
+      <div>
+        <h3>🔒 100% Privacy-First & On-Device</h3>
+        <p>Your morning routines, sleep schedule, and physical steps belong exclusively to you. StandUp requires no account registration, maintains zero remote habit databases, and analyzes camera verification ephemerally in RAM. Compliant with the <strong>Digital Personal Data Protection Act, 2023</strong> of India.</p>
+        <a href="privacy-policy.html" class="btn-secondary">Read Full Privacy Policy →</a>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 8px;">🛡️</div>
+        <div style="color: var(--text-accent); font-weight: 700; font-size: 1.1rem;">Zero Cloud Tracking</div>
+        <div style="color: var(--text-muted); font-size: 0.85rem;">Local SQLite Database Only</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section id="download" class="section container" style="text-align: center;">
+    <div class="section-header">
+      <span class="section-tag">Get Started Today</span>
+      <h2 class="section-title">Ready to Take Control of Your Mornings?</h2>
+      <p class="section-desc">Download StandUp on the PhonePe Appstore for Android. No subscriptions, no required accounts, 100% free.</p>
+    </div>
+    <div>
+      <button class="btn-primary" style="font-size: 1.15rem; padding: 16px 36px;" onclick="handleDownload(event)">
+        📱 Get StandUp on PhonePe Appstore
+      </button>
+      <div style="margin-top: 14px; font-size: 0.88rem; color: var(--text-muted);">
+        Package: <code>com.growthstreaks.standup</code> • Requires Android 7.0 (API 24) or later
+      </div>
+    </div>
+  </section>
+
+  <!-- Coming Soon Modal -->
+  <div id="comingSoonModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="font-size: 3rem; margin-bottom: 12px;">🚀</div>
+      <h3>Coming Soon on PhonePe Appstore</h3>
+      <p>
+        <strong>StandUp: Habit Alarm & Tracker</strong> is currently undergoing official developer certification and review on the <strong>PhonePe Appstore (Indus)</strong>.
+      </p>
+      <p style="font-size: 0.88rem; color: var(--text-accent);">
+        Once verified, this button will link directly to the official PhonePe store listing!
+      </p>
+      <button class="btn-close" onclick="closeModal(null)">Got it</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="brand">
+            <img src="assets/icon.png" alt="StandUp Icon">
+            <span>StandUp</span>
+          </a>
+          <p>The Discipline & Habit Alarm OS for Android. Built to help individuals overcome morning procrastination, maintain daily physical movement, and sustain unbroken consistency.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#verification">Camera Alarm</a></li>
+            <li><a href="#fitness">Step Counter</a></li>
+            <li><a href="#screenshots">App Screenshots</a></li>
+            <li><a href="#download">Download App</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Legal & Compliance</h4>
+          <ul>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="app-ads.txt">app-ads.txt</a></li>
+            <li><a href="mailto:sakshamrajpoot094@gmail.com">Developer Support</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 StandUp. Developed & Published by Saksham Rajpoot. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Single Configuration Variable for PhonePe Store URL -->
+  <script>
+    // =========================================================================
+    // CONFIGURATION: Set the official PhonePe App Store URL here when live
+    // =========================================================================
+    const APP_STORE_URL = ""; 
+
+    function handleDownload(e) {
+      if (e) e.preventDefault();
+      if (APP_STORE_URL && APP_STORE_URL.trim() !== "") {
+        window.open(APP_STORE_URL, "_blank");
+      } else {
+        document.getElementById("comingSoonModal").classList.add("active");
+      }
+    }
+
+    function closeModal(e) {
+      document.getElementById("comingSoonModal").classList.remove("active");
+    }
+
+    // Escape key closes modal
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") closeModal();
+    });
+  </script>
+</body>
+</html>
