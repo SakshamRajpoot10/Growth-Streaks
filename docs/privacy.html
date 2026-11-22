@@ -8,35 +8,39 @@
   <link rel="icon" type="image/png" href="assets/icon.png">
   <style>
     :root {
-      --bg-page: #f8fafc;
-      --bg-card: #ffffff;
-      --text-heading: #0f172a;
-      --text-body: #334155;
-      --text-muted: #64748b;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --accent-teal: #0d9488;
-      --border: #e2e8f0;
-      --border-focus: #cbd5e1;
+      --bg-canvas: #F8F9FA;
+      --bg-card: #FFFFFF;
+      --text-heading: #111827;
+      --text-body: #4B5563;
+      --text-muted: #6B7280;
+      --primary: #10B981;
+      --primary-hover: #059669;
+      --primary-light: #34D399;
+      --primary-soft: #DCFCE7;
+      --primary-text: #065F46;
+      --streak-accent: #EA580C;
+      --streak-bg: #FFFBEB;
+      --streak-border: #FDE68A;
+      --streak-text: #9A3412;
+      --border: #E5E7EB;
+      --border-subtle: #F3F4F6;
+      --shadow-card: 0 4px 16px -2px rgba(17, 24, 39, 0.05);
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: var(--font);
-      background-color: var(--bg-page);
+      background-color: var(--bg-canvas);
       color: var(--text-body);
       line-height: 1.75;
-      padding: 48px 20px;
+      padding: 44px 20px;
     }
     .wrapper {
       max-width: 860px;
       margin: 0 auto;
     }
     .nav-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
     .nav-bar a {
       display: inline-flex;
@@ -52,34 +56,34 @@
     .doc-container {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 56px 64px;
-      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+      border-radius: 20px;
+      padding: 56px 60px;
+      box-shadow: var(--shadow-card);
     }
     .doc-badge {
       display: inline-block;
-      background: #eff6ff;
-      color: var(--primary);
-      border: 1px solid #bfdbfe;
+      background: var(--primary-soft);
+      color: var(--primary-text);
+      border: 1px solid #A7F3D0;
       padding: 4px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       margin-bottom: 16px;
     }
     h1 {
-      font-size: 2.4rem;
+      font-size: 2.35rem;
       font-weight: 800;
       color: var(--text-heading);
       letter-spacing: -0.5px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       line-height: 1.25;
     }
     .doc-meta {
-      padding-bottom: 24px;
-      margin-bottom: 36px;
+      padding-bottom: 22px;
+      margin-bottom: 34px;
       border-bottom: 1px solid var(--border);
       font-size: 0.92rem;
       color: var(--text-muted);
@@ -101,17 +105,16 @@
     p { margin-bottom: 16px; font-size: 1rem; color: var(--text-body); }
     ul { margin-left: 24px; margin-bottom: 20px; }
     li { margin-bottom: 8px; color: var(--text-body); }
-    .callout {
-      background: #f8fafc;
-      border-left: 4px solid var(--primary);
-      border-top: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      border-radius: 0 10px 10px 0;
+    .callout-streak {
+      background: var(--streak-bg);
+      border: 1px solid var(--streak-border);
+      border-left: 4px solid var(--streak-accent);
+      border-radius: 0 12px 12px 0;
       padding: 18px 22px;
       margin: 24px 0;
+      color: var(--streak-text);
     }
-    .callout p { margin-bottom: 0; }
+    .callout-streak p { margin-bottom: 0; color: var(--streak-text); font-weight: 500; }
     .table-responsive {
       overflow-x: auto;
       margin: 24px 0;
@@ -128,20 +131,20 @@
       vertical-align: top;
     }
     th {
-      background-color: #f8fafc;
+      background-color: #F9FAFB;
       color: var(--text-heading);
       font-weight: 600;
     }
-    td { background-color: #ffffff; }
+    td { background-color: #FFFFFF; }
     .contact-box {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: 12px;
+      background: var(--primary-soft);
+      border: 1px solid #A7F3D0;
+      border-radius: 14px;
       padding: 24px;
       margin: 28px 0;
     }
-    .contact-box h3 { color: #166534; margin-top: 0; }
-    .contact-box p { color: #15803d; margin-bottom: 6px; }
+    .contact-box h3 { color: var(--primary-text); margin-top: 0; }
+    .contact-box p { color: #047857; margin-bottom: 6px; }
     .doc-footer {
       margin-top: 48px;
       padding-top: 24px;
@@ -151,7 +154,7 @@
       text-align: center;
     }
     @media (max-width: 768px) {
-      body { padding: 24px 12px; }
+      body { padding: 20px 12px; }
       .doc-container { padding: 32px 20px; }
       h1 { font-size: 1.85rem; }
       h2 { font-size: 1.25rem; }
@@ -179,7 +182,7 @@
       <p>StandUp is designed as a daily discipline, habit tracking, and waking accountability application. We operate on a strict <strong>privacy-first, on-device architecture</strong>: we do not maintain user accounts, we do not require your phone number or email address to use the app, and we do not store your private habits or physical routines on remote servers.</p>
 
       <h2>2. Core Privacy Commitment: 100% On-Device Processing</h2>
-      <div class="callout">
+      <div class="callout-streak">
         <p><strong>Zero Account Requirement & Local Storage:</strong> StandUp does not require registration, login credentials, or cloud synchronization. All your scheduled alarms, custom routine names, daily streak progress, and step counts are stored strictly on your physical phone within local device storage.</p>
       </div>
 
@@ -296,8 +299,8 @@
       <div class="contact-box">
         <h3>Developer & Grievance Redressal Contact</h3>
         <p><strong>Developer:</strong> Saksham Rajpoot</p>
-        <p><strong>Email:</strong> <a href="mailto:sakshamrajpoot094@gmail.com" style="color: #166534; font-weight: 600;">sakshamrajpoot094@gmail.com</a></p>
-        <p><strong>Official Website:</strong> <a href="https://sakshamrajpoot10.github.io/Growth-Streaks/" style="color: #166534;">https://sakshamrajpoot10.github.io/Growth-Streaks/</a></p>
+        <p><strong>Email:</strong> <a href="mailto:sakshamrajpoot094@gmail.com" style="color: var(--primary-text); font-weight: 600;">sakshamrajpoot094@gmail.com</a></p>
+        <p><strong>Official Website:</strong> <a href="https://sakshamrajpoot10.github.io/Growth-Streaks/" style="color: var(--primary-text);">https://sakshamrajpoot10.github.io/Growth-Streaks/</a></p>
         <p><strong>Location:</strong> India</p>
       </div>
 

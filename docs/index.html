@@ -13,29 +13,33 @@
   <link rel="icon" type="image/png" href="assets/icon.png">
   <style>
     :root {
-      --bg-main: #ffffff;
-      --bg-alt: #f8fafc;
-      --bg-card: #ffffff;
-      --text-heading: #0f172a;
-      --text-body: #334155;
-      --text-muted: #64748b;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-soft: #eff6ff;
-      --accent-teal: #0d9488;
-      --accent-orange: #ea580c;
-      --border: #e2e8f0;
-      --border-card: #f1f5f9;
-      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
-      --shadow-md: 0 4px 20px -2px rgba(15, 23, 42, 0.07);
-      --shadow-lg: 0 12px 36px -4px rgba(15, 23, 42, 0.1);
+      --bg-canvas: #F8F9FA;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F3F4F6;
+      --text-heading: #111827;
+      --text-body: #4B5563;
+      --text-muted: #6B7280;
+      --primary: #10B981;
+      --primary-hover: #059669;
+      --primary-light: #34D399;
+      --primary-soft: #DCFCE7;
+      --primary-text: #065F46;
+      --streak-accent: #EA580C;
+      --streak-bg: #FFFBEB;
+      --streak-border: #FDE68A;
+      --streak-text: #9A3412;
+      --border: #E5E7EB;
+      --border-subtle: #F3F4F6;
+      --shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.04);
+      --shadow-card: 0 4px 18px -2px rgba(17, 24, 39, 0.06);
+      --shadow-lg: 0 16px 36px -4px rgba(17, 24, 39, 0.08);
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       font-family: var(--font);
-      background-color: var(--bg-main);
+      background-color: var(--bg-canvas);
       color: var(--text-body);
       line-height: 1.65;
       overflow-x: hidden;
@@ -47,7 +51,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
@@ -92,7 +96,7 @@
       background: var(--primary) !important;
       color: #ffffff !important;
       padding: 10px 22px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 600 !important;
       transition: all 0.2s ease !important;
       box-shadow: var(--shadow-sm);
@@ -100,7 +104,7 @@
     .btn-nav:hover {
       background: var(--primary-hover) !important;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
     }
 
     /* Hero Section */
@@ -116,8 +120,8 @@
       align-items: center;
       gap: 8px;
       background: var(--primary-soft);
-      border: 1px solid #bfdbfe;
-      color: var(--primary);
+      border: 1px solid #A7F3D0;
+      color: var(--primary-text);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.85rem;
@@ -162,13 +166,13 @@
       text-decoration: none;
       cursor: pointer;
       border: none;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
       transition: all 0.2s ease;
     }
     .btn-primary:hover {
       background: var(--primary-hover);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 6px 22px rgba(16, 185, 129, 0.4);
     }
     .btn-secondary {
       display: inline-flex;
@@ -185,7 +189,7 @@
       transition: all 0.2s ease;
     }
     .btn-secondary:hover {
-      background: var(--bg-alt);
+      background: var(--bg-subtle);
       border-color: #cbd5e1;
     }
     .hero-highlights {
@@ -202,7 +206,7 @@
     }
     .hero-highlights span::before {
       content: "✓";
-      color: #10b981;
+      color: var(--primary);
       font-weight: bold;
     }
 
@@ -214,11 +218,11 @@
     .phone-mockup {
       width: 295px;
       height: 600px;
-      background: #0f172a;
+      background: #111827;
       border-radius: 42px;
       padding: 11px;
-      box-shadow: 0 25px 60px -12px rgba(15, 23, 42, 0.25), 0 0 1px rgba(0, 0, 0, 0.4);
-      border: 3px solid #334155;
+      box-shadow: var(--shadow-lg), 0 0 1px rgba(0, 0, 0, 0.2);
+      border: 3px solid #374151;
     }
     .phone-screen {
       width: 100%;
@@ -234,9 +238,38 @@
       display: block;
     }
 
+    /* Streak Card Banner */
+    .streak-banner {
+      background: var(--streak-bg);
+      border: 1px solid var(--streak-border);
+      border-radius: 18px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 20px 0 60px;
+      box-shadow: var(--shadow-sm);
+    }
+    .streak-banner-icon {
+      font-size: 2.8rem;
+    }
+    .streak-banner-content h4 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--streak-text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .streak-banner-content p {
+      color: #7C2D12;
+      font-size: 0.98rem;
+      margin-bottom: 0;
+    }
+
     /* Features Section */
-    .section { padding: 96px 0; }
-    .section-alt { background-color: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .section { padding: 90px 0; }
+    .section-alt { background-color: #ffffff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
     .section-header {
       text-align: center;
       max-width: 680px;
@@ -270,15 +303,15 @@
     .feature-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 32px 28px;
       box-shadow: var(--shadow-sm);
       transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
     .feature-card:hover {
       transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
-      border-color: #cbd5e1;
+      box-shadow: var(--shadow-card);
+      border-color: #A7F3D0;
     }
     .feature-icon {
       width: 52px;
@@ -311,9 +344,9 @@
       margin-top: 20px;
     }
     .screenshot-card {
-      background: var(--bg-card);
+      background: #ffffff;
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 18px;
       overflow: hidden;
       box-shadow: var(--shadow-sm);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -321,7 +354,7 @@
     }
     .screenshot-card:hover {
       transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-card);
     }
     .screenshot-card img {
       width: 100%;
@@ -368,7 +401,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(17, 24, 39, 0.6);
       backdrop-filter: blur(4px);
       z-index: 999;
       justify-content: center;
@@ -382,7 +415,7 @@
       padding: 36px 32px;
       max-width: 480px;
       width: 100%;
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+      box-shadow: 0 20px 40px rgba(17, 24, 39, 0.2);
       text-align: center;
     }
     .modal-content h3 { font-size: 1.5rem; color: var(--text-heading); margin-bottom: 12px; }
@@ -392,7 +425,7 @@
       color: white;
       border: none;
       padding: 12px 28px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
       font-size: 1rem;
@@ -431,6 +464,7 @@
       .hero-subtitle { margin: 0 auto 30px; }
       .hero-actions { justify-content: center; }
       .hero-highlights { justify-content: center; }
+      .streak-banner { flex-direction: column; text-align: center; padding: 20px; }
       .privacy-card { grid-template-columns: 1fr; padding: 32px 24px; }
       .footer-grid { grid-template-columns: 1fr; gap: 32px; }
       .nav-links { display: none; }
@@ -489,6 +523,17 @@
     </div>
   </section>
 
+  <!-- Streak Banner Inspired by the App -->
+  <section class="container">
+    <div class="streak-banner">
+      <div class="streak-banner-icon">🔥</div>
+      <div class="streak-banner-content">
+        <h4>Build Unstoppable Habit Streaks</h4>
+        <p>Consistency is key. StandUp pairs every wake-up alarm with routine completion rings, tracking your daily accountability and building momentum week after week.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- Core Pillars -->
   <section id="features" class="section section-alt">
     <div class="container">
@@ -517,7 +562,7 @@
           <p>Measures your daily walking steps, active minutes, estimated distance, and burned calories automatically using hardware motion sensors — completely avoiding battery-draining GPS tracking or annoying permanent notifications.</p>
         </div>
 
-        <div class="feature-card">
+        <div class="feature-card" id="fitness">
           <div class="feature-icon">📅</div>
           <h3>Habit Streak Calendar</h3>
           <p>Visualize your monthly consistency at a glance. Days where all morning tasks and routines are completed light up with vibrant completion markers, motivating you to keep your momentum going week after week.</p>
