@@ -30,7 +30,7 @@
 | 📢 **AdMob Publisher Authorization** | **[sakshamrajpoot10.github.io/Growth-Streaks/app-ads.txt](https://sakshamrajpoot10.github.io/Growth-Streaks/app-ads.txt)** | **`LIVE`** |
 | 📱 **PhonePe Appstore (Indus)** | **[Download StandUp on PhonePe Appstore](https://www.phonepeappstore.com/apps/com.growthstreaks.standup)** | **`UNDER REVIEW`** |
 
-> ℹ️ **Store Status Notice:** StandUp was officially prepared, signed with production V2/V3 signatures, and submitted for publication review on the **PhonePe Appstore (Indus Appstore)** on **November 22, 2026**. Once review concludes (typically 24–72 hours), the download link above directs directly to the store page for direct one-tap installation on Android devices across India and worldwide.
+> ℹ️ **Official Store Distribution Only:** StandUp was officially prepared, signed with production V2/V3 signatures, and submitted for publication review on the **PhonePe Appstore (Indus Appstore)** on **November 22, 2026**. StandUp is distributed exclusively through official store channels — no raw APK files are hosted or downloadable via GitHub to guarantee authenticity, security, and verified automatic updates. Once review concludes, the download link above directs directly to the store page for direct one-tap installation on Android devices across India and worldwide.
 
 ---
 
@@ -168,12 +168,10 @@ npm install
 npx expo start
 ```
 
-### 3. Compile Standalone Production APK
-```bash
-cd android
-./gradlew.bat assembleRelease --no-daemon
-```
-*Output:* `android/app/build/outputs/apk/release/app-release.apk`
+### 3. Application Distribution
+StandUp is distributed **exclusively through the official PhonePe Appstore (Indus Appstore)**. Raw APK binary files are deliberately excluded from this repository to protect intellectual property, prevent unauthorized cloning, and ensure all users install verified, cryptographically signed builds with automatic store updates.
+
+👉 **[Download StandUp on PhonePe Appstore](https://www.phonepeappstore.com/apps/com.growthstreaks.standup)**
 
 ---
 

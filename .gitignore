@@ -9,7 +9,12 @@ dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# Native & Binary Outputs (NEVER TRACK BINARIES OR KEYS)
+*.apk
+*.aab
+*.apks
+*.keystore
+standup-release.keystore
 .kotlin/
 *.orig.*
 *.jks
@@ -46,7 +51,3 @@ android/local.properties
 android/app/build/
 android/app/.cxx/
 android/.idea/
-
-# Android builds
-*.apk
-*.aab
